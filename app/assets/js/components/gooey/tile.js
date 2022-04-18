@@ -36,11 +36,10 @@ export default class Tile {
         }
     }
     planeGeometry() {
-        const { width, height } = this.tile;
         this.getBounds();
         const res = {
-            width: this.isPrivate ? width : window.innerWidth,
-            height: this.isPrivate ? height : window.innerHeight
+            width: this.isPrivate ? this.sizes.width : window.innerWidth,
+            height: this.isPrivate ? this.sizes.height : window.innerHeight
         }
         this.uniforms = {...this.uniforms,...{
             u_map : { type : 't', value : this.texture },
