@@ -1,0 +1,94 @@
+.video-player {
+    position: relative;
+    font-size: 0;
+    //overflow: hidden;
+    background: #000;
+    z-index: 0;
+    border: 1px solid $color-orange;
+    $root : &;
+    &:before {
+        content:"";
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        opacity: 0.2;
+        z-index: -2;
+        transition: 0.5s;
+    }
+    &:after {
+        content:"";
+        position: absolute;
+        left: 0px;
+        top: 12px;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        opacity: 0.2;
+        z-index: -1;
+        transition: 0.5s;
+    }
+    &__thumb {
+        position: relative;
+        img {
+            width: 100%;
+        }
+        &:before {
+            content:"";
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            background: #000;
+            opacity: 0.1;
+            position: absolute;
+            transition: 0.3s;
+            z-index: 1;
+            #{$root}:hover & {
+                opacity: 0.3;
+            }
+        }
+        &:after {
+            content: "\f04b";
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: absolute;
+            left:50%;
+            margin-left: -30px;
+            margin-top: -38px;
+            top:50%;
+            transform: scale(1);
+            color:$color-orange;
+            font-size: 77px;
+            text-shadow: 0px 7px 45px rgba(#000,0.7);
+            transition: 0.3s;
+            z-index: 2;
+            @include screen(mobile) {
+                font-size: 60px;
+                margin-left: -30px;
+                margin-top: -30px;
+            }
+            #{$root}:hover & {
+                transform: scale(1.4);
+            }
+        }
+    }
+    &--no-shadow {
+        border:0;
+        &:after,
+        &:before {
+            display: none;
+        }
+        .video-player__thumb {
+            &:before {
+                display: none;
+            }
+        }
+    }
+}

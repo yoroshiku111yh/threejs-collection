@@ -1,0 +1,356 @@
+.header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: #fff;
+    height: 85px;
+    box-shadow: 0px 0px 5px rgba(#000,0.2);
+    @extend .clearfix;
+    z-index: 15;
+    @include screen(tablet) {
+        height: 50px;
+        position: fixed;
+        //border-bottom: 1px solid #ddd;
+    }
+    .container {
+        //position: relative;
+        @include screen(tablet) {
+            position: relative;
+            height: 100%;
+        }
+    }
+    &__logo {
+        float:left;
+        font-size: 0;
+        line-height: 85px;
+        height: 85px;
+        position: relative;
+        z-index: 2;
+        @include screen(tablet) {
+            position: absolute;
+            float: none;
+            left:50%;
+            top:50%;
+            line-height: 1;
+            height: auto;
+            transform: translate(-50%,-50%);
+            width: 85px;
+            img {
+                width: 100%;
+            }
+        }
+        a {
+            display: inline-block;
+            vertical-align: middle;
+            line-height: 1;
+        }
+    }
+    &__search {
+        position: absolute;
+        right: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        @extend .clearfix;
+        display: none;
+        @include screen(tablet) {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            background: rgba(#000,0.7);
+            z-index: 5;
+            -webkit-overflow-scrolling: touch;
+        }
+        .container {
+            position: relative;
+            height: 100%;
+            @include screen(tablet) {
+                height: 50px;
+            }
+        }
+        &__container {
+            position: absolute;
+            left: 200px;
+            right: 15px;
+            top:50%;
+            transform: translateY(-50%);
+            border-bottom: 1px solid #dcdcdc;
+            height: 30px;
+            background: #fff;
+            @include screen(tablet) {
+                left: 5px;
+                right: 5px;
+                border-radius: 30px;
+                border: 0;
+                margin-top: 2px;
+            }
+        }
+        &__close {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            position: relative;
+            float: left;
+            cursor: pointer;
+            &:after,&:before {
+                content:"";
+                display: block;
+                position: absolute;
+                top:50%;
+                left:15%;
+                height: 2px;
+                width: 70%;
+                margin-top: -1px;
+                background: #3d3d3d;
+            }
+            &:before {
+                transform: rotate(-45deg);
+            }
+            &:after {
+                transform: rotate(45deg);
+            }
+        }
+        &__input {
+            float: left;
+            width: calc(100% - 30px);
+            height: 30px;
+            line-height: 30px;
+            border:0;
+            background: none;
+            padding-left: 10px;
+            padding-right: 40px;
+        }
+        &__submit {
+            background: none;
+            border:0;
+            outline: none;
+            position: absolute;
+            right:0px;
+            top:50%;
+            padding: 0px 10px;
+            transform: translateY(-50%);
+            font-size: 0;
+            i {
+                display: inline-block;
+            }
+        }
+    }
+    &__search-btn {
+        position: absolute;
+        right:15px;
+        top:50%;
+        transform: translateY(-50%);
+        display: none;
+        margin-top: 3px;
+        @include screen(tablet) {
+            display: inline-block;
+        }
+        i {
+            display: inline-block;
+        }
+    }
+    &__hbg-btn {
+        position: absolute;
+        left:15px;
+        top:50%;
+        transform: translateY(-50%);
+        display: inline-block;
+        width: 20px;
+        height: 17px;
+        display: none;
+        @include screen(tablet) {
+            display: block;
+        }
+        span {
+            width: 20px;
+            height: 3px;
+            background: $color-blue;
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            &:nth-child(1) {
+            }
+            &:nth-child(2) {
+                top:7px;
+            }
+            &:nth-child(3) {
+                top:14px;
+            }
+        }
+        &.close {
+            span {
+                &:nth-child(1) {
+                    -webkit-animation: firstBarReverse .5s ease;
+                    -o-animation: firstBarReverse .5s ease;
+                    animation: firstBarReverse .5s ease;
+                    animation-fill-mode: forwards;
+                }
+                &:nth-child(2) {
+                    -webkit-animation: secondBarReverse .5s ease;
+                    -o-animation: secondBarReverse .5s ease;
+                    animation: secondBarReverse .5s ease;
+                    animation-fill-mode: forwards;
+                }
+                &:nth-child(3) {
+                    -webkit-animation: thirdBarReverse .5s ease;
+                    -o-animation: thirdBarReverse .5s ease;
+                    animation: thirdBarReverse .5s ease;
+                    animation-fill-mode: forwards;
+                }
+            }
+        }
+        &.open {
+            span {
+                &:nth-child(1) {
+                    -webkit-animation: firstBar .5s ease;
+                    -o-animation: firstBar .5s ease;
+                    animation: firstBar .5s ease;
+                    animation-fill-mode: forwards;
+                }
+                &:nth-child(2) {
+                    -webkit-animation: secondBar .5s ease;
+                        -o-animation: secondBar .5s ease;
+                        animation: secondBar .5s ease;
+                        animation-fill-mode: forwards;
+                }
+                &:nth-child(3) {
+                    -webkit-animation: thirdBar .5s ease;
+                    -o-animation: thirdBar .5s ease;
+                    animation: thirdBar .5s ease;
+                    animation-fill-mode: forwards;
+                }
+            }
+        }
+    }
+
+    &.sticky {
+        @include screen(tablet,true) {
+            position: fixed;
+            height: 55px;
+            .main-menu > ul > li > a {
+                height: 55px;
+                line-height: 55px;
+            }
+            .header__logo {
+                line-height: 55px;
+                height: 55px;
+                width: 88px;
+                img {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}
+
+
+@include keyframes(firstBar) {
+    0% {
+        top: 0;
+        transform: rotate(0);
+    }
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+    100% {
+        top: 7px;
+        transform: rotate(45deg);
+    }
+};
+@include keyframes(secondBar) {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+};
+@include keyframes(thirdBar) {
+    0% {
+        top: 14px;
+        transform: rotate(0);
+    }
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+    100% {
+        top: 7px;
+        transform: rotate(-45deg);
+    }
+};
+@include keyframes(firstBar) {
+    0% {
+        top: 0;
+        transform: rotate(0);
+    }
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+    100% {
+        top: 7px;
+        transform: rotate(45deg);
+    }
+};
+@include keyframes(secondBar) {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+};
+@include keyframes(thirdBar) {
+    0% {
+        top: 14px;
+        transform: rotate(0);
+    }
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+    100% {
+        top: 7px;
+        transform: rotate(-45deg);
+    }
+};
+@include keyframes(firstBarReverse) {
+    0% {
+        top: 7px;
+        transform: rotate(45deg);
+    }
+
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+    100% {
+        top: 0;
+        transform: rotate(0);
+    }
+};
+@include keyframes(secondBarReverse) {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+};
+@include keyframes(thirdBarReverse) {
+    50% {
+        top: 7px;
+        transform: rotate(0);
+    }
+
+    100% {
+        transform: rotate(0);
+        top: 14px;
+    }
+};

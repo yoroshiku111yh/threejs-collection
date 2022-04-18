@@ -1,0 +1,176 @@
+.pagination {
+    @extend .clearfix;
+    //min-height: 80px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    $root : &;
+    &__next, &__prev {
+        font-size: 0;
+        &:disabled {
+            opacity: 0;
+        }
+        a {
+            font-size: 0;
+            width: auto;
+            display: inline-block;
+            min-height: 60px;
+            position: relative;
+            width: 45px;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-size: 0 !important;
+            transition: 0.3s;
+            &:hover {
+                transform: translateX(0px);
+            }
+            @include screen(desktop) {
+                min-height: 44px;
+            }
+            @include screen(tablet) {
+                background-size: 34px;
+                width: 36px;
+            }
+        }
+        @include screen(tablet) {
+            //a {width: 150px;}
+        }
+        @include screen(mobile) {
+
+        }
+    }
+    &__prev {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        #{$root}.before-animate & {
+            opacity: 0;
+            transform:translateY(50px);
+        }
+
+        #{$root}.animate & {
+            opacity: 1;
+            transform:translateY(0px);
+            transition: 0.5s;
+            transition-delay: 0s;
+        }
+        a {
+            //@extend .button-thin;
+            background-image: url('../images/icon/arrow-left.png');
+            // @include screen(mobile) {
+            //     &:after,&:before {
+            //         content: "";
+            //         display: block;
+            //         width: 30%;
+            //         height: 2px;
+            //         background: #363636;
+            //         margin-top: -1px;
+            //         position: absolute;
+            //         top:50%;
+            //         left:12px;
+            //     }
+            //     &:before {
+            //         transform: rotate(-45deg);
+            //         transform-origin:  0% 50%;
+            //     }
+            //     &:after {
+            //         transform: rotate(45deg);
+            //         transform-origin:  0% 50%;;
+            //     }
+            // }
+            &:hover {
+                transform: translateX(-5px);
+            }
+        }
+    }
+    &__next {
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 2;
+        #{$root}.before-animate & {
+            opacity: 0;
+            transform:translateY(50px);
+        }
+
+        #{$root}.animate & {
+            opacity: 1;
+            transform:translateY(0px);
+            transition: 0.5s;
+            transition-delay: 0.2s;
+        }
+        a {
+            //@extend .button-thin;
+            background-image: url('../images/icon/arrow-right.png');
+            // @include screen(mobile) {
+            //     &:after,&:before {
+            //         content: "";
+            //         display: block;
+            //         width: 30%;
+            //         height: 2px;
+            //         background: #363636;
+            //         margin-top: -1px;
+            //         position: absolute;
+            //         top:50%;
+            //         left:12px;
+            //     }
+            //     &:before {
+            //         transform: rotate(-45deg);
+            //         transform-origin:  100% 50%;
+            //     }
+            //     &:after {
+            //         transform: rotate(45deg);
+            //         transform-origin:  100% 50%;;
+            //     }
+            // }
+            &:hover {
+                transform: translateX(5px);
+            }
+        }
+    }
+    &__pages {
+        text-align: center;
+        vertical-align: middle;
+        display: block;
+        line-height: 60px;
+        padding-left: 250px;
+        padding-right: 250px;
+        font-size: rem(18);
+        letter-spacing: 1px;
+        @include screen(desktop) {
+            line-height: 40px;
+            font-size: rem(16);
+        }
+        @include screen(tablet) {
+            line-height: 50px;
+        }
+        @include screen(mobile) {
+            padding-left: 50px;
+            padding-right: 50px;
+            line-height: 40px;
+            font-size: rem(14);
+        }
+        #{$root}.before-animate & {
+            opacity: 0;
+            transform:translateY(50px);
+        }
+
+        #{$root}.animate & {
+            opacity: 1;
+            transform:translateY(0px);
+            transition: 0.5s;
+            transition-delay: 0.1s;
+        }
+        &__current {
+            font-size: rem(30);
+            font-weight: bold;
+            @include screen(desktop) {
+                font-size: rem(26);
+            }
+            @include screen(mobile) {
+                font-size: rem(24);
+            }
+        }
+    }
+}

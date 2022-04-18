@@ -1,0 +1,19 @@
+{
+    "heroBanner" : [
+        {
+            "title" : "title 1",
+            "description"  : "description 1",
+            "image": "assets/images/dummy/article-img-1.jpg"
+        },
+        {
+            "title" : "title 2",
+            "description"  : "description 2",
+            "image": "assets/images/dummy/article-img-1.jpg"
+        },
+        {
+            "title" : "title 3",
+            "description"  : "description 3",
+            "image": "assets/images/dummy/article-img-1.jpg"
+        }
+    ]
+}

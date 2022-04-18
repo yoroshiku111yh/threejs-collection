@@ -1,0 +1,36 @@
+.select-box {
+    display: inline-block;
+    position: relative;
+    &__select,&__current {
+
+    }
+    &__current {
+        z-index: 1;
+    }
+    &__select {
+        z-index: 2;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        display: none;
+        @include screen(desktop) {
+            display: block;
+        }
+    }
+    &__dropdown {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        background: #000;
+        display: none;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        .open & {
+            display: block;
+        }
+    }
+}

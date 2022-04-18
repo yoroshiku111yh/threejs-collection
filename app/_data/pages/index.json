@@ -1,0 +1,31 @@
+{
+	"articles": [
+		{
+			"id": 1,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"id": 2,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"id": 3,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	],
+	"heroBanners": [
+		{
+			"id": 1,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	]
+
+}

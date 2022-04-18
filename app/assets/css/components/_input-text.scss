@@ -1,0 +1,31 @@
+.input-text {
+    width: 100%;
+    border:1px solid #d6d6d6;
+    color:#464646;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 15px;
+    font-size: rem(14);
+    transition: 0.3s;
+    @include screen(desktop) {
+        font-size: rem(14);
+        height: 40px;
+        line-height: 40px;
+    }
+    @include screen(mobile) {
+        font-size: rem(13);
+    }
+    @include placeholder {
+        color:#bebebe;
+    };
+    &:focus {
+        border-color: $color-orange;
+    }
+
+}
+textarea.input-text {
+    height: auto;
+    line-height: 1.4;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}

@@ -1,0 +1,113 @@
+.button {
+    vertical-align: middle;
+    border:0;
+    line-height: 40px;
+    height: 40px;
+    color:#5c5e5c;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+    //width: 100%;
+    white-space: nowrap;
+    padding:0 25px;
+    //max-width: 300px;
+    transition: 0.3s;
+    position: relative;
+    min-width: 150px;
+    top:0;
+    left:0;
+    box-shadow: 0px 0px 0px #363636;
+    transform: translate(0,0);
+    font-size: 22px;
+    font-weight: 900;
+    z-index: 0;
+    background: none;
+    overflow: hidden;
+    background: $color-orange;
+    //transform: scaleX(1.2);
+    color: rgba(#5c5c5c,0);
+    $root : &;
+    @include screen(mobile) {
+        font-size: 18px;
+    }
+    &:before {
+        content:"";
+        width: 0%;
+        height: 100%;
+        position: absolute;
+        left: 50%;
+        top: 0;
+        background: $color-orange;
+        background: #5c5e5c;
+        z-index: -1;
+        opacity: 0;
+        transition: 0.5s;
+        transform: translateX(-50%);
+    }
+    span {
+        display: inline-block;
+        transform: skewX(-20deg);
+        position: relative;
+        color: rgba(#5c5c5c,1);
+        &:after {
+            content:attr(data-text);
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            color:#5c5c5c;
+            transition: 0.7s;
+            //z-index: -1;
+            opacity: 0.6;
+        }
+        &:after {
+            transform: translate(-50%,0px);
+            left:50%;
+        }
+    }
+    &--white {
+        background-color: #fff;
+        &:before {
+            //background-color: #fff;
+        }
+    }
+    &:hover {
+        &:before {
+            width: calc(100% - 10px);
+            opacity: 1;
+        }
+        span {
+            color:$color-orange;
+            &:before,
+            &:after {
+                opacity: 0;
+            }
+            &:after {
+                //transform: translateX(2px,2px);
+                letter-spacing: 10px;
+            }
+        }
+    }
+    &--inverse {
+        background: #5c5e5c;
+        color: $color-orange;
+        &:before {
+            background: $color-orange;
+        }
+        span {
+            color:$color-orange;
+            &:after {
+                color:$color-orange;
+            }
+        }
+        &:hover {
+            span {
+                color:#5c5e5c;
+                &:after {
+                    color:#5c5e5c;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,108 @@
+// -----------------------------------------------------------------------------
+// This file contains very basic styles.
+// -----------------------------------------------------------------------------
+/**
+ * Set up a decent box model on the root element
+ */
+
+html {
+    box-sizing: border-box;
+}
+/**
+ * Make all elements from the DOM inherit from the parent box-sizing
+ * Since `*` has a specificity of 0, it does not override the `html` value
+ * making all elements inheriting from the root box-sizing value
+ * See: https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+*:focus,
+*:hover {
+    text-decoration: none !important;
+    outline: none !important;
+}
+/**
+ * Basic styles for links
+ */
+
+a {
+    text-decoration: none;
+    outline: none !important;
+    color: $color-blue;
+    @include on-event {
+        text-decoration: underline;
+    }
+
+    &:active,
+    &:focus {}
+}
+
+body {
+    line-height: 1.4;
+ //-webkit-transform: translate3d(0, 0, 0);
+    min-height: 100vh;
+    background: #fff;
+    padding-top: 85px;
+    @include screen(tablet) {
+        //background: #fff url(../images/global/bg-tablet.jpg) center top;
+        background: #fff;
+        padding-top: 50px;
+    }
+    @include screen(mobile) {
+    }
+     &.no-padding-top {
+         padding-top: 0;
+     }
+    &.body-fixed {
+        position: fixed;
+        width: 100%;
+    }
+    &.unscrollnable {
+        overflow: hidden;
+    }
+}
+
+
+.svg {
+    display: none;
+
+    &.replaced-svg {
+        display: inline-block;
+    }
+}
+
+.lozad {
+    opacity: 0;
+    transition: 0.3s;
+    &.loaded {
+        opacity: 1;
+    }
+}
+
+// ul {
+//     padding: 0;
+//     margin: 0;
+// }
+// li {
+//     list-style: none;
+// }
+// input[type='number'] {
+//     -moz-appearance:textfield;
+// }
+//
+// input::-webkit-outer-spin-button,
+// input::-webkit-inner-spin-button {
+//     -webkit-appearance: none;
+// }
+// .clear {
+//     clear: both;
+// }
+// .fancybox-lock {
+//     overflow: visible !important;
+//     width: auto;
+// }

@@ -1,0 +1,15 @@
+<section class="hero-banner">
+    {% for item in heroBanner %}
+    <article class="article">
+        <figure class="thumb">
+            <img src="{{ item.image }}" alt="">
+            <figcaption>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+            </figcaption>
+            {#
+            <a class="close" href="javascript:void(0);">X</a>#}
+        </figure>
+    </article>
+    {% endfor %}
+</section>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>{{ title }}</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ assets_url }}/images/favicons/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
+
+    {{ wp_head }}
+
+    {% if css_style_inline != true %}
+    <link rel="stylesheet" href="{{assets_url}}/css/app.css">
+    {% else %}
+    <style>
+        {% include 'assets/css/app-compressed.twig' %}
+    </style>
+    {% endif %}
+</head>
+
+<body>
+
+    {% include '_layout/header.twig' %}
+    <!-- ... the rest of the HTML page ... -->
+    {% block page %}{% endblock %}
+    <!-- ... -->
+    {% include '_layout/footer.twig' %}
+
+    {% block before_js %}{% endblock %}
+
+    <script src="{{assets_url}}/js/app.js"></script>
+
+	{{ wp_footer }}
+
+    {% block after_js %}{% endblock %}
+
+
+</body>
+
+</html>

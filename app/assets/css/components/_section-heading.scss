@@ -1,0 +1,37 @@
+.section-heading {
+    font-weight: bold;
+    color:#464646;
+    margin-top: 45px;
+    margin-bottom: 30px;
+    @include screen(mobile) {
+        text-align: center;
+    }
+    &--right {
+        text-align: right;
+        @include screen(mobile) {
+            text-align: center;
+        }
+    }
+    h2 {
+        margin: 0;
+        font-size: rem(30);
+        font-weight: bold;
+        line-height: 40px;
+        line-height: 1.2;
+        @include screen(mobile) {
+            font-size: rem(30)
+        }
+        small {
+            display: block;
+            font-size: rem(30);
+            font-weight: 200;
+            color:#464646;
+            @include screen(mobile) {
+                font-size: rem(30)
+            }
+        }
+        &.color-white small {
+            color: #fff;
+        }
+    }
+}

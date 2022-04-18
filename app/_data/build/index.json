@@ -1,0 +1,73 @@
+{
+	"assetPath": "assets",
+	"assets_url": "assets",
+	"title": "Climax - The Best Creatology Agency",
+	"css_style_inline": false,
+	"menu": [
+		{
+			"title": "About Us",
+			"url": "/about-us.html"
+		},
+		{
+			"title": "Our Work",
+			"url": "/our-work.html"
+		},
+		{
+			"title": "Services",
+			"url": "/services.html"
+		},
+		{
+			"title": "Carees",
+			"url": "/carees.html"
+		},
+		{
+			"title": "Contact",
+			"url": "/contact.html"
+		}
+	],
+	"heroBanner": [
+		{
+			"title": "title 1",
+			"description": "description 1",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"title": "title 2",
+			"description": "description 2",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"title": "title 3",
+			"description": "description 3",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	],
+	"articles": [
+		{
+			"id": 1,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"id": 2,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"id": 3,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	],
+	"heroBanners": [
+		{
+			"id": 1,
+			"title": "Climax - We are a Creatology Agency",
+			"description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cum suscipit, et corporis iusto natus modi dignissimos totam fugit sed eligendi sit odio consectetur officia perferendis neque quasi recusandae dolorum ipsam!",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	]
+}

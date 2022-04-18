@@ -1,0 +1,16 @@
+@charset 'UTF-8';
+@import "./abstracts/index";
+@import "./vendor/*";
+@import "./base/index";
+@import "./layout/**/*";
+@import "./components/**/*";
+@import "./pages/**/*";
+@import "./themes/**/*";
+@import '_sprites'; // imports sprite.scss
+@import '_spritesSVG'; // imports spritesSVG.scss
+// $spritesheet-sprites is an array of all sprite image names
+@include sprites($spritesheet-sprites);
+
+body {
+    background: white !important;
+}

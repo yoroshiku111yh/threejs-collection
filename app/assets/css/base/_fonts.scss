@@ -1,0 +1,73 @@
+// @font-face {
+//     font-family: 'Roboto';
+//     src: url('../fonts/Roboto-Light.eot');
+//     src: url('../fonts/Roboto-Light.eot?#iefix') format('embedded-opentype'),
+//         url('../fonts/Roboto-Light.woff2') format('woff2'),
+//         url('../fonts/Roboto-Light.woff') format('woff'),
+//         url('../fonts/Roboto-Light.ttf') format('truetype'),
+//         url('../fonts/Roboto-Light.svg#Roboto-Light') format('svg');
+//     font-weight: 300;
+//     font-style: normal;
+// }
+//
+// @font-face {
+//     font-family: 'Roboto';
+//     src: url('../fonts/Roboto-Bold.eot');
+//     src: url('../fonts/Roboto-Bold.eot?#iefix') format('embedded-opentype'),
+//         url('../fonts/Roboto-Bold.woff2') format('woff2'),
+//         url('../fonts/Roboto-Bold.woff') format('woff'),
+//         url('../fonts/Roboto-Bold.ttf') format('truetype'),
+//         url('../fonts/Roboto-Bold.svg#Roboto-Bold') format('svg');
+//     font-weight: bold;
+//     font-style: normal;
+// }
+//
+// @font-face {
+//     font-family: 'Roboto';
+//     src: url('../fonts/Roboto-Regular.eot');
+//     src: url('../fonts/Roboto-Regular.eot?#iefix') format('embedded-opentype'),
+//         url('../fonts/Roboto-Regular.woff2') format('woff2'),
+//         url('../fonts/Roboto-Regular.woff') format('woff'),
+//         url('../fonts/Roboto-Regular.ttf') format('truetype'),
+//         url('../fonts/Roboto-Regular.svg#Roboto-Regular') format('svg');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+//
+// @font-face {
+//     font-family: 'Roboto';
+//     src: url('../fonts/Roboto-Medium.eot');
+//     src: url('../fonts/Roboto-Medium.eot?#iefix') format('embedded-opentype'),
+//         url('../fonts/Roboto-Medium.woff2') format('woff2'),
+//         url('../fonts/Roboto-Medium.woff') format('woff'),
+//         url('../fonts/Roboto-Medium.ttf') format('truetype'),
+//         url('../fonts/Roboto-Medium.svg#Roboto-Medium') format('svg');
+//     font-weight: 500;
+//     font-style: normal;
+// }
+@font-face {
+    font-family: 'SimSun';
+    src: url('../fonts/SimSun.eot');
+    src: url('../fonts/SimSun.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/SimSun.woff2') format('woff2'),
+        url('../fonts/SimSun.woff') format('woff'),
+        url('../fonts/SimSun.ttf') format('truetype'),
+        url('../fonts/SimSun.svg#SimSun') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+
+@mixin Roboto {
+    font-family: 'Roboto',sans-serif;
+}
+
+@mixin NotoSans {
+    font-family: 'Noto Sans SC', Arial,'Hiragino Sans GB',STXihei,'Microsoft YaHei',sans-serif;
+}
+
+@mixin SimSun {
+    font-family: 'SimSun', sans-serif;
+}

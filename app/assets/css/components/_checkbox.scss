@@ -1,0 +1,38 @@
+.checkbox {
+    display: inline-block;
+    cursor: pointer;
+    vertical-align: middle;
+    input {
+        display: none;
+        & + span {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border:1px solid $color-blue;
+            position: relative;
+            vertical-align: middle;
+            margin-right: 10px;
+            margin-top: -3px;
+            &:before {
+                content:"";
+                position: absolute;
+                left: 50%;
+                top:50%;
+                width: 10px;
+                height: 10px;
+                background: $color-blue;
+                border-radius: 50%;
+                transform: translate(-50%,-50%) scale(0);
+                transition: 0.3s;
+                opacity: 0;
+            }
+        }
+        &:checked + span {
+            &:before {
+                transform: translate(-50%,-50%) scale(1);
+                opacity: 1;
+            }
+        }
+    }
+}

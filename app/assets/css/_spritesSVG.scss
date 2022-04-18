@@ -1,0 +1,29 @@
+.icon {
+    font-size: 10px;
+}
+
+.icon:before {
+    content:' ';
+    vertical-align:middle;
+    display: inline-block;
+    background-image: url("../images/spritesSVG.svg");
+    background-repeat: no-repeat;
+    background-size: 3em 3em;
+}
+
+.no-svg .icon:before {
+    background-image: url("../images/spritesSVG.png");
+}
+
+
+
+  .icon.svg-icon-phone:before {
+      background-position: 0em 0em;
+      width: 3em;
+      height: 3em;
+  }
+
+
+
+
+

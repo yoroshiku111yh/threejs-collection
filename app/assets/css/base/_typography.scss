@@ -1,0 +1,19 @@
+/**
+ * Basic typography style for copy text
+ */
+html {
+    font-size: 14px;
+}
+
+body {
+    color: #5c5e5c;
+    font-size: 14px;
+    font-weight: 400;
+    @include NotoSans;
+    @include screen(mobile) {
+        font-size: 14px;
+    }
+    // @include screen(mobile) {
+    //     font-size: rem(13);
+    // }
+}
