@@ -1,9 +1,24 @@
 
+import * as THREE from 'THREE';
+import { convertStringToUniform } from '../ultilities/ulti';
 import Tile from '../components/gooey/tile';
-import SceneCard from './../components/gooey/scene';
+import SceneCard from '../components/gooey/scene';
+import gooeyShader from '../../shaders/gooey/gooeyShader.glsl';
+import shapeShader from '../../shaders/gooey/shapeShader.glsl';
+import trippyShader from '../../shaders/gooey/trippyShader.glsl';
+import waveShader from '../../shaders/gooey/waveShader.glsl';
+import revealShader from '../../shaders/gooey/revealShader.glsl';
 
 
-export default class Gooey {
+const effects = {
+    gooey : gooeyShader,
+    shape : shapeShader,
+    trippy : trippyShader,
+    wave : waveShader,
+    reveal : revealShader
+}
+
+export default class GooeyEffects {
     constructor(){
         this.tilesSelector = '.gooey-tile';
         this.tiles = [];
@@ -28,7 +43,8 @@ export default class Gooey {
                 idCanvas : `stage${i}`,
                 imgSrc : img.src,
                 hoverSrc : img.dataset.hover,
-                effectShape : img.getAttribute("shape"),
+                effect : img.getAttribute("data-effect"),
+                dataUniform : convertStringToUniform(img.getAttribute("data-uniform")),
                 width : img.width,
                 height : img.height,
                 imgDom : img
@@ -56,17 +72,23 @@ export default class Gooey {
     }
     renderTiles(){
         for(let i = 0 ; i < this.tiles.length; i++){
-            this.tilesRendered = new Tile({
+            const effect = effects[this.tiles[i].effect];
+            if(!effect) continue;
+            const tileRendered = new Tile({
                 scene : this.sceneTiles[i],
                 tile : this.tiles[i],
-                effectShape : null
-            })
+                effectShape : effect,
+                duration : 0.5,
+            });
+            this.tilesRendered.push(tileRendered);
         }
     }
     requestAnimationSceneTiles(){
-        for(let i = 0 ; i < this.sceneTiles.length; i++){
+        for(let i = 0 ; i < this.tilesRendered.length; i++){
             const scene = this.sceneTiles[i];
-            scene.setUpdateCallback(() => {})
+            scene.setUpdateCallback(() => {
+                this.tilesRendered[i].update();
+            })
             scene.update();
         }
     }

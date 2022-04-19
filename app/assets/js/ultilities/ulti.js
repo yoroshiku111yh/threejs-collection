@@ -1,6 +1,6 @@
-import { Frustum, Matrix4 } from "three";
+import { Frustum, Matrix4, Color, Vector4, Vector3, TextureLoader } from "three";
 
-export const checkOutOfViewCamera = ({obj, camera}) => {
+export const checkOutOfViewCamera = ({ obj, camera }) => {
     const frustum = new Frustum()
     const matrix = new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
     frustum.setFromProjectionMatrix(matrix)
@@ -20,7 +20,7 @@ export const getPositionByRadian = ({ radian, distance, from }) => {
     }
 }
 
-export const getRadian2Points = ({point1 , point2}) => {
+export const getRadian2Points = ({ point1, point2 }) => {
     const delta_x = point1.x - point2.x;
     const delta_y = point1.y - point2.y;
     return Math.atan2(delta_y, delta_x);
@@ -28,8 +28,8 @@ export const getRadian2Points = ({point1 , point2}) => {
 
 export const pointerPos = ({ z = 1, pointer, size }) => {
     return {
-        x : ( pointer.clientX / size.width ) * 2*z - 1*z,
-        y : - ( pointer.clientY / size.height ) * 2*z + 1*z
+        x: (pointer.clientX / size.width) * 2 * z - 1 * z,
+        y: - (pointer.clientY / size.height) * 2 * z + 1 * z
     }
 }
 
@@ -78,7 +78,7 @@ export const wrap = (el, wrapper) => {
 
 export const unwrap = (content) => {
     for (let i = 0; i < content.length; i++) {
-        const el     = content[i]
+        const el = content[i]
         const parent = el.parentNode
 
         if (parent.parentNode) parent.outerHTML = el.innerHTML
@@ -88,4 +88,36 @@ export const unwrap = (content) => {
 export const ev = (eventName, data, once = false) => {
     const e = new CustomEvent(eventName, { detail: data }, { once })
     document.dispatchEvent(e)
+}
+
+export const convertThreeColorToVector = (color, isVec4) => {
+    const colorThree = new Color(color);
+    if (isVec4) {
+        return new Vector4(colorThree.r, colorThree.g, colorThree.b, 1);
+    }
+    return new Vector3(colorThree.r, colorThree.g, colorThree.b);
+}
+
+export const convertStringToObject = (string = '') => {
+    if(string === null || string.length === 0) return;
+    return JSON.parse(string);
+}
+
+export const convertStringToUniform = (string = '') => {
+    if(string === null || string.length === 0) return;
+    const uniforms = {};
+    const obj = convertStringToObject(string);
+    for (const property in obj) {
+        let value = obj[property];
+        if(value.toString().indexOf('colorType-') !== -1){
+            value = value.replace('colorType-', '');
+            value = convertThreeColorToVector(value, true);
+        }
+        if(value.toString().indexOf('textureType-') !== -1){
+            value = value.replace('textureType-', '');
+            value = new TextureLoader().load( value );
+        }
+        uniforms[property] = { value : value } 
+    }
+    return uniforms
 }
