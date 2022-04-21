@@ -7,12 +7,12 @@ export default class GooeyEffect extends ShaderMaterial {
             vertexShader,
             fragmentShader
         });
-        this.uniforms = {...uniforms,...{
+        this.uniforms = {...{
             u_progressHover : { value : 0.0},
             u_progressClick: { value: 0.0 },
             u_alpha : { value : 1.0 },
             u_time : { value : new Clock().getElapsedTime() },
-        }};
+        }, ...uniforms};
         this.transparent = true;
         this.defines = {
             PI: Math.PI,

@@ -7,7 +7,6 @@ export default class SceneCard extends SceneBase{
         super($container, size.width, size.height);
         this.camereOption = cameraOption;
         this.perspective = 800;
-        this.tiles = [];
         this.init();
     }
     init(){
