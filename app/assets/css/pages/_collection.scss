@@ -157,3 +157,16 @@ figcaption{
     line-height: 1.35;
     color : #000;
 }
+
+.fullscreen{
+    width : 100vw;
+    height : 100vh;
+    overflow: hidden;
+    position: relative;
+    & > img {
+        position: absolute;
+        top : 0;
+        left :0;
+        opacity: 0;
+    }
+}

@@ -1,9 +1,9 @@
 
 import ScenePointLight from '../components/point-light/scene';
 import * as THREE from 'three';
-import PointLightMaterial from '../../shaders/pointLight';
+import PointLightMaterial from '../../shaders/pointLight/index.js';
 
-export default class PointLight {
+export default class PointLightShader {
     constructor(){
         this.$container = document.getElementById("point-light-cv");
         this.scene = new ScenePointLight({

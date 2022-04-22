@@ -1,0 +1,10 @@
+{% extends "_layout/layout.twig" %}
+{% block page %}
+	<main id="main" data-module="">
+		<div data-module="distortionImage" class="js-distortion-img-wrapper fullscreen" data-displacement="./assets/images/materials/displacement/2.jpg"  data-intensity="-0.8">
+			<img class="js-distortion-img" src="./assets/images/materials/building-1.jpg"/>
+			<img class="js-distortion-img" src="./assets/images/materials/building-2.jpg"/>
+			<canvas id="cv-distortion-img-1"></canvas>
+		</div>
+	</main>
+{% endblock %}
