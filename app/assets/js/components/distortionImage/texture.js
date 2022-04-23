@@ -10,10 +10,8 @@ export default class MeshComponent {
         this.init();
     }
     init() {
-        const { texture1, texture2 } = this.loadImageTexture();
-        this.texture1 = texture1;
-        this.texture2 = texture2;
-
+        const { textures } = this.data;
+        this.setFilterPrevNextTexture(textures[0], textures[1]);
         this.disp = this.loadDisplaceImage();
 
         const { a1, a2 } = this.getAspect();
@@ -23,18 +21,15 @@ export default class MeshComponent {
     loadVideoTexture() {
         // will update later
     }
-    loadImageTexture() {
-        const { image1, image2 } = this.data
-        const tex1 = this.loader.load(image1);
-        const tex2 = this.loader.load(image2);
-
-        tex1.magFilter = tex2.magFilter = THREE.LinearFilter;
-        tex1.minFilter = tex2.minFilter = THREE.LinearFilter;
-
-        return {
-            texture1: tex1,
-            texture2: tex2
-        }
+    setFilterPrevNextTexture(prevTexture, nextTexture) {
+        prevTexture.magFilter = nextTexture.magFilter = THREE.LinearFilter;
+        prevTexture.minFilter = nextTexture.minFilter = THREE.LinearFilter;
+        this.texturePrev = prevTexture;
+        this.textureNext = nextTexture;
+    }
+    updatePrevNextTexture(prevTexture, nextTexture){
+        this.uniforms.texture1.value = prevTexture;
+        this.uniforms.texture2.value = nextTexture;
     }
     loadDisplaceImage() {
         const { displacementImage } = this.data;
@@ -83,11 +78,11 @@ export default class MeshComponent {
             },
             texture1: {
                 type: 't',
-                value: this.texture1
+                value: this.texturePrev
             },
             texture2: {
                 type: 't',
-                value: this.texture2
+                value: this.textureNext
             },
             disp: {
                 type: 't',
@@ -111,11 +106,36 @@ export default class MeshComponent {
         this.uniforms = this.material.getUniform();
         return new THREE.Mesh(geo, this.material);
     }
-    transitionIn() {
+    transitionIn(callback) {
         const { speedIn, easing } = this.data;
         TweenMax.to(this.uniforms.dispFactor, speedIn, {
             value: 1,
             ease: easing,
+            onComplete : () => { callback && callback(); }
         });
     }
+    transitionOut(callback) {
+        const { speedOut, easing } = this.data;
+        TweenMax.to(this.uniforms.dispFactor, speedOut, {
+            value: 0,
+            ease: easing,
+            onComplete : () => { callback && callback(); }
+        });
+    }
+    setDispFactor(value = 0){
+        if(value !== 0){
+            value = 1;
+        }
+        this.uniforms.dispFactor.value = value;
+    }
+    // test(){
+    //     const { textures } = this.data;
+    //     setTimeout(() => {
+    //         this.setFilterPrevNextTexture(textures[1], textures[2]);
+    //         this.uniforms.texture1.value = textures[1];
+    //         this.uniforms.texture2.value = textures[2];
+    //         this.uniforms.dispFactor.value = 0;
+    //         this.transitionIn();
+    //     }, 3000);
+    // }
 }

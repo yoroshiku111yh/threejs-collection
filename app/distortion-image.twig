@@ -1,10 +1,18 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
 	<main id="main" data-module="">
-		<div data-module="distortionImage" class="js-distortion-img-wrapper fullscreen" data-displacement="./assets/images/materials/displacement/2.jpg"  data-intensity="-0.8">
-			<img class="js-distortion-img" src="./assets/images/materials/building-1.jpg"/>
-			<img class="js-distortion-img" src="./assets/images/materials/building-2.jpg"/>
+		<div data-module="distortionImage" id="js-distortion-1" class="js-distortion-img-wrapper fullscreen" data-displacement="./assets/images/materials/displacement/1.jpg" data-intensity="-0.8">
+			<img class="js-distortion-img active" data-name="build1" src="./assets/images/materials/building-1.jpg"/>
+			<img class="js-distortion-img " data-name="build2" src="./assets/images/materials/building-2.jpg"/>
+			<img class="js-distortion-img " data-name="tech1" src="./assets/images/materials/tech-1.jpg"/>
+			<img class="js-distortion-img " data-name="tech2" src="./assets/images/materials/tech-2.jpg"/>
+			<img class="js-distortion-img " data-name="beach1" src="./assets/images/materials/beach-1.jpg"/>
+			<img class="js-distortion-img " data-name="beach2" src="./assets/images/materials/beach-2.jpg"/>
 			<canvas id="cv-distortion-img-1"></canvas>
+			<div style="text-align : center; position : absolute; bottom : 10px; margin : 0 auto; left : 0; right : 0; font-size: 24px; z-index : 3">
+				<button class="js-prev-slide" >Prev</button>
+				<button class="js-next-slide">Next</button>
+			</div>
 		</div>
 	</main>
 {% endblock %}

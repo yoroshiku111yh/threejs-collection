@@ -99,25 +99,61 @@ export const convertThreeColorToVector = (color, isVec4) => {
 }
 
 export const convertStringToObject = (string = '') => {
-    if(string === null || string.length === 0) return;
+    if (string === null || string.length === 0) return;
     return JSON.parse(string);
 }
 
 export const convertStringToUniform = (string = '') => {
-    if(string === null || string.length === 0) return;
+    if (string === null || string.length === 0) return;
     const uniforms = {};
     const obj = convertStringToObject(string);
     for (const property in obj) {
         let value = obj[property];
-        if(value.toString().indexOf('colorType-') !== -1){
+        if (value.toString().indexOf('colorType-') !== -1) {
             value = value.replace('colorType-', '');
             value = convertThreeColorToVector(value, true);
         }
-        if(value.toString().indexOf('textureType-') !== -1){
+        if (value.toString().indexOf('textureType-') !== -1) {
             value = value.replace('textureType-', '');
-            value = new TextureLoader().load( value );
+            value = new TextureLoader().load(value);
         }
-        uniforms[property] = { value : value } 
+        uniforms[property] = { value: value }
     }
     return uniforms
+}
+
+export const loadAllTextures = (arTextures, callback) => {
+    const loader = new TextureLoader();
+    let count = 0;
+    const arResult = [];
+    let isError = false;
+    for (let i = 0; i < arTextures.length; i++) {
+        const texture = arTextures[i];
+        loader.load(
+            texture.src,
+            (tex) => {
+                count++;
+                tex.name = texture.name;
+                arResult[i] = tex;
+                if(count === arTextures.length && !isError){
+                    callback(arResult);
+                }
+            },
+            undefined,
+            (err) => {
+                isError = true;
+                console.log('Error load texture:' + texture.src);
+                console.log(err);
+            }
+        )
+    }
+}
+
+export const getTextureByName = (arTexture, name) => {
+    for(let i = 0 ; i < arTexture.length; i++){
+        const texture = arTexture[i];
+        if(texture.name === name){
+            return texture;
+        }
+    }
 }
