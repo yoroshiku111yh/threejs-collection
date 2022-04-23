@@ -1,14 +1,15 @@
 
 import { ShaderMaterial } from 'three';
 import vertexShader from './vertexShader.glsl';
-import fragmentShader from './fragmentShader.glsl';
+import fragmentShaderDefault from './fragmentShader.glsl';
+import fragmentShaderWithoutDisplacement from './fragmentShaderWithoutDisplacement.glsl';
 
 export default class DistortionImageMateria extends ShaderMaterial {
-    constructor(uniforms) {
+    constructor(uniforms, isDisplacement) {
         super({
-            vertexShader,
-            fragmentShader
+            vertexShader
         });
+        this.fragmentShader = isDisplacement ? fragmentShaderDefault : fragmentShaderWithoutDisplacement;
         this.uniforms = {
             ...{
                 dpr: {

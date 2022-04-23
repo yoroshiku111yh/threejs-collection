@@ -44,6 +44,7 @@ export default class DistortionImage {
                 hover: el.dataset.hover || true,
                 images: arImages,
                 displacementImage: el.dataset.displacement,
+                isDisplacement : el.dataset.displacement ? true : false,
                 commonAngle: degToRad(+el.dataset.deg) || degToRad(45), //default 45 deg
                 angle1: degToRad(+el.dataset.deg1) || degToRad(45),
                 angle2: degToRad(+el.dataset.deg2) || -degToRad(45)*3,

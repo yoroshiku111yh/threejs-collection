@@ -54,7 +54,7 @@ export default class MeshComponent {
         }
     }
     getMaterial() {
-        const { intensity1, intensity2, intensity, angle1, angle2, parent } = this.data;
+        const { intensity1, intensity2, intensity, angle1, angle2, parent, isDisplacement } = this.data;
         const material = new DistortionImageMateria({
             intensity1: {
                 type: 'f',
@@ -96,7 +96,7 @@ export default class MeshComponent {
                 type: 'f',
                 value: window.devicePixelRatio
             }
-        })
+        }, isDisplacement)
         return material;
     }
     createMesh() {
