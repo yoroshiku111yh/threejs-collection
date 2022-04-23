@@ -27,7 +27,7 @@ export default class MeshComponent {
         this.texturePrev = prevTexture;
         this.textureNext = nextTexture;
     }
-    updatePrevNextTexture(prevTexture, nextTexture){
+    updatePrevNextTexture(prevTexture, nextTexture) {
         this.uniforms.texture1.value = prevTexture;
         this.uniforms.texture2.value = nextTexture;
     }
@@ -111,7 +111,7 @@ export default class MeshComponent {
         TweenMax.to(this.uniforms.dispFactor, speedIn, {
             value: 1,
             ease: easing,
-            onComplete : () => { callback && callback(); }
+            onComplete: () => { callback && callback(); }
         });
     }
     transitionOut(callback) {
@@ -119,23 +119,18 @@ export default class MeshComponent {
         TweenMax.to(this.uniforms.dispFactor, speedOut, {
             value: 0,
             ease: easing,
-            onComplete : () => { callback && callback(); }
+            onComplete: () => { callback && callback(); }
         });
     }
-    setDispFactor(value = 0){
-        if(value !== 0){
+    setDispFactor(value = 0) {
+        if (value !== 0) {
             value = 1;
         }
         this.uniforms.dispFactor.value = value;
     }
-    // test(){
-    //     const { textures } = this.data;
-    //     setTimeout(() => {
-    //         this.setFilterPrevNextTexture(textures[1], textures[2]);
-    //         this.uniforms.texture1.value = textures[1];
-    //         this.uniforms.texture2.value = textures[2];
-    //         this.uniforms.dispFactor.value = 0;
-    //         this.transitionIn();
-    //     }, 3000);
-    // }
+    resize() {
+        const { parent } = this.data;
+        const { a1, a2 } = this.getAspect();
+        this.uniforms.res.value = new THREE.Vector4(parent.offsetWidth, parent.offsetHeight, a1, a2);
+    }
 }

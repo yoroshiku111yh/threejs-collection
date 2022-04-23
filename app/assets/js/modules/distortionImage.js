@@ -1,6 +1,6 @@
 
 import { Expo } from 'gsap';
-import { getTextureByName, loadAllTextures } from '../ultilities/ulti';
+import { getTextureByName, loadAllTextures, degToRad } from '../ultilities/ulti';
 import SceneDistortion from './../components/distortionImage/scene';
 import MeshComponent from './../components/distortionImage/texture';
 
@@ -16,6 +16,7 @@ export default class DistortionImage {
         this.createSceneListItem();
         this.eventClickNextSlide();
         this.eventClickPrevSlide();
+        this.eventHover();
     }
     createSceneListItem() {
         for (let i = 0; i < this.$parent.length; i++) {
@@ -35,41 +36,46 @@ export default class DistortionImage {
                 parent: el,
                 width: el.clientWidth,
                 height: el.clientHeight,
-                imagesRatio: el.dataset.ratio || 1.0,
-                intensity: el.dataset.intensity || 1,
-                speedIn: el.dataset.speedin || 1.6,
-                speedOut: el.dataset.speedout || 1.2,
+                imagesRatio: +el.dataset.ratio || 1.0,
+                intensity: +el.dataset.intensity || 1,
+                speedIn: +el.dataset.speedin || 1.6,
+                speedOut: +el.dataset.speedout || 1.2,
                 easing: el.dataset.easing || Expo.easeOut,
                 hover: el.dataset.hover || true,
                 images: arImages,
                 displacementImage: el.dataset.displacement,
-                commonAngle: el.dataset.angle || Math.PI / 4, //default 45 deg
-                angle1: el.dataset.angle1 || Math.PI / 4,
-                angle2: el.dataset.angle2 || (-Math.PI / 4) * 3,
-                video: el.dataset.video || false
+                commonAngle: degToRad(+el.dataset.deg) || degToRad(45), //default 45 deg
+                angle1: degToRad(+el.dataset.deg1) || degToRad(45),
+                angle2: degToRad(+el.dataset.deg2) || -degToRad(45)*3,
+                //video: el.dataset.video || false
             }
 
             loadAllTextures(arImages, (result) => {
                 this.dataObj.push(obj);
-                this.startRender(result, i);
+                this.startRender(result);
             })
         }
     }
-    startRender(arTextures, index) {
-        const obj = this.dataObj[index];
-        obj.textures = arTextures;
-        const scene = new SceneDistortion({
-            $container: obj.$container,
-            size: {
-                width: obj.width,
-                height: obj.height
+    startRender(arTextures) {
+        for (let i = 0; i < this.dataObj.length; i++) {
+            if (!this.scenes[i]) {
+                const obj = this.dataObj[i];
+                obj.textures = arTextures;
+                const scene = new SceneDistortion({
+                    $container: obj.$container,
+                    size: {
+                        width: obj.width,
+                        height: obj.height
+                    }
+                });
+                const mesh = new MeshComponent(obj);
+                scene.mainScene.add(mesh.createMesh());
+                this.scenes[i] = scene;
+                this.meshes[obj.parentId] = mesh;
+                scene.update();
+                this.resize(scene, mesh, obj.parent);
             }
-        });
-        const mesh = new MeshComponent(obj);
-        scene.mainScene.add(mesh.createMesh());
-        this.scenes.push(scene);
-        this.meshes[obj.parentId] = mesh;
-        scene.update();
+        }
     }
     eventClickNextSlide() {
         $('.js-next-slide').click((e) => {
@@ -85,7 +91,7 @@ export default class DistortionImage {
             const mesh = this.meshes[parentId];
             this.updatePrevNextUniforms(mesh, prev[0].dataset.name, next[0].dataset.name);
             mesh.setDispFactor();
-            _this.setAttribute('disabled' , true);
+            _this.setAttribute('disabled', true);
             mesh.transitionIn(() => {
                 _this.removeAttribute('disabled');
             });
@@ -105,16 +111,39 @@ export default class DistortionImage {
             const mesh = this.meshes[parentId];
             this.updatePrevNextUniforms(mesh, prev[0].dataset.name, next[0].dataset.name);
             mesh.setDispFactor(1);
-            _this.setAttribute('disabled' , true);
+            _this.setAttribute('disabled', true);
             mesh.transitionOut(() => {
                 _this.removeAttribute('disabled');
             });
         })
     }
-    updatePrevNextUniforms(mesh, prevName, nextName){
+    updatePrevNextUniforms(mesh, prevName, nextName) {
         const prevTexture = getTextureByName(mesh.data.textures, prevName);
         const nextTexture = getTextureByName(mesh.data.textures, nextName);
         mesh.setFilterPrevNextTexture(prevTexture, nextTexture);
         mesh.updatePrevNextTexture(prevTexture, nextTexture);
+    }
+    resize(scene, mesh, parent) {
+        window.addEventListener('resize', () => {
+            scene.resize({
+                width: parent.offsetWidth,
+                height: parent.offsetHeight
+            });
+            mesh.resize();
+        })
+    }
+    eventHover(){
+        $('.js-distortion-img-wrapper.-hover').on('mouseenter', (e) => {
+            const _this = e.currentTarget;
+            const id = _this.getAttribute("id");
+            const mesh = this.meshes[id];
+            mesh.transitionIn();
+        })
+        $('.js-distortion-img-wrapper.-hover').on('mouseleave', (e) => {
+            const _this = e.currentTarget;
+            const id = _this.getAttribute("id");
+            const mesh = this.meshes[id];
+            mesh.transitionOut();
+        })
     }
 }

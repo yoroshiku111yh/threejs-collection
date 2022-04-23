@@ -157,3 +157,8 @@ export const getTextureByName = (arTexture, name) => {
         }
     }
 }
+
+
+export const degToRad = ( deg ) => {
+    return deg*Math.PI/180;
+};
