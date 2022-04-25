@@ -10,6 +10,6 @@ export default class bubbleShader {
         this.init();
     }
     init() {
-        this.createBubbleMesh()
+        // still research :(
     }
 }
