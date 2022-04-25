@@ -70,7 +70,8 @@ export default class DistortionImage {
                     }
                 });
                 const mesh = new MeshComponent(obj);
-                scene.mainScene.add(mesh.createMesh());
+                const createMesh = mesh.createMesh();
+                scene.mainScene.add(createMesh);
                 this.scenes[i] = scene;
                 this.meshes[obj.parentId] = mesh;
                 scene.update();

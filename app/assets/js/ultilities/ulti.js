@@ -135,7 +135,7 @@ export const loadAllTextures = (arTextures, callback) => {
                 count++;
                 tex.name = texture.name;
                 arResult[i] = tex;
-                if(count === arTextures.length && !isError){
+                if (count === arTextures.length && !isError) {
                     callback(arResult);
                 }
             },
@@ -150,15 +150,28 @@ export const loadAllTextures = (arTextures, callback) => {
 }
 
 export const getTextureByName = (arTexture, name) => {
-    for(let i = 0 ; i < arTexture.length; i++){
+    for (let i = 0; i < arTexture.length; i++) {
         const texture = arTexture[i];
-        if(texture.name === name){
+        if (texture.name === name) {
             return texture;
         }
     }
 }
 
-
-export const degToRad = ( deg ) => {
-    return deg*Math.PI/180;
+export const degToRad = (deg) => {
+    return deg * Math.PI / 180;
 };
+
+export const applyVector = (mesh) => {
+    if (mesh.isMesh) {
+
+        const position = mesh.geometry.attributes.position;
+        const vector = new Vector3();
+        mesh.geometry.vertices = [];
+        for (let i = 0, l = position.count; i < l; i++) {
+            vector.fromBufferAttribute(position, i);
+            vector.applyMatrix4(mesh.matrixWorld);
+            mesh.geometry.vertices.push(vector);
+        }
+    }
+}
