@@ -1,4 +1,4 @@
-import { GLTFLoader } from '../gltfLoader';
+import { GLTFLoader } from '../jsm/loaders/gltfLoader';
 
 export class LoaderGLTF {
     constructor({src, resolve, reject}) {

@@ -28,9 +28,6 @@ export default class BubbleCircleGeometry {
                 },
                 color2: {
                     value: new THREE.Color("#FACE40")
-                },
-                texture1 : {
-                    value : new THREE.TextureLoader().load(srcTextureTest)
                 }
             },
             fragmentShader : fragmentShader

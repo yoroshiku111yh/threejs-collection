@@ -9,5 +9,6 @@ export default class Blob2dMaterial extends ShaderMaterial{
             fragmentShader
         });
         this.uniforms = uniforms;
+        this.getUniforms = () => this.uniforms;
     }
 }

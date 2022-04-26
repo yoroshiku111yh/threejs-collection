@@ -1,4 +1,4 @@
-import { OBJLoader } from '../objLoader';
+import { OBJLoader } from '../jsm/loaders/objLoader';
 
 export class LoaderOBJ {
     constructor({ src, resolve, reject = this.rejectFn, processing }) {
