@@ -34,6 +34,12 @@ export const pointerPos = ({ z = 1, pointer, size }) => {
 }
 
 export const randomInRange = (max, min) => Math.random() * (max - min) + min;
+export const getRandomValueInArray = (ar) => ar[ar.length * Math.random() | 0];
+
+export const randomInRange2 = (min, max) => {
+    const delta = max - min;
+    return (direction = 1) => (min + delta * Math.random()) * direction;
+  }
 
 import * as THREE from 'three'
 

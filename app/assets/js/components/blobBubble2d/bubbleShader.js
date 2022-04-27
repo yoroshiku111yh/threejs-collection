@@ -1,43 +1,65 @@
 import * as THREE from 'three';
 import Blob2dMaterial from '../../../shaders/blobBubble2d/index';
 import fragmentShader from '../../../shaders/blobBubble2d/fragmentShaderBlob2d.glsl';
+import { getRandomValueInArray, randomInRange2 } from './../../ultilities/ulti';
+import { TweenMax, Sine } from 'gsap/gsap-core';
 
 const srcTextureTest = "https://i.imgur.com/crl7JVm.jpeg";
 
 export default class BubbleShader {
-    constructor() {
-        this.clock = new THREE.Clock();
+    constructor({ planeSize, objUniforms, moveTexture, clockDelta }) {
+        this.clockDelta = clockDelta;
+        this.textureMovingX = false;
+        this.textureMovingY = false;
+        this.directionX = 1;
+        this.directionY = 1;
+        this.planeSize = planeSize;
+        this.objUniforms = objUniforms;
+        this.moveTexture = moveTexture;
         this.init();
     }
     init() {
         this.createPlane();
     }
-    createPlane() {
-        const geo = new THREE.PlaneGeometry(2, 2, 1, 1);
-        const material = new Blob2dMaterial({
-            uniforms: {
-                uPlaneSize: {
-                    value: new THREE.Vector2(2, 2)
-                },
-                uImageSize: {
-                    value: new THREE.Vector2(1920, 843)
-                },
-                uTime: {
-                    value: 0.0
-                },
-                uRadius: {
-                    value: 0.5
-                },
-                uSpikes: {
-                    value: 1.5
-                },
-                uTexture: {
-                    value: new THREE.TextureLoader().load(srcTextureTest),
-                },
-                isMouse : {
-                    value : false
-                }
+    setUniformMaterial(){
+        this.uniforms = {
+            uPlaneSize: {
+                value: new THREE.Vector2(this.planeSize.width, this.planeSize.height)
             },
+            uImageSize: {
+                value: new THREE.Vector2(1920, 843)
+            },
+            uTime: {
+                value: 0.0
+            },
+            uAlpha : {
+                value : this.objUniforms.alpha
+            },
+            uRadius: {
+                value: this.objUniforms.radius //0.5
+            },
+            uSpikes: {
+                value: this.objUniforms.spikes //1.5
+            },
+            uTexture: {
+                value: new THREE.TextureLoader().load(srcTextureTest),
+            },
+            isMouse : {
+                value : false
+            },
+            uTextureMoveX : {
+                value : 0.0
+            },
+            uTextureMoveY : {
+                value : 0.0
+            }
+        }
+    }
+    createPlane() {
+        const geo = new THREE.PlaneGeometry(this.planeSize.width, this.planeSize.height, 1, 1);
+        this.setUniformMaterial();
+        const material = new Blob2dMaterial({
+            uniforms: this.uniforms,
             fragmentShader: fragmentShader
         });
         this.uniforms = material.getUniforms();
@@ -47,6 +69,36 @@ export default class BubbleShader {
         return this.mesh;
     }
     update(){
-        this.uniforms.uTime.value += this.clock.getDelta();
+        this.uniforms.uTime.value += this.clockDelta;
+        this.animateMoveTexture();
+    }
+    setDirection(x, y){
+        if(!this.moveTexture.direction) return;
+        this.moveTexture.direction.x = x;
+        this.moveTexture.direction.y = y;
+    }
+    animateMoveTexture(){
+        if(!this.textureMovingX){
+            this.textureMovingX = true;
+            TweenMax.to(this.uniforms.uTextureMoveX, {
+                value : this.moveTexture.randomXFn(this.moveTexture.direction.x),
+                duration : 3,
+                ease: Sine.easeInOut,
+                onComplete: () => {
+                    //this.textureMovingX = false;
+                }
+            })
+        }
+        if(!this.textureMovingY){
+            this.textureMovingY = true;
+            TweenMax.to(this.uniforms.uTextureMoveY, {
+                value : this.moveTexture.randomYFn(this.moveTexture.direction.y),
+                duration : 3,
+                ease: Sine.easeInOut,
+                onComplete: () => {
+                    //this.textureMovingY = false;
+                }
+            })
+        }
     }
 }

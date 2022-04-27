@@ -10,5 +10,6 @@ export default class Blob2dMaterial extends ShaderMaterial{
         });
         this.uniforms = uniforms;
         this.getUniforms = () => this.uniforms;
+        this.transparent = true;
     }
 }

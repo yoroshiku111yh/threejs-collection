@@ -7,12 +7,16 @@ uniform vec3 uColor;
 uniform vec2 uPlaneSize;
 uniform vec2 uImageSize;
 uniform vec2 uMousePos;
+uniform float uTextureMoveX;
+uniform float uTextureMoveY;
 uniform float uMouseRadius;
 uniform float uTime;
 uniform sampler2D uTexture;
 uniform float uSpikes;
 uniform float uRadius;
 uniform bool isMouse;
+uniform float uAlpha;
+
 
 varying vec2 vUv;
 
@@ -22,7 +26,8 @@ void main() {
     vec2 coverUv = cover(uv, uPlaneSize, uImageSize);
 
     // apply image texture
-    vec4 texture = texture2D(uTexture, coverUv);
+    vec2 posTexture = coverUv + vec2(uTextureMoveX, uTextureMoveY);
+    vec4 texture = texture2D(uTexture, posTexture);
     vec4 color = texture;
     if(isMouse) {
         // generate cursor blob noise (slow down uTime)
@@ -47,5 +52,7 @@ void main() {
     if(color.a < 1.0){
         discard;
     }
+
     gl_FragColor = color;
+    gl_FragColor.a = uAlpha;
 }
