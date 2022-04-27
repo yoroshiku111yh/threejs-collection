@@ -8,6 +8,7 @@ const srcTextureTest = "https://i.imgur.com/crl7JVm.jpeg";
 
 export default class BubbleShader {
     constructor({ planeSize, objUniforms, moveTexture, clockDelta }) {
+        this.clock = new THREE.Clock();
         this.clockDelta = clockDelta;
         this.textureMovingX = false;
         this.textureMovingY = false;
@@ -69,7 +70,7 @@ export default class BubbleShader {
         return this.mesh;
     }
     update(){
-        this.uniforms.uTime.value += this.clockDelta;
+        this.uniforms.uTime.value += this.clock.getDelta();
         this.animateMoveTexture();
     }
     setDirection(x, y){
@@ -85,7 +86,7 @@ export default class BubbleShader {
                 duration : 3,
                 ease: Sine.easeInOut,
                 onComplete: () => {
-                    //this.textureMovingX = false;
+                    this.textureMovingX = false;
                 }
             })
         }
@@ -96,7 +97,7 @@ export default class BubbleShader {
                 duration : 3,
                 ease: Sine.easeInOut,
                 onComplete: () => {
-                    //this.textureMovingY = false;
+                    this.textureMovingY = false;
                 }
             })
         }

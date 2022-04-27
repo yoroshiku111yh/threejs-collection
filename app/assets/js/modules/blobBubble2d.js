@@ -24,8 +24,8 @@ export default class BlobBubble2d {
         });
         this.testScene.mainScene.background = new THREE.Color("#ccc");
         // shader
-        const fnX = randomInRange2(0.02, 0.05);
-        const fnY = randomInRange2(0.02, 0.05);
+        const fnX = randomInRange2(0.02, 0.05, false);
+        const fnY = randomInRange2(0.02, 0.05, false);
         this.bubbleShader = new BubbleShader({
             planeSize: {
                 width: 3,
@@ -43,8 +43,7 @@ export default class BlobBubble2d {
                     x : 1,
                     y : 1
                 }
-            },
-            clockDelta : this.clockDelta
+            }
         });
         this.testScene.mainScene.add(this.bubbleShader.getMesh());
 
@@ -65,8 +64,7 @@ export default class BlobBubble2d {
                     x : 1,
                     y : 1
                 }
-            },
-            clockDelta : this.clockDelta
+            }
         });
         this.testScene.mainScene.add(this.bubbleShader2.getMesh());
 
@@ -87,8 +85,7 @@ export default class BlobBubble2d {
                     x : 1,
                     y : 1
                 }
-            },
-            clockDelta : this.clockDelta
+            }
         });
         this.testScene.mainScene.add(this.bubbleShader3.getMesh());
     }
@@ -98,9 +95,8 @@ export default class BlobBubble2d {
             this.bubbleShader2.update();
             this.bubbleShader3.update();
             ///
-            return;
-            const directionX = getRandomValueInArray([1, -1]);
-            const directionY = getRandomValueInArray([1, -1]);
+            const directionX = getRandomValueInArray([1, -1, -1, 1]);
+            const directionY = getRandomValueInArray([1, -1, -1, 1]);
         
             this.bubbleShader.setDirection(
                 directionX,
