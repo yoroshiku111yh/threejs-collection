@@ -16,6 +16,8 @@ export default class SceneBlob2d extends SceneBase{
         this.update();
     }
     resize(size) {
+        this.camera.aspect = size.width/size.height;
+        this.camera.updateProjectionMatrix();
         this.renderer.setSize(size.width, size.height);
     }
 }

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import SceneBlob2d from './../components/blobBubble2d/scene';
 import { getRandomValueInArray, randomInRange2 } from './../ultilities/ulti';
 import BubbleIntro from './../components/blobBubble2d/bubbleIntro';
+import { TweenMax } from 'gsap/gsap-core';
 
 export default class BlobBubble2d {
     constructor() {
@@ -12,6 +13,7 @@ export default class BlobBubble2d {
         this.speedVal = 15;
         this.hoverTexture = null;
         this.changingTexture = false;
+        this.mouse = new THREE.Vector2();
         this.init();
         this.setUpdateCallback();
         this.update();
@@ -28,8 +30,11 @@ export default class BlobBubble2d {
                 height: window.innerHeight
             }
         });
-        this.testScene.mainScene.background = new THREE.Color("#fff");
+        this.testScene.mainScene.background = new THREE.Color("#5d7faf");
         // shader
+        this.groupBlob = new THREE.Group();
+        this.testScene.mainScene.add(this.groupBlob);
+        //
         const fnX = randomInRange2(0.02, 0.05, false);
         const fnY = randomInRange2(0.02, 0.05, false);
         this.bubbleIntro = new BubbleIntro({
@@ -51,7 +56,7 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.bubbleIntro.getMesh());
+        this.groupBlob.add(this.bubbleIntro.getMesh());
 
         this.bubbleIntro2 = new BubbleIntro({
             planeSize: {
@@ -72,7 +77,7 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.bubbleIntro2.getMesh());
+        this.groupBlob.add(this.bubbleIntro2.getMesh());
 
         this.bubbleIntro3 = new BubbleIntro({
             planeSize: {
@@ -93,7 +98,7 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.bubbleIntro3.getMesh());
+        this.groupBlob.add(this.bubbleIntro3.getMesh());
     }
     setUpdateCallback() {
         this.testScene.updateCallback = () => {
@@ -126,7 +131,7 @@ export default class BlobBubble2d {
             this.testScene.resize({
                 width : window.innerWidth,
                 height : window.innerHeight
-            })
+            });
         })
     }
     animateIntro() {
@@ -142,12 +147,14 @@ export default class BlobBubble2d {
             this.hoverTexture = new THREE.TextureLoader().load(_this.dataset.src);
             if(this.changingTexture) return;
             this.changingTexture = true;
+            const spikesVal = getRandomValueInArray([3, 5]);
             this.bubbleIntro.setDisFactor();
             this.bubbleIntro.updateTexture(null, this.hoverTexture);
             this.bubbleIntro.transitionIn(() => {
                 this.bubbleIntro.updateTexture(this.hoverTexture, null);
                 this.changingTexture = false;
             });
+            this.bubbleIntro.setSpikes(spikesVal);
             //
             this.bubbleIntro2.setDisFactor();
             this.bubbleIntro2.updateTexture(null, this.hoverTexture);
@@ -155,6 +162,7 @@ export default class BlobBubble2d {
                 this.bubbleIntro2.updateTexture(this.hoverTexture, null);
                 this.changingTexture = false;
             });
+            this.bubbleIntro2.setSpikes(spikesVal);
             //
             this.bubbleIntro3.setDisFactor();
             this.bubbleIntro3.updateTexture(null, this.hoverTexture);
@@ -162,9 +170,29 @@ export default class BlobBubble2d {
                 this.bubbleIntro3.updateTexture(this.hoverTexture, null);
                 this.changingTexture = false;
             });
+            this.bubbleIntro3.setSpikes(spikesVal);
+            //
+            this.setPosWhenMouseMove(e);
+            this.moveGroupBlob();
         })
         $('.js-hover-bubble-texture').on("mouseleave", (e) => {
+            if(this.changingTexture) return;
             this.hoverTexture = null;
+            this.bubbleIntro.setSpikes(1.5);
+            this.bubbleIntro2.setSpikes(1.5);
+            this.bubbleIntro3.setSpikes(1.5);
+        })
+    }
+    setPosWhenMouseMove(event){
+        TweenMax.to(this.mouse, 0., {
+            x: (event.clientX / window.innerWidth) * 2 * 2 - 1 * 2,
+            y: -(event.clientY / window.innerHeight) * 2 * 2/2 + 1 * 2/2,
+        });
+    }
+    moveGroupBlob(){
+        TweenMax.to(this.groupBlob.position, 0.65, {
+            x: this.mouse.x,
+            y: this.mouse.y
         })
     }
 }

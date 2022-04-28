@@ -21,6 +21,9 @@ export default class BubbleShader {
     init() {
         this.createPlane();
     }
+    resize({ width, height }){
+        this.mesh.scale.set( width, height, 1 );
+    }
     setUniformMaterial(){
         this.uniforms = {
             uPlaneSize: {
@@ -79,6 +82,12 @@ export default class BubbleShader {
     update(){
         this.uniforms.uTime.value += this.clock.getDelta();
         this.animateMoveTexture();
+    }
+    setSpikes(value){
+        TweenMax.to(this.uniforms.uSpikes,{
+            value : value,
+            duration : 0.5
+        })
     }
     setDirection(x, y){
         if(!this.moveTexture.direction) return;

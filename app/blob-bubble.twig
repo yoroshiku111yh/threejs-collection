@@ -2,11 +2,17 @@
 {% block page %}
 	<main id="main" data-module="">
         <div data-module="blobBubble2d">
-            <div style="display : block; width : 200px; height : auto; position : relative; z-index : 1; cursor : pointer">
-                <img data-src="./assets/images/materials/same-size/1000x896-1.jpg" src="./assets/images/materials/same-size/1000x896-1.jpg" style="width: 100%" class="js-hover-bubble-texture" />
+            <div style="display : block; width : auto; height : auto; position : absolute; top : 0; left : 0; padding-left : 15px; padding-top : 10px; z-index : 1; cursor : pointer">
+                <h3 style="font-size: 32px; color : #ccc; text-align : left" data-src="./assets/images/materials/same-size/1000x896-1.jpg" class="js-hover-bubble-texture">
+                    HOVER ME NOW
+                </h3>
+                {# <img data-src="./assets/images/materials/same-size/1000x896-1.jpg" src="./assets/images/materials/same-size/1000x896-1.jpg" style="width: 100%" class="js-hover-bubble-texture" /> #}
             </div>
-            <div style="margin-top : 50px; display : block; width : 200px; height : auto; position : relative; z-index : 1; cursor : pointer">
-                <img data-src="./assets/images/materials/same-size/1000x896-2.jpg" src="./assets/images/materials/same-size/1000x896-2.jpg" style="width: 100%" class="js-hover-bubble-texture" />
+            <div style="margin-top : 50px; display : block; width : auto; height : auto; position : absolute ; padding-right : 15px; padding-bottom : 10px; z-index : 1; cursor : pointer; bottom : 0; right : 0;">
+                {# <img data-src="./assets/images/materials/same-size/1000x896-2.jpg" src="./assets/images/materials/same-size/1000x896-2.jpg" style="width: 100%" class="js-hover-bubble-texture" /> #}
+                <h3 style="font-size: 32px; color : #ccc; text-align : right" data-src="./assets/images/materials/same-size/1000x896-2.jpg" class="js-hover-bubble-texture">
+                    HOVER ME NOW
+                </h3>
             </div>
             <canvas class="background-cv" id="blob-bubble-cv"></canvas>
         </div>
