@@ -1,10 +1,8 @@
 import * as THREE from 'three';
 import Blob2dMaterial from '../../../shaders/blobBubble2d/index';
 import fragmentShader from '../../../shaders/blobBubble2d/fragmentShaderBlob2d.glsl';
-import { getRandomValueInArray, randomInRange2 } from './../../ultilities/ulti';
 import { TweenMax, Sine } from 'gsap/gsap-core';
-
-const srcTextureTest = "https://i.imgur.com/crl7JVm.jpeg";
+import { srcTextureBlank } from '../../ultilities/initialize';
 
 export default class BubbleShader {
     constructor({ planeSize, objUniforms, moveTexture, clockDelta }) {
@@ -17,6 +15,7 @@ export default class BubbleShader {
         this.planeSize = planeSize;
         this.objUniforms = objUniforms;
         this.moveTexture = moveTexture;
+        this.introDone = false;
         this.init();
     }
     init() {
@@ -28,7 +27,9 @@ export default class BubbleShader {
                 value: new THREE.Vector2(this.planeSize.width, this.planeSize.height)
             },
             uImageSize: {
-                value: new THREE.Vector2(1920, 843)
+                value: new THREE.Vector2(
+                    this.objUniforms?.textureWidth || 1000, 
+                    this.objUniforms?.textureWidth || 896)
             },
             uTime: {
                 value: 0.0
@@ -43,7 +44,7 @@ export default class BubbleShader {
                 value: this.objUniforms.spikes //1.5
             },
             uTexture: {
-                value: new THREE.TextureLoader().load(srcTextureTest),
+                value: this.objUniforms.texture || new THREE.TextureLoader().load(srcTextureBlank),
             },
             isMouse : {
                 value : false

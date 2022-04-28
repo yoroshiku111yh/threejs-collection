@@ -29,7 +29,7 @@ void main() {
     vec2 posTexture = coverUv + vec2(uTextureMoveX, uTextureMoveY);
     vec4 texture = texture2D(uTexture, posTexture);
     vec4 color = texture;
-    if(isMouse) {
+    if(isMouse) { // use in research
         // generate cursor blob noise (slow down uTime)
         float mouseBlobNoise = snoise3(vec3(uv.x * uSpikes, uv.y * uSpikes, uTime * 0.3));
 
