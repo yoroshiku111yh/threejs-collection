@@ -6,16 +6,19 @@
 uniform vec3 uColor;
 uniform vec2 uPlaneSize;
 uniform vec2 uImageSize;
-uniform vec2 uMousePos;
 uniform float uTextureMoveX;
 uniform float uTextureMoveY;
 uniform float uMouseRadius;
 uniform float uTime;
 uniform sampler2D uTexture;
+uniform sampler2D uTexture2;
 uniform float uSpikes;
 uniform float uRadius;
-uniform bool isMouse;
 uniform float uAlpha;
+uniform float uDisFactor;
+
+uniform bool isMouse;
+uniform vec2 uMousePos;
 
 varying vec2 vUv;
 
@@ -44,8 +47,10 @@ void main() {
 
     // apply image texture
     vec2 posTexture = coverUv + vec2(uTextureMoveX, uTextureMoveY);
-    vec4 texture = texture2D(uTexture, posTexture);
-    vec4 color = texture;
+
+    vec4 _texture = texture2D(uTexture, posTexture);
+    vec4 _texture2 = texture2D(uTexture2, posTexture);
+    vec4 color = mix(_texture, _texture2, uDisFactor);
     //color = mouseGooey(color, isMouse, uv, uSpikes, uTime, uMousePos);
     // use another circle blob as mask on the color's alpha channel (black === alpha of 0)
     float imageBlobNoise = snoise3(vec3(uv.x * uSpikes, uv.y * uSpikes, uTime * 1.0));

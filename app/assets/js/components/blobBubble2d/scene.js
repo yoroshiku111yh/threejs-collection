@@ -15,4 +15,7 @@ export default class SceneBlob2d extends SceneBase{
         this.initCamera();
         this.update();
     }
+    resize(size) {
+        this.renderer.setSize(size.width, size.height);
+    }
 }

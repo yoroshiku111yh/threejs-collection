@@ -46,6 +46,9 @@ export default class BubbleShader {
             uTexture: {
                 value: this.objUniforms.texture || new THREE.TextureLoader().load(srcTextureBlank),
             },
+            uTexture2 : {
+                value : null
+            },
             isMouse : {
                 value : false
             },
@@ -53,6 +56,9 @@ export default class BubbleShader {
                 value : 0.0
             },
             uTextureMoveY : {
+                value : 0.0
+            },
+            uDisFactor : {
                 value : 0.0
             }
         }
@@ -102,5 +108,30 @@ export default class BubbleShader {
                 }
             })
         }
+    }
+    updateTexture(textPrev, textNext){
+        if(textPrev){
+            this.uniforms.uTexture.value = textPrev;
+        }
+        if(textNext){
+            this.uniforms.uTexture2.value = textNext;
+        }
+    }
+    setDisFactor(isOut = false){
+        let disFactor = 0;
+        if(isOut){
+            disFactor = 1;
+        }
+        this.uniforms.uDisFactor.value = disFactor;
+    }
+    transitionIn(callback){
+        TweenMax.to(this.uniforms.uDisFactor,{
+            value : 1.0,
+            duration : 0.25,
+            ease : Sine.easeInOut,
+            onComplete : () => {
+                callback && callback();
+            }
+        })
     }
 }

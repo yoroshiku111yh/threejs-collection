@@ -2,7 +2,13 @@
 {% block page %}
 	<main id="main" data-module="">
         <div data-module="blobBubble2d">
-            <canvas id="blob-bubble-cv"></canvas>
+            <div style="display : block; width : 200px; height : auto; position : relative; z-index : 1; cursor : pointer">
+                <img data-src="./assets/images/materials/same-size/1000x896-1.jpg" src="./assets/images/materials/same-size/1000x896-1.jpg" style="width: 100%" class="js-hover-bubble-texture" />
+            </div>
+            <div style="margin-top : 50px; display : block; width : 200px; height : auto; position : relative; z-index : 1; cursor : pointer">
+                <img data-src="./assets/images/materials/same-size/1000x896-2.jpg" src="./assets/images/materials/same-size/1000x896-2.jpg" style="width: 100%" class="js-hover-bubble-texture" />
+            </div>
+            <canvas class="background-cv" id="blob-bubble-cv"></canvas>
         </div>
     </main>
 {% endblock %}

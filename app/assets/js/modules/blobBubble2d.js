@@ -10,10 +10,15 @@ export default class BlobBubble2d {
         this.processingVal = 1;
         this.spikesVal = 0.5;
         this.speedVal = 15;
+        this.hoverTexture = null;
+        this.changingTexture = false;
         this.init();
         this.setUpdateCallback();
         this.update();
+        this.resize();
         this.animateIntro();
+        //
+        this.eventHoverGetTexture();
     }
     init() {
         this.testScene = new SceneBlob2d({
@@ -27,7 +32,7 @@ export default class BlobBubble2d {
         // shader
         const fnX = randomInRange2(0.02, 0.05, false);
         const fnY = randomInRange2(0.02, 0.05, false);
-        this.BubbleIntro = new BubbleIntro({
+        this.bubbleIntro = new BubbleIntro({
             planeSize: {
                 width: 3,
                 height: 3,
@@ -46,9 +51,9 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.BubbleIntro.getMesh());
+        this.testScene.mainScene.add(this.bubbleIntro.getMesh());
 
-        this.BubbleIntro2 = new BubbleIntro({
+        this.bubbleIntro2 = new BubbleIntro({
             planeSize: {
                 width: 3,
                 height: 3,
@@ -67,9 +72,9 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.BubbleIntro2.getMesh());
+        this.testScene.mainScene.add(this.bubbleIntro2.getMesh());
 
-        this.BubbleIntro3 = new BubbleIntro({
+        this.bubbleIntro3 = new BubbleIntro({
             planeSize: {
                 width: 3,
                 height: 3,
@@ -88,26 +93,26 @@ export default class BlobBubble2d {
                 }
             }
         });
-        this.testScene.mainScene.add(this.BubbleIntro3.getMesh());
+        this.testScene.mainScene.add(this.bubbleIntro3.getMesh());
     }
     setUpdateCallback() {
         this.testScene.updateCallback = () => {
-            this.BubbleIntro.update();
-            this.BubbleIntro2.update();
-            this.BubbleIntro3.update();
+            this.bubbleIntro.update();
+            this.bubbleIntro2.update();
+            this.bubbleIntro3.update();
             ///
             const directionX = getRandomValueInArray([1, -1, -1, 1]);
             const directionY = getRandomValueInArray([-1, 1, -1, -1]);
 
-            this.BubbleIntro.setDirection(
+            this.bubbleIntro.setDirection(
                 directionX,
                 directionY
             );
-            this.BubbleIntro2.setDirection(
+            this.bubbleIntro2.setDirection(
                 directionX,
                 directionY
             );
-            this.BubbleIntro3.setDirection(
+            this.bubbleIntro3.setDirection(
                 directionX,
                 directionY
             );
@@ -116,11 +121,50 @@ export default class BlobBubble2d {
     update() {
         this.testScene.update();
     }
+    resize(){
+        window.addEventListener("resize", () => {
+            this.testScene.resize({
+                width : window.innerWidth,
+                height : window.innerHeight
+            })
+        })
+    }
     animateIntro() {
         setTimeout(() => {
-            this.BubbleIntro.animationIntro({  radius: 0.5,  duration: 0.75 });
-            this.BubbleIntro2.animationIntro({ radius: 0.45, duration: 0.95 });
-            this.BubbleIntro3.animationIntro({ radius: 0.43, duration: 1.05 });
+            this.bubbleIntro.animationIntro({  radius: 0.5,  duration: 0.75 });
+            this.bubbleIntro2.animationIntro({ radius: 0.45, duration: 0.95 });
+            this.bubbleIntro3.animationIntro({ radius: 0.43, duration: 1.05 });
         }, 1000);
+    }
+    eventHoverGetTexture(){
+        $('.js-hover-bubble-texture').on("mouseenter", (e) => {
+            const _this = e.currentTarget;
+            this.hoverTexture = new THREE.TextureLoader().load(_this.dataset.src);
+            if(this.changingTexture) return;
+            this.changingTexture = true;
+            this.bubbleIntro.setDisFactor();
+            this.bubbleIntro.updateTexture(null, this.hoverTexture);
+            this.bubbleIntro.transitionIn(() => {
+                this.bubbleIntro.updateTexture(this.hoverTexture, null);
+                this.changingTexture = false;
+            });
+            //
+            this.bubbleIntro2.setDisFactor();
+            this.bubbleIntro2.updateTexture(null, this.hoverTexture);
+            this.bubbleIntro2.transitionIn(() => {
+                this.bubbleIntro2.updateTexture(this.hoverTexture, null);
+                this.changingTexture = false;
+            });
+            //
+            this.bubbleIntro3.setDisFactor();
+            this.bubbleIntro3.updateTexture(null, this.hoverTexture);
+            this.bubbleIntro3.transitionIn(() => {
+                this.bubbleIntro3.updateTexture(this.hoverTexture, null);
+                this.changingTexture = false;
+            });
+        })
+        $('.js-hover-bubble-texture').on("mouseleave", (e) => {
+            this.hoverTexture = null;
+        })
     }
 }

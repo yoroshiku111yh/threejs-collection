@@ -9,7 +9,6 @@ export default class BubbleIntro extends BubbleShader {
         this.init();
     }
     animationIntro({ radius = 0., duration = 0 }){
-        console.log(this.uniforms.uRadius);
         if(!this.animateIntroDone){
             TweenMax.to(this.uniforms.uRadius, {
                 value : radius,
