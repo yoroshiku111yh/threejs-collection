@@ -1,12 +1,15 @@
 
 import * as THREE from 'three';
+import { TweenMax } from 'gsap/gsap-core';
 import HoverDistortionRgbEffect from '../../../shaders/hoverDistortionRgbSplitImage';
 import SceneBase from './../../ultilities/sceneBase';
 
 const testImageSrc = document.getElementById("test-img").src;
+const testImageSrc2 = "https://i.imgur.com/LY4VlUM.jpeg";
 function lerp(start, end, t){
     //https://www.geeksforgeeks.org/p5-js-lerp-function/
     return start * ( 1 - t ) + end * t;
+    // functional same tweenmax gsap
 }
 
 export default class SceneHoverDistortionImage extends SceneBase{
@@ -28,7 +31,7 @@ export default class SceneHoverDistortionImage extends SceneBase{
                 value : this.textureTest
             },
             uContainSize : {
-                value : new THREE.Vector2(250,350)
+                value : new THREE.Vector2(this.sizePlane.w, this.sizePlane.h)
             },
             uTextureSize : {
                 value : new THREE.Vector2(768, 1024)
@@ -58,6 +61,7 @@ export default class SceneHoverDistortionImage extends SceneBase{
     createPlaneMesh(){
         const geo = new THREE.PlaneGeometry(1, 1 ,20, 20);
         const mat = new HoverDistortionRgbEffect(this.uniforms);
+        //this.uniforms = mat.getUniform();
         this.planeMesh = new THREE.Mesh(geo, mat);
         this.planeMesh.scale.set(this.sizePlane.w, this.sizePlane.h, 1);
         this.planeMesh.position.set(this.offset.x, this.offset.y, 0);
@@ -76,15 +80,7 @@ export default class SceneHoverDistortionImage extends SceneBase{
             this.sizePlane.w = lerp(this.sizePlane.w, this.updateSizePlane.w, 0.1);
             this.sizePlane.h = lerp(this.sizePlane.h, this.updateSizePlane.h, 0.1);
             this.planeMesh.scale.set(this.sizePlane.w, this.sizePlane.h, 1);
-            const textureCover = this.updateSizeTexture({
-                plane : this.sizePlane,
-                img : {
-                    w : 768,
-                    h : 1024
-                },
-                texture : this.textureTest
-            });
-            this.uniforms.uTexture.value = textureCover;
+            this.uniforms.uContainSize.value = new THREE.Vector2(this.sizePlane.w, this.sizePlane.h);
         }
     }
     updateSizeTexture({plane, img, texture}){
@@ -102,6 +98,7 @@ export default class SceneHoverDistortionImage extends SceneBase{
     events(){
         this.onMouseMove();
         this.onMouseHover();
+        this.onMouseOut();
     }
     onMouseHover(){
         $('.js-hover').on("mouseover", (e) => {
@@ -109,11 +106,17 @@ export default class SceneHoverDistortionImage extends SceneBase{
             const sizeMesh = JSON.parse(_this.dataset.size);
             this.updateSizePlane = sizeMesh;
             this.isHover = true;
+            TweenMax.to(this.uniforms.uAlpha, 0.35, {
+                value : 1
+            })
         })
     }
     onMouseOut(){
         $('.js-hover').on("mouseout", (e) => {
             this.isHover = false;
+            TweenMax.to(this.uniforms.uAlpha, 0.35, {
+                value : 0
+            })
         })
     }
 
