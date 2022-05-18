@@ -1,0 +1,39 @@
+{% extends "_layout/layout.twig" %}
+{% block page %}
+    <style>
+        canvas {
+            position : absolute;
+            top : 0;
+            left : 0;
+            z-index : 1;
+        }
+        .list-style-1 {
+            margin : 0;
+            position : relative;
+            z-index : 2;
+        }
+        .list-style-1 li {
+            display : block;
+            max-width : 40%;
+            min-width : 300px;
+            margin : 0;
+            padding : 90px 5px;
+            box-sizing : border-box;
+            font-family: cursive;
+            font-size: 32px;
+            color : #000;
+            text-align : left;
+            line-height : 1.35;
+            text-transform : uppercase;
+        }
+    </style>
+	<main id="main" data-module="hoverDistortionRgbImage">
+        <img id="test-img" style= "opacity : 0; visibility : hidden; position : absolute; top : 0; left : 0" src="./assets/images/materials/natural-2.jpg" />
+        <ul class="list-style-1">
+            <li class="js-hover" data-size='{ "w": 250, "h" : 350 }'>Home</li>
+            <li class="js-hover" data-size='{ "w" : 400, "h" : 400 }'>About</li>
+            <li class="js-hover" data-size='{ "w" : 400, "h" : 100 }'>Contact</li>
+        </ul>
+		<canvas id="cv-hover-distortion"></canvas>
+	</main>
+{% endblock %}

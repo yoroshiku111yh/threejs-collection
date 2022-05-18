@@ -5,7 +5,9 @@ export default class SceneBase{
         this.W = sizeWidth;
         this.H = sizeHeight;
         this.perspective = 5;
-    
+        this.maxPerspective = 100;
+        this.minPerspective = 0.01;
+        this.degCameraPerspective = 45;
     }
     start(){
         this.mainScene = new THREE.Scene();
@@ -17,7 +19,7 @@ export default class SceneBase{
         this.renderer.setPixelRatio(window.devicePixelRatio);
     }
     initCamera() {
-        this.camera = new THREE.PerspectiveCamera(45, this.W / this.H, 0.01, 100);
+        this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
         this.camera.position.set(0, 0, this.perspective);
     }
     update() {
