@@ -15,11 +15,12 @@ function lerp(start, end, t){
 export default class SceneHoverDistortionImage extends SceneBase{
     constructor({$container, size}){
         super($container, size.width, size.height);
+        this.loader = new THREE.TextureLoader();
         this.sizePlane = { w : 250, h : 350 };
         this.updateSizePlane = { w : 250, h : 350 };
         this.offset = new THREE.Vector2();
         this.mouse = new THREE.Vector2();
-        this.textureTest = new THREE.TextureLoader().load(testImageSrc);
+        this.textureHover = this.loader.load(testImageSrc);
         this.uniforms = {
             uAlpha : {
                 value : 0.0
@@ -28,7 +29,13 @@ export default class SceneHoverDistortionImage extends SceneBase{
                 value : new THREE.Vector2()
             },
             uTexture : {
-                value : this.textureTest
+                value : this.textureHover
+            },
+            uTextureNext : {
+                value : this.textureHover
+            },
+            uDisFactor : {
+                value : 0.0
             },
             uContainSize : {
                 value : new THREE.Vector2(this.sizePlane.w, this.sizePlane.h)
@@ -76,6 +83,8 @@ export default class SceneHoverDistortionImage extends SceneBase{
         this.offset.x = lerp(this.offset.x, this.mouse.x, 0.1);
         this.offset.y = lerp(this.offset.y, this.mouse.y, 0.1);
         this.planeMesh.position.set(this.offset.x - this.W/2, -this.offset.y + this.H/2, 0);
+        this.uniforms.uOffset.value.x = (this.mouse.x - this.offset.x)* 0.0005;
+        this.uniforms.uOffset.value.y = (this.mouse.y - this.offset.y)* 0.0005;
         if(this.isHover){
             this.sizePlane.w = lerp(this.sizePlane.w, this.updateSizePlane.w, 0.1);
             this.sizePlane.h = lerp(this.sizePlane.h, this.updateSizePlane.h, 0.1);
@@ -104,19 +113,27 @@ export default class SceneHoverDistortionImage extends SceneBase{
         $('.js-hover').on("mouseover", (e) => {
             const _this = e.currentTarget;
             const sizeMesh = JSON.parse(_this.dataset.size);
+            const textureMesh = this.loader.load(_this.dataset.img);
+            this.uniforms.uTextureNext.value = textureMesh;
             this.updateSizePlane = sizeMesh;
             this.isHover = true;
-            TweenMax.to(this.uniforms.uAlpha, 0.35, {
-                value : 1
-            })
+            TweenMax.to(this.uniforms.uDisFactor, 0.15, {
+                value : 1.0
+            });
+            TweenMax.to(this.uniforms.uAlpha, 0.15, {
+                value : 1.0
+            });
         })
     }
     onMouseOut(){
         $('.js-hover').on("mouseout", (e) => {
             this.isHover = false;
-            TweenMax.to(this.uniforms.uAlpha, 0.35, {
-                value : 0
-            })
+            TweenMax.to(this.uniforms.uDisFactor, 0.15, {
+                value : 0.0
+            });
+            TweenMax.to(this.uniforms.uAlpha, 0.15, {
+                value : 0.0
+            });
         })
     }
 
