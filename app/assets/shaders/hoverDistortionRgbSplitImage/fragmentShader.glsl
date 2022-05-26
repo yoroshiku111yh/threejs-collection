@@ -1,7 +1,6 @@
 #pragma glslify:cover=require('../helper/cover');
 
 uniform sampler2D uTexture;
-uniform sampler2D uTextureNext;
 uniform float uAlpha;
 uniform vec2 uOffset;
 
@@ -21,8 +20,6 @@ void main() {
     vec2 coverUv = cover(vUv, uContainSize, uTextureSize);
     vec2 translate2d = vec2(0.0);
     vec2 myUv = coverUv + translate2d; 
-    vec4 color = texture2D(uTexture, myUv);
-    vec4 colorNext = texture2D(uTextureNext, myUv);
-    gl_FragColor = mix(color, colorNext, uDisFactor);
-    gl_FragColor.a = uAlpha;
+    vec3 color = rgbShift(uTexture, myUv, uOffset);
+    gl_FragColor = vec4(color, uAlpha);
 }

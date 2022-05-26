@@ -20,7 +20,7 @@ export default class SceneHoverDistortionImage extends SceneBase{
         this.updateSizePlane = { w : 250, h : 350 };
         this.offset = new THREE.Vector2();
         this.mouse = new THREE.Vector2();
-        this.textureHover = this.loader.load(testImageSrc);
+        this.textureHover = this.loader.load(testImageSrc2);
         this.uniforms = {
             uAlpha : {
                 value : 0.0
@@ -31,9 +31,6 @@ export default class SceneHoverDistortionImage extends SceneBase{
             uTexture : {
                 value : this.textureHover
             },
-            uTextureNext : {
-                value : this.textureHover
-            },
             uDisFactor : {
                 value : 0.0
             },
@@ -42,6 +39,9 @@ export default class SceneHoverDistortionImage extends SceneBase{
             },
             uTextureSize : {
                 value : new THREE.Vector2(768, 1024)
+            },
+            uTextureUrl : {
+                value : testImageSrc2
             }
         };
         this.perspective = 1000;
@@ -114,13 +114,15 @@ export default class SceneHoverDistortionImage extends SceneBase{
             const _this = e.currentTarget;
             const sizeMesh = JSON.parse(_this.dataset.size);
             const textureMesh = this.loader.load(_this.dataset.img);
-            this.uniforms.uTextureNext.value = textureMesh;
+
+            if(this.uniforms.uTextureUrl.value == _this.dataset.img) return;
+
+            this.uniforms.uTextureUrl.value = _this.dataset.img;
+            this.uniforms.uTexture.value = textureMesh;
             this.updateSizePlane = sizeMesh;
             this.isHover = true;
-            TweenMax.to(this.uniforms.uDisFactor, 0.15, {
-                value : 1.0
-            });
-            TweenMax.to(this.uniforms.uAlpha, 0.15, {
+            this.uniforms.uAlpha.value = 0;
+            TweenMax.to(this.uniforms.uAlpha, 0.35, {
                 value : 1.0
             });
         })
@@ -128,10 +130,8 @@ export default class SceneHoverDistortionImage extends SceneBase{
     onMouseOut(){
         $('.js-hover').on("mouseout", (e) => {
             this.isHover = false;
-            TweenMax.to(this.uniforms.uDisFactor, 0.15, {
-                value : 0.0
-            });
-            TweenMax.to(this.uniforms.uAlpha, 0.15, {
+            this.uniforms.uTextureUrl.value = null;
+            TweenMax.to(this.uniforms.uAlpha, 0.35, {
                 value : 0.0
             });
         })
