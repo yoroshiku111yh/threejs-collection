@@ -12,6 +12,7 @@ export default class SceneSoapBubble extends SceneBase {
     }
     init(){
         this.start();
+        this.mainScene.background = new THREE.Color( '#ff0000' );
         this.initCamera();
         this.createBuffer();
         this.createPlane();
@@ -48,6 +49,12 @@ export default class SceneSoapBubble extends SceneBase {
             },
             iResolution : {
                 value : getResolution({ W : this.W, H : this.H })
+            },
+            iContainSize : {
+                value : new THREE.Vector2(this.W, this.H)
+            },
+            iTextureSize : {
+                value : new THREE.Vector2(1024, 768)
             }
         });
         this.uniforms = material.getUniform();
@@ -58,9 +65,6 @@ export default class SceneSoapBubble extends SceneBase {
     updateCallback(){
         // this.renderer.clear();
         this.uniforms.iTexture.value = this.bannerTex;
-        this.uniforms.iTime.value += 0.03;
-        if(this.uniforms.iTime.value > 1000){
-            this.uniforms.iTime.value = 0;
-        }
+        this.uniforms.iTime.value += 0.02;
     }
 }
