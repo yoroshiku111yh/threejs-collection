@@ -5,10 +5,15 @@
 #define Rot(a) mat2(cos(a),-sin(a),sin(a),cos(a))
 #define MATERIAL 0
 
+#pragma glslify:cover=require('../helper/cover');
+
 varying vec2 vUv;
+varying float vBlend;
 uniform float iTime;
 uniform vec4 iResolution;
 uniform sampler2D iTexture;
+uniform vec2 iTextureSize;
+uniform vec2 iContainSize;
 
 vec3 N33(vec3 p) {
     vec3 a = fract(p * vec3(123.34, 234.34, 345.65));
@@ -35,13 +40,15 @@ float metaball(vec3 p, float i, float t) {
 
 vec2 GetDist(vec3 p) {
 
-    float k = 0.5; // radius metalball fly total
+    float k = 0.4; // radius metalball fly total
     float d = 10.0;
     float t = iTime * 3.0;
 
     d = smin(d, metaball(p, 0.3, t), k);
     d = smin(d, metaball(p, 0.6, t), k);
     d = smin(d, metaball(p, 0.9, t), k);
+    d = smin(d, metaball(p, 1.2, t), k);
+    d = smin(d, metaball(p, 1.5, t), k);
 
     vec2 model = vec2(d, MATERIAL);
     return model;
@@ -83,101 +90,6 @@ float sdBox(in vec2 p, in vec2 b) {
     return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
 }
 
-// float charS(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     float d = abs(length(p-vec2(-0.02,0.06))-0.06)-0.02;
-//     float d2 = B(p-vec2(0.03,0.02),vec2(0.045,0.04));
-//     d = max(-d2,d);
-
-//     d2 = abs(length(p-vec2(-0.02,-0.06))-0.06)-0.02;
-//     float d3 = B(p-vec2(-0.06,-0.02),vec2(0.045,0.04));
-//     d2 = max(-d3,d2);
-
-//     d = min(d,d2);
-//     return d;
-// }
-
-// float charH(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     p.x = abs(p.x)-0.06;
-//     float d = B(p,vec2(0.02,0.14));
-//     p = prevP;
-//     float d2 = B(p,vec2(0.08,0.02));
-//     d = min(d,d2);
-//     return d;
-// }
-
-// float charA(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     p.x = abs(p.x)-0.04;
-//     p*=Rot(radians(-15.0));
-//     float d = B(p,vec2(0.02,0.16));
-//     p = prevP;
-//     float d2 = B(p-vec2(0.0,-0.03),vec2(0.05,0.02));
-//     d = min(d,d2);
-//     d = max((abs(p.y)-0.09),d);
-//     p = prevP;
-//     p*=Rot(radians(22.0));
-//     d2 =  B(p-vec2(-0.037,-0.12),vec2(0.019,0.12));
-//     return d;
-// }
-
-// float charD(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     float d = abs(sdBox(p,vec2(0.02,0.075))-0.04)-0.02;
-//     d = max(-p.x-0.03,d);
-//     float d2 = B(p-vec2(-0.05,0.0),vec2(0.02,0.135));
-//     d = min(d,d2);
-//     return d;
-// }
-
-// float charE(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     float d = B(p,vec2(0.065,0.13));
-//     p.y = abs(p.y)-0.055;
-//     float d2 = B(p-vec2(0.03,0.0),vec2(0.065,0.03));
-//     d = max(-d2,d);
-//     return d;
-// }
-
-// float charR(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=1.5;
-//     float d = abs(sdBox(p-vec2(-0.01,0.05),vec2(0.03,0.022))-0.04)-0.023;
-//     d = max(-p.x-0.03,d);
-//     float d2 = B(p-vec2(-0.05,0.0),vec2(0.02,0.135));
-//     d = min(d,d2);
-//     p*=Rot(radians(-20.0));
-//     d2 = B(p-vec2(0.02,-0.14),vec2(0.02,0.13));
-//     p*=Rot(radians(20.0));
-//     d2 = max(-p.y-0.132,d2);
-
-//     d = min(d,d2);
-//     return d;
-// }
-
-// float shaderText(vec2 p){
-//     vec2 prevP = p;
-//     p.y*=0.9;
-//     float d = charS(p-vec2(-0.5,0.0));
-//     float d2 = charH(p-vec2(-0.34,0.0));
-//     d = min(d,d2);
-//     d2 = charA(p-vec2(-0.14,0.0));
-//     d = min(d,d2);
-//     d2 = charD(p-vec2(0.05,0.0));
-//     d = min(d,d2);
-//     d2 = charE(p-vec2(0.22,0.0));
-//     d = min(d,d2);
-//     d2 = charR(p-vec2(0.38,0.0));
-//     d = min(d,d2);
-//     return d;
-// }
-
 // vec3 drawBg(vec2 p, vec3 col){
 //     float d = shaderText(p*1.7);
 //     col = mix(col,vec3(0.0),S(d,0.0));
@@ -192,7 +104,8 @@ vec3 drawBg(vec2 p, vec3 col) {
 
 vec3 reflectMaterial(vec2 p, vec3 rd, vec3 n) {
     vec3 r = reflect(rd, n);
-    vec3 refTex = drawBg(p, vec3(max(0.95, r.y))) + (r * sin(iTime) * 0.5);
+    float clearGamma = 0.25;
+    vec3 refTex = drawBg(p, vec3(max(0.95, r.y))) + (r * sin(iTime) * clearGamma);
     return refTex;
 }
 
@@ -206,8 +119,8 @@ vec3 materials(int mat, vec3 n, vec3 rd, vec2 p, vec3 col) {
 void main() {
     //vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
     vec2 uv = vUv - vec2(0.5, 0.5);
-    vec2 newUv = vUv;
-    vec4 tex = texture2D(iTexture, vUv);
+    vec2 coverUv = cover(vUv, iContainSize, iTextureSize);
+    vec2 newUv = coverUv;
     //vec2 prevUV = uv;
     //vec2 m =  iMouse.xy/iResolution.xy;
 
@@ -215,24 +128,21 @@ void main() {
     float zBall = 1.0;
     vec3 rd = R(uv, ro, vec3(0, 0.0, 0.0), zBall);
     vec2 d = RayMarch(ro, rd, 1., MAX_STEPS);
-    vec3 col = vec3(1.0);
+    vec4 col = vec4(1.0);
     if(d.x < MAX_DIST) {
         vec3 p = ro + rd * d.x;
         vec3 n = GetNormal(p);
         float len = pow(length(n.xy), 3.0);
         newUv += n.xy * len * 0.02;
         int mat = int(d.y);
-        col = materials(mat, n, rd, newUv, col);
+        col.rgb = materials(mat, n, rd, newUv, col.rgb);
     } else {
         //col = tex.rgb;
-        col = drawBg(vUv, col);
+        col.rgb = drawBg(coverUv, col.rgb);
     }
 
     // gamma correction
-    col = pow(col, vec3(0.9545));
-    vec4 final = vec4(col, 1.0);
-    if(final.a < 0.1) {
-        discard;
-    }
+    col.rgb = pow(col.rgb, vec3(0.9545));
+    vec4 final = vec4(col.rgb, 1.0);
     gl_FragColor = final;
 }
