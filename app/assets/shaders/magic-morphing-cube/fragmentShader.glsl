@@ -8,7 +8,7 @@ varying vec2 vUv;
 const float MAX_DISTANCE = 100.;
 const float EPSILON = .0001;
 const int NUM_MARCHES = 255;
-const float BOX_EXTENTS = 3.;
+const float BOX_EXTENTS = 2.;
 const float RADIUS = .5;
 const float RADIUS_COMPONENT = .35355; // sqrt(RADIUS^2 / 2)
 
@@ -40,8 +40,8 @@ float getGrey(vec3 p){ return p.x*0.299 + p.y*0.587 + p.z*0.114; }
 
 vec3 tex3D( sampler2D tex, vec3 p, vec3 n, mat3 mat)
 {
-   	n *= mat;;
-    
+   	n *= mat;
+
     n = max((abs(n) - 0.2)*7., 0.001);
     n /= (n.x + n.y + n.z );  
     
@@ -170,7 +170,7 @@ vec3 getColor(vec3 pos, vec3 eye, float texScale, mat3 mat)
     float lerpAmount = clamp(uvOffset / (gridTileWidth / 2.), 0., 1.);
     
     bool swap = floor(mod(iTime / repeat, 2.)) == 0.;
-    
+
     vec3 norm = swap ? 
         			mix(bump(iChannel1, pos * texScale, gradient(originalPos, mat), bumpAmount, mat),
                     	bump(iChannel0, pos * texScale, gradient(originalPos, mat), bumpAmount, mat),
@@ -189,21 +189,22 @@ vec3 getColor(vec3 pos, vec3 eye, float texScale, mat3 mat)
                    		tex3D(iChannel1, pos * texScale, norm, mat),
                    		lerpAmount) * light;
     
-    col.r += mix(0., step(num, thickness), max(0., sign(dist.y + dist.x)));
     
+    col.r += mix(0., step(num, thickness), max(0., sign(dist.y + dist.x)));
 	return col;
 }
 
 void main() //out vec4 fragColor, in vec2 fragCoord
 {
-    const float texScale = 1./6.;
+    const float texScale = 1./10.;
     const mat3 identity = mat3(1., 0., 0., 0., 1., 0., 0., 0., 1.);
     
     //vec2 uv = (2. * fragCoord - iResolution.xy) / iResolution.y;
     vec2 uv = vUv - vec2(0.5, 0.5);
 
 
-    vec3 eye = vec3(-6., 5., 6.5);
+    //vec3 eye = vec3(-6., 5., 6.5);
+    vec3 eye = vec3( 0., 0., 10.);
     vec3 ray = normalize(vec3(uv, -1.));
     
     mat3 modelMatrix = rotateY(iTime / 2.);
@@ -214,9 +215,13 @@ void main() //out vec4 fragColor, in vec2 fragCoord
     float dist = distanceToShape(eye, ray, modelMatrix);
     vec3 pos = eye + ray * dist;
     
-    gl_FragColor = vec4(0.);
-    
+    gl_FragColor = vec4(vec3(0.), 1.);
     if (dist < MAX_DISTANCE) {
         gl_FragColor.rgb = getColor(pos, eye, texScale, modelMatrix);
     }
 }
+
+// void main(){
+//     vec3 color = vec3(0.0);
+//     gl_FragColor = vec4(color, 1.0);
+// }

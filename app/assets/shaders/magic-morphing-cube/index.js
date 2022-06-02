@@ -10,6 +10,7 @@ export default class ShaderMagicMorphingCube extends ShaderMaterial {
         });
         this.uniforms = uniforms;
         this.transparent = true;
+        this.DoubleSide = true;
         this.getUniforms = () => this.uniforms;
     }
 }

@@ -7,6 +7,8 @@ export default class HoverDistortionRgbImage {
     }
     init(){
         this.initScene();
+        this.eventHoverIn();
+        this.eventHoverOut();
     }
     initScene(){
         this.sceneImage = new SceneHoverDistortionImage({
@@ -15,6 +17,22 @@ export default class HoverDistortionRgbImage {
                 width : window.innerWidth,
                 height : window.innerHeight
             }
+        })
+    }
+    eventHoverIn(){
+        $('.js-hover').on("mouseover", (e) => {
+            const _this = e.currentTarget;
+            const url = _this.dataset.img;
+            const sizeMesh = JSON.parse(_this.dataset.size);
+            this.sceneImage.onMouseHover({
+                url : url,
+                size : sizeMesh
+            });
+        })
+    }
+    eventHoverOut(){
+        $('.js-hover').on("mouseout", (e) => {
+            this.sceneImage.onMouseOut();
         })
     }
 }

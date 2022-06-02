@@ -22,6 +22,21 @@ export default class SceneBase{
         this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
         this.camera.position.set(0, 0, this.perspective);
     }
+    initPerspectiveCamera(){
+        this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
+        this.camera.position.set(0, 0, this.perspective);
+    }
+    initOrthographicCamera(){
+        this.camera = new THREE.OrthographicCamera(
+            this.W / -2, 
+            this.W / 2, 
+            this.H / 2, 
+            this.H / -2, 
+            0, 
+            1000
+        );
+        this.camera.position.set(0, 0, 0);
+    }
     update() {
         requestAnimationFrame(this.update.bind(this))
         this.updateCallback();
