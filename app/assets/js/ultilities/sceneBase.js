@@ -8,6 +8,7 @@ export default class SceneBase{
         this.maxPerspective = 100;
         this.minPerspective = 0.01;
         this.degCameraPerspective = 45;
+        this.renderedInCallBack = false;
     }
     start(){
         this.mainScene = new THREE.Scene();
@@ -43,7 +44,9 @@ export default class SceneBase{
         if(!this.camera){
             console.error("Camera is undefined.");
         }
-        this.renderer.render(this.mainScene, this.camera);
+        if(!this.renderedInCallBack){
+            this.renderer.render(this.mainScene, this.camera);
+        }
     }
     updateCallback(){
         /// empty for child

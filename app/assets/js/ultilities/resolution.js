@@ -25,3 +25,8 @@ export const getResolutionWithoutImageAspect = ({W, H}) => {
         H * dpr
     )
 }
+
+export const getResolutionVec3 = ({W, H}) => {
+    const dpr = Math.min(devicePixelRatio, 2 || 1);
+    return new THREE.Vector3(W, H, dpr);
+}
