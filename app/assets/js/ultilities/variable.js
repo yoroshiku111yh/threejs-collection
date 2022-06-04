@@ -1,0 +1,1 @@
+export const clearColorDark = "#565C62";

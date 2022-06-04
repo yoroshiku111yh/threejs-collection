@@ -23,9 +23,9 @@ void main() {
     vec2 tc = texture(iChannel0, uv).xy;
     col = texture(iChannel1, tc - (0.5 - uv));
     col.xyz *= waterColor;
-    // vec3 n = normalize(vec3(length(dFdx(tc)), length(dFdy(tc)), DEPTH / max(iResolution.x, iResolution.y)));
-    // vec3 n_color = vec3(0.38, 0.26, 0.89);
-    // col.xyz += pow(dot(n, normalize(n_color)), 2.0);
+    vec3 n = normalize(vec3(length(dFdx(tc)), length(dFdy(tc)), DEPTH / max(iResolution.x, iResolution.y)));
+    vec3 n_color = vec3(.9,.25,-.1);
+    col.xyz += pow(dot(n, normalize(n_color)), 2.0);
     gl_FragColor = col;
 
 }
