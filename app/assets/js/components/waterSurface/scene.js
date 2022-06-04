@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import SceneBase from './../../ultilities/sceneBase';
 import { getResolutionVec3 } from '../../ultilities/resolution';
-import { imgUrlWater } from './../../ultilities/srcImgurl';
+import { imgUrlWater, imgUrlBrick } from './../../ultilities/srcImgurl';
 import { BufferManager, BufferShader } from './../../ultilities/buffer';
 
 import fragmentBuffer from './../../../shaders/waterSurface/buffer.glsl';
@@ -9,7 +9,6 @@ import vertex from './../../../shaders/waterSurface/vertexShader.glsl';
 import fragmentImage from './../../../shaders/waterSurface/fragmentShader.glsl';
 import ShaderRefractMultisideCommon from './../../../shaders/refractMultisideCommon/index';
 import { clearColorDark } from './../../ultilities/variable';
-import whaleModelSrc from './../../../3dmodel/obj/glass-whale.obj';
 import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
 import { getTextureCover } from '../../ultilities/textureCover';
 
@@ -20,12 +19,76 @@ export default class SceneWaterSurface extends SceneBase {
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.mouse = new THREE.Vector4();
         this.pointer = new THREE.Vector2();
-        this.bgSize = new THREE.Vector2(2048, 1024);
         this.loader = new THREE.TextureLoader();
         this.rayCaster = new THREE.Raycaster();
-        this.bg = this.loader.load(imgUrlWater);
-        this.bgWater = null;
-        this.init();
+        this.bgWaterSurface = null;
+        this.modelSrc = null;
+        this.isModelNotTransparent = false;
+        this.textureWaterSurface = null;
+        this.modelName = "model-unique";
+        /////////////////
+        this.bgWall = null;
+        this.bgWallSize = new THREE.Vector2();
+    }
+    setDataUniformsBufferPlane() {
+        this.dataUniformsBufferPlane = {
+            iChannel0: {
+                value: null
+            },
+            iChannel1: {
+                value: this.bgWaterSurface
+            },
+            iResolution: {
+                value: this.resolution
+            }
+        };
+    }
+    setDataUniformsBuffer() {
+        this.dataUniformsBuffer = {
+            iResolution: {
+                value: this.resolution
+            },
+            iChannel0: {
+                value: null
+            },
+            iChannel1: {
+                value: null
+            },
+            iMouse: {
+                value: this.mouse
+            },
+            iTime: {
+                value: 0.
+            },
+            iFrame: {
+                value: 0
+            }
+        }
+    }
+    setDataUniformsModel({ior = 0.85, colorReflect = new THREE.Color("#FFF"), colorRefraction = new THREE.Color("rgb(255, 245, 245)"), isRefract = true}) {
+        this.dataUniformsModel = {
+            envMap: {
+                value: null
+            },
+            ior: {
+                value: ior
+            },
+            colorReflect: {
+                value: colorReflect
+            },
+            colorRefraction: {
+                value: colorRefraction
+            },
+            resolution: {
+                value: new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z)
+            },
+            zPosition: {
+                value: this.getZmodel()
+            },
+            isRefract: {
+                value: isRefract
+            }
+        }
     }
     init() {
         this.start();
@@ -63,26 +126,7 @@ export default class SceneWaterSurface extends SceneBase {
     }
     createBufferA() {
         this.bufferATarget = new BufferManager(this.renderer, { width: this.W, height: this.H });
-        this.bufferA = new BufferShader(fragmentBuffer, vertex, {
-            iResolution: {
-                value: this.resolution
-            },
-            iChannel0: {
-                value: null
-            },
-            iChannel1: {
-                value: null
-            },
-            iMouse: {
-                value: this.mouse
-            },
-            iTime: {
-                value: 0.
-            },
-            iFrame: {
-                value: 0
-            }
-        },
+        this.bufferA = new BufferShader(fragmentBuffer, vertex, this.dataUniformsBuffer,
             {
                 x: this.W,
                 y: this.H
@@ -92,17 +136,7 @@ export default class SceneWaterSurface extends SceneBase {
     createBufferPlane() {
 
         this.bufferImageTarget = new BufferManager(this.renderer, { width: this.W, height: this.H });
-        this.bufferImage = new BufferShader(fragmentImage, vertex, {
-            iChannel0: {
-                value: null
-            },
-            iChannel1: {
-                value: this.bgWater
-            },
-            iResolution: {
-                value: this.resolution
-            }
-        },
+        this.bufferImage = new BufferShader(fragmentImage, vertex, this.dataUniformsBufferPlane,
             {
                 x: this.W,
                 y: this.H
@@ -110,43 +144,33 @@ export default class SceneWaterSurface extends SceneBase {
     }
     createModel() {
         //const geo = new THREE.IcosahedronGeometry(1, 0);
-        this.materialModel = new ShaderRefractMultisideCommon({
-            envMap: {
-                value: this.envFbo.texture
-            },
-            ior: {
-                value: 0.99
-            },
-            colorReflect: {
-                value: new THREE.Color("#FFF")
-            },
-            colorRefraction: {
-                value: new THREE.Color("rgb(255, 245, 245)")
-            },
-            resolution: {
-                value: new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z)
-            },
-            zPosition: {
-                value: this.getZmodel()
-            }
-        });
+        this.materialModel = new ShaderRefractMultisideCommon(this.dataUniformsModel);
+        this.materialModel.uniforms.envMap.value = this.envFbo.texture;
         //this.modelMesh = new THREE.Mesh(geo, this.materialModel);
+        this.modelMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(),
+            new THREE.MeshBasicMaterial()
+        );
+        this.modelMesh.name = this.modelName;
+        if(!this.modelSrc) {
+            console.error("Missing model url");
+            return;
+        }
         new LoaderOBJ({
-            src: whaleModelSrc,
+            src: this.modelSrc,
             resolve: (obj) => {
                 const mesh = obj.children[0];
-                this.modelMesh = mesh;
+                this.replaceModel(this.modelName, mesh);
                 this.modelMesh.position.z = 1;
-                this.mainScene.add(this.modelMesh);
             }
         });
     }
     createBackground() {
-        this.bg = getTextureCover(this.bg, { width: this.W, height: this.H }, { width: this.bgSize.x, height: this.bgSize.y });
+        this.bgWall = getTextureCover(this.bgWall, { width: this.W, height: this.H }, { width: this.bgWallSize.x, height: this.bgWallSize.y });
 
         this.quad = new THREE.Mesh(
             new THREE.PlaneGeometry(1, 1, 1, 1),
-            new THREE.MeshBasicMaterial({ map: this.bg })
+            new THREE.MeshBasicMaterial({ map: this.bgWall })
         );
         this.quad.layers.set(1);
         this.quad.scale.set(this.W, this.H, 1);
@@ -157,6 +181,8 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderModel();
         this.renderWaterSurface();
         this.rayCasting();
+        if(this.transition)
+            this.transition();
     }
     renderWaterSurface() {
         this.bufferA.uniforms.iTime.value += 0.01;
@@ -166,7 +192,7 @@ export default class SceneWaterSurface extends SceneBase {
         this.bufferA.uniforms.iChannel0.value = this.bufferATarget.readBuffer.texture;
 
         this.bufferImage.uniforms.iChannel0.value = this.bufferATarget.readBuffer.texture;
-        this.bufferImage.uniforms.iChannel1.value = this.bgWater;
+        this.bufferImage.uniforms.iChannel1.value =  !this.isModelNotTransparent ? this.bgWaterSurface : this.textureWaterSurface;
 
 
         this.bufferATarget.render(this.bufferA.scene, this.camera);
@@ -177,7 +203,7 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderer.setRenderTarget(this.envFbo);
         this.renderer.render(this.mainScene, this.orthoCamera);
 
-        this.bgWater = this.envFbo.texture;
+        this.bgWaterSurface = this.envFbo.texture;
 
         this.renderer.setRenderTarget(null);
         this.renderer.render(this.mainScene, this.orthoCamera); // render background
@@ -189,7 +215,6 @@ export default class SceneWaterSurface extends SceneBase {
         this.materialModel.uniforms.envMap.value = this.bufferImageTarget.readBuffer.texture;
 
         //this.modelMesh.rotation.x += 0.005;
-        this.modelMesh.rotation.y += 0.005;
     }
     rayCasting() {
         this.rayCaster.setFromCamera(this.pointer, this.camera);
@@ -232,7 +257,7 @@ export default class SceneWaterSurface extends SceneBase {
     resize() {
         this.W = window.innerWidth;
         this.H = window.innerHeight;
-        this.bg = getTextureCover(this.bg, { width: this.W, height: this.H }, { width: this.bgSize.x, height: this.bgSize.y });
+        this.bgWall = getTextureCover(this.bgWall, { width: this.W, height: this.H }, { width: this.bgWallSize.x, height: this.bgWallSize.y });
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.renderer.setSize(this.W, this.H);
 
@@ -278,5 +303,15 @@ export default class SceneWaterSurface extends SceneBase {
             }
         }
         return z;
+    }
+    removeModel(uniqueName){
+        const prevModel = this.mainScene.getObjectByName(uniqueName);
+        this.mainScene.remove(prevModel);
+    }
+    replaceModel(uniqueName, meshModel){
+        this.removeModel(uniqueName);
+        meshModel.name = uniqueName;
+        this.modelMesh = meshModel;
+        this.mainScene.add(this.modelMesh);
     }
 }

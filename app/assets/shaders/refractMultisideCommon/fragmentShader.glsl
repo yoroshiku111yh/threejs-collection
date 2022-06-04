@@ -7,6 +7,8 @@ uniform float ior;
 uniform float uTime;
 uniform vec3 colorRefraction;
 uniform vec3 colorReflect;
+uniform bool isRefract;
+
 
 varying vec3 worldNormal;
 varying vec3 viewDirection;
@@ -25,7 +27,9 @@ void main() {
 	vec3 normal = worldNormal;
 	// calculate refraction and add to the screen coordinates
 	vec3 refracted = refract(eyeVector, normal, 1.0/iorVal);
-	uv += refracted.xy;
+	if(isRefract){
+		uv += refracted.xy;
+	}
 
 	// sample the background texture
 	vec4 tex;
