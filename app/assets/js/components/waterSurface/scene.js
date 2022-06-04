@@ -115,7 +115,7 @@ export default class SceneWaterSurface extends SceneBase {
                 value: this.envFbo.texture
             },
             ior: {
-                value: 1.015
+                value: 0.99
             },
             colorReflect: {
                 value: new THREE.Color("#FFF")
@@ -125,6 +125,9 @@ export default class SceneWaterSurface extends SceneBase {
             },
             resolution: {
                 value: new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z)
+            },
+            zPosition: {
+                value: this.getZmodel()
             }
         });
         //this.modelMesh = new THREE.Mesh(geo, this.materialModel);
@@ -133,14 +136,14 @@ export default class SceneWaterSurface extends SceneBase {
             resolve: (obj) => {
                 const mesh = obj.children[0];
                 this.modelMesh = mesh;
-                this.modelMesh.position.z = this.getZmodel();
+                this.modelMesh.position.z = 1;
                 this.mainScene.add(this.modelMesh);
             }
         });
     }
     createBackground() {
-        this.bg = getTextureCover(this.bg, { width : this.W, height : this.H}, { width : this.bgSize.x, height : this.bgSize.y});
-        
+        this.bg = getTextureCover(this.bg, { width: this.W, height: this.H }, { width: this.bgSize.x, height: this.bgSize.y });
+
         this.quad = new THREE.Mesh(
             new THREE.PlaneGeometry(1, 1, 1, 1),
             new THREE.MeshBasicMaterial({ map: this.bg })
@@ -196,36 +199,43 @@ export default class SceneWaterSurface extends SceneBase {
         }
     }
     eventMouse() {
-        this.container.addEventListener("mousemove", (e) => {
-            const x = (e.clientX / this.W) * 2 - 1;
-            const y = - (e.clientY / window.innerHeight) * 2 + 1;
-            this.pointer.x = x;
-            this.pointer.y = y;
-            this.mouse.setX(e.clientX);
-            this.mouse.setY(this.H - e.clientY);
-        });
-        this.container.addEventListener("mousedown", (e) => {
-            if (this.isInteractive) {
-                this.mouse.setZ(1);
-            }
-        });
-        this.container.addEventListener("mouseup", (e) => {
-            this.mouse.setZ(0);
-            this.isInteractive = false;
-        })
+        if ("ontouchmove" in window) {
+            window.addEventListener("touchstart", this.eventMouseDown.bind(this));
+            window.addEventListener("touchmove", this.eventMouseMove.bind(this));
+            window.addEventListener("touchend", this.eventMouseUp.bind(this));
+        } else {
+            window.addEventListener("mousedown", this.eventMouseDown.bind(this));
+            window.addEventListener("mousemove", this.eventMouseMove.bind(this));
+            window.addEventListener("mouseup", this.eventMouseUp.bind(this));
+        }
+    }
+    eventMouseDown() {
+        if (this.isInteractive) {
+            this.mouse.setZ(1);
+        }
+    }
+    eventMouseUp() {
+        this.mouse.setZ(0);
+        this.isInteractive = false;
+    }
+    eventMouseMove(e) {
+        const _x = e.touches ? e.touches[0].clientX : e.clientX;
+        const _y = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const x = (_x / this.W) * 2 - 1;
+        const y = - (_y / this.H) * 2 + 1;
+        this.pointer.x = x;
+        this.pointer.y = y;
+        this.mouse.setX(_x);
+        this.mouse.setY(this.H - _y);
     }
     resize() {
         this.W = window.innerWidth;
         this.H = window.innerHeight;
-        this.bg = getTextureCover(this.bg, {width : this.W, height : this.H}, { width : this.bgSize.x, height : this.bgSize.y});
-        this.resolution = getResolutionVec3({W : this.W, H : this.H});
+        this.bg = getTextureCover(this.bg, { width: this.W, height: this.H }, { width: this.bgSize.x, height: this.bgSize.y });
+        this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.renderer.setSize(this.W, this.H);
-        this.envFbo.setSize(
-            this.W * this.resolution.z,
-            this.H * this.resolution.z
-        );
-        this.quad.scale.set(this.W, this.H, 1);
-        this.materialModel.uniforms.resolution.value = new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z);
+
         this.camera.aspect = this.W / this.H;
         this.camera.updateProjectionMatrix();
 
@@ -235,17 +245,37 @@ export default class SceneWaterSurface extends SceneBase {
         this.orthoCamera.bottom = this.H / -2;
         this.orthoCamera.updateProjectionMatrix();
 
-        this.modelMesh.position.z = this.getZmodel();
+        this.resizeModel();
+        this.resizeSurface();
+
     }
-    getZmodel(){
+    resizeModel() {
+        this.envFbo.setSize(
+            this.W * this.resolution.z,
+            this.H * this.resolution.z
+        );
+        this.quad.scale.set(this.W, this.H, 1);
+
+        this.materialModel.uniforms.resolution.value = new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z);
+        this.materialModel.uniforms.zPosition.value = this.getZmodel();
+    }
+    resizeSurface() {
+        this.bufferA.resize({ x: this.resolution.x, y: this.resolution.y });
+        this.bufferImage.resize({ x: this.resolution.x, y: this.resolution.y });
+    }
+    getZmodel() {
         const width = window.innerWidth;
         const height = window.innerHeight;
         let z = 1;
-        if(width <= 768){
-            z = -1; 
-        }
-        if(width < 500){
-            z = -2; 
+        if (width > height) return z;
+        if (width < 900) {
+            z = 1.5 * 900 / width;
+            if (z < 1.0) {
+                z = 1.0;
+            }
+            if (z > 2.0) {
+                z = 2.0;
+            }
         }
         return z;
     }

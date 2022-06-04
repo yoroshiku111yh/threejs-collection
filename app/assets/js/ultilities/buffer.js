@@ -4,7 +4,11 @@ export class BufferManager {
     constructor(renderer, size, filter = THREE.LinearFilter, wrap = THREE.ClampToEdgeWrapping) {
 
         this.renderer = renderer;
-        this.readBuffer = new THREE.WebGLRenderTarget(size.width, size.height, {
+        this.size = {
+            width : size.width,
+            height : size.height
+        }
+        this.readBuffer = new THREE.WebGLRenderTarget(this.size.width, this.size.height, {
             wrapS : wrap,
             wrapT : wrap,
             minFilter: filter,
@@ -17,7 +21,15 @@ export class BufferManager {
         this.writeBuffer = this.readBuffer.clone();
 
     }
-
+    resize(size){
+        this.size = size;
+        const dpr = Math.min(devicePixelRatio, 2 || 1);
+        this.writeBuffer.setSize(
+            this.size.width*dpr ,
+            this.size.height*dpr
+        );
+        this.swap();
+    }
     swap() {
         const temp = this.readBuffer;
         this.readBuffer = this.writeBuffer;
@@ -49,12 +61,17 @@ export class BufferShader {
             vertexShader: vertexShader,
             uniforms: uniforms
         });
+        this.scale = scale;
         this.scene = new THREE.Scene();
         this.plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 1, 1), this.material);
-        this.plane.scale.set(scale.x, scale.y);
+        this.plane.scale.set(this.scale.x, this.scale.y, 1);
         this.scene.add(
             this.plane
         );
+    }
+    resize(scale){
+        this.scale = scale;
+        this.plane.scale.set(this.scale.x, this.scale.y, 1);
     }
 
 }
