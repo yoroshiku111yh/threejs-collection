@@ -44,7 +44,7 @@ void main() {
         d = STRENGTH * smoothstep(4.5, .5, length(pos.xy - gl_FragCoord.xy));
     } else {
         // Simulate rain drops
-        float t = iTime * 1.;
+        float t = iTime * 2.;
         vec2 pos = fract(floor(t) * vec2(0.456665, 0.708618)) * iResolution.xy;
         float amp = 1. - step(.05, fract(t));
         d = -amp * smoothstep(2.5, .5, length(pos.xy - gl_FragCoord.xy));

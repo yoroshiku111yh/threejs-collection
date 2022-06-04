@@ -9,13 +9,18 @@ import vertex from './../../../shaders/waterSurface/vertexShader.glsl';
 import fragmentImage from './../../../shaders/waterSurface/fragmentShader.glsl';
 import ShaderRefractMultisideCommon from './../../../shaders/refractMultisideCommon/index';
 import { clearColorDark } from './../../ultilities/variable';
+import whaleModelSrc from './../../../3dmodel/obj/glass-whale.obj';
+import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
+import { getTextureCover } from '../../ultilities/textureCover';
 
+//z = -15
 export default class SceneWaterSurface extends SceneBase {
     constructor({ $container, size = {} }) {
         super($container, size.width, size.height);
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.mouse = new THREE.Vector4();
         this.pointer = new THREE.Vector2();
+        this.bgSize = new THREE.Vector2(2048, 1024);
         this.loader = new THREE.TextureLoader();
         this.rayCaster = new THREE.Raycaster();
         this.bg = this.loader.load(imgUrlWater);
@@ -34,6 +39,7 @@ export default class SceneWaterSurface extends SceneBase {
         this.createBufferPlane();
         this.createModel();
         this.eventMouse();
+        window.addEventListener("resize", this.resize.bind(this));
         this.update();
     }
     initCamera2() {
@@ -103,24 +109,40 @@ export default class SceneWaterSurface extends SceneBase {
             });
     }
     createModel() {
-        const geo = new THREE.IcosahedronGeometry(1, 0);
+        //const geo = new THREE.IcosahedronGeometry(1, 0);
         this.materialModel = new ShaderRefractMultisideCommon({
             envMap: {
                 value: this.envFbo.texture
             },
             ior: {
-                value: 0.99
+                value: 1.015
+            },
+            colorReflect: {
+                value: new THREE.Color("#FFF")
+            },
+            colorRefraction: {
+                value: new THREE.Color("rgb(255, 245, 245)")
             },
             resolution: {
-                value: this.resolution
+                value: new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z)
             }
         });
-        this.modelMesh = new THREE.Mesh(geo, this.materialModel);
-        this.mainScene.add(this.modelMesh);
+        //this.modelMesh = new THREE.Mesh(geo, this.materialModel);
+        new LoaderOBJ({
+            src: whaleModelSrc,
+            resolve: (obj) => {
+                const mesh = obj.children[0];
+                this.modelMesh = mesh;
+                this.modelMesh.position.z = this.getZmodel();
+                this.mainScene.add(this.modelMesh);
+            }
+        });
     }
     createBackground() {
+        this.bg = getTextureCover(this.bg, { width : this.W, height : this.H}, { width : this.bgSize.x, height : this.bgSize.y});
+        
         this.quad = new THREE.Mesh(
-            new THREE.PlaneGeometry(1,1,1,1),
+            new THREE.PlaneGeometry(1, 1, 1, 1),
             new THREE.MeshBasicMaterial({ map: this.bg })
         );
         this.quad.layers.set(1);
@@ -148,7 +170,7 @@ export default class SceneWaterSurface extends SceneBase {
         this.bufferImageTarget.render(this.bufferImage.scene, this.camera);
     }
     renderModel() {
-
+        if (!this.modelMesh) return;
         this.renderer.setRenderTarget(this.envFbo);
         this.renderer.render(this.mainScene, this.orthoCamera);
 
@@ -163,27 +185,27 @@ export default class SceneWaterSurface extends SceneBase {
 
         this.materialModel.uniforms.envMap.value = this.bufferImageTarget.readBuffer.texture;
 
-        this.modelMesh.rotation.x += 0.005;
+        //this.modelMesh.rotation.x += 0.005;
         this.modelMesh.rotation.y += 0.005;
     }
-    rayCasting(){
+    rayCasting() {
         this.rayCaster.setFromCamera(this.pointer, this.camera);
         const intersects = this.rayCaster.intersectObjects(this.mainScene.children);
-        if(intersects.length > 0){
+        if (intersects.length > 0) {
             this.isInteractive = true;
         }
     }
     eventMouse() {
         this.container.addEventListener("mousemove", (e) => {
-            const x = ( e.clientX / this.W ) * 2 - 1;
-            const y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+            const x = (e.clientX / this.W) * 2 - 1;
+            const y = - (e.clientY / window.innerHeight) * 2 + 1;
             this.pointer.x = x;
             this.pointer.y = y;
             this.mouse.setX(e.clientX);
             this.mouse.setY(this.H - e.clientY);
         });
         this.container.addEventListener("mousedown", (e) => {
-            if(this.isInteractive){ 
+            if (this.isInteractive) {
                 this.mouse.setZ(1);
             }
         });
@@ -191,5 +213,40 @@ export default class SceneWaterSurface extends SceneBase {
             this.mouse.setZ(0);
             this.isInteractive = false;
         })
+    }
+    resize() {
+        this.W = window.innerWidth;
+        this.H = window.innerHeight;
+        this.bg = getTextureCover(this.bg, {width : this.W, height : this.H}, { width : this.bgSize.x, height : this.bgSize.y});
+        this.resolution = getResolutionVec3({W : this.W, H : this.H});
+        this.renderer.setSize(this.W, this.H);
+        this.envFbo.setSize(
+            this.W * this.resolution.z,
+            this.H * this.resolution.z
+        );
+        this.quad.scale.set(this.W, this.H, 1);
+        this.materialModel.uniforms.resolution.value = new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z);
+        this.camera.aspect = this.W / this.H;
+        this.camera.updateProjectionMatrix();
+
+        this.orthoCamera.left = this.W / -2;
+        this.orthoCamera.right = this.W / 2;
+        this.orthoCamera.top = this.H / 2;
+        this.orthoCamera.bottom = this.H / -2;
+        this.orthoCamera.updateProjectionMatrix();
+
+        this.modelMesh.position.z = this.getZmodel();
+    }
+    getZmodel(){
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        let z = 1;
+        if(width <= 768){
+            z = -1; 
+        }
+        if(width < 500){
+            z = -2; 
+        }
+        return z;
     }
 }

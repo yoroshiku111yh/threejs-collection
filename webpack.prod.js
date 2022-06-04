@@ -37,6 +37,13 @@ module.exports = {
                     'glslify-loader',
                 ],
             },
+            {
+                test: /\.(obj|glb|gltf)$/,
+                loader: 'file-loader',
+                options: {
+                    esModule: false
+                }
+            }
         ]
     },
     target: ['es5','web'],

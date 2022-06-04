@@ -5,7 +5,8 @@ uniform sampler2D envMap;
 uniform vec3 resolution;
 uniform float ior;
 uniform float uTime;
-
+uniform vec3 colorRefraction;
+uniform vec3 colorReflect;
 
 varying vec3 worldNormal;
 varying vec3 viewDirection;
@@ -18,7 +19,6 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 void main() {
 	//water is 1.33 and diamond has an IOR of 2.42.
 	float iorVal = ior;
-	
 	// get screen coordinates
 	vec2 uv = gl_FragCoord.xy / resolution.xy;
 
@@ -28,7 +28,10 @@ void main() {
 	uv += refracted.xy;
 
 	// sample the background texture
-	vec4 tex = texture2D(envMap, uv);
+	vec4 tex;
+	tex.r = texture2D(envMap, uv * colorRefraction.r).r;
+	tex.g = texture2D(envMap, uv * colorRefraction.g).g;
+	tex.b = texture2D(envMap, uv * colorRefraction.b).b;
 
 	vec4 outputTex = tex;
 
@@ -36,7 +39,7 @@ void main() {
 	float f = Fresnel(eyeVector, normal);
 
 	// mix the refraction color and reflection color
-	outputTex.rgb = mix(outputTex.rgb, vec3(1.0), f);
+	outputTex.rgb = mix(outputTex.rgb, colorReflect, f);
 
 	gl_FragColor = vec4(outputTex.rgb, 1.0);
 }
