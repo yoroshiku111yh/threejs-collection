@@ -181,6 +181,16 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderModel();
         this.renderWaterSurface();
         this.rayCasting();
+
+        //// for fun
+        if(this.dataUniformsModel.ior.value >= 0.99){
+            this.dataUniformsModel.ior.value = 0.99;
+        }
+        else{
+            this.dataUniformsModel.ior.value += 0.005;
+        }
+        ////
+
         if(this.transition)
             this.transition();
     }

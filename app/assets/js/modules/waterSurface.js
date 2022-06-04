@@ -18,7 +18,7 @@ export default class WaterSurface {
         this.scene.setDataUniformsBuffer();
         this.scene.setDataUniformsBufferPlane();
         this.scene.setDataUniformsModel({
-            ior : 0.85,
+            ior : 0.0,
             colorReflect : new Color("#fff"),
             colorRefraction : new Color("#fff"),
             isRefract : true
@@ -42,7 +42,7 @@ export default class WaterSurface {
         //     })
         // }, 5000);
 
-        
+
         this.scene.init();
     }
 }
