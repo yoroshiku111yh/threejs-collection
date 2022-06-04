@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import SceneBase from './../../ultilities/sceneBase';
 import { getResolutionVec3 } from '../../ultilities/resolution';
-import { imgUrlBrick, imgUrlDryWall } from './../../ultilities/srcImgurl';
+import { imgUrlWater } from './../../ultilities/srcImgurl';
 import { BufferManager, BufferShader } from './../../ultilities/buffer';
 
 import fragmentBuffer from './../../../shaders/waterSurface/buffer.glsl';
@@ -15,8 +15,10 @@ export default class SceneWaterSurface extends SceneBase {
         super($container, size.width, size.height);
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.mouse = new THREE.Vector4();
+        this.pointer = new THREE.Vector2();
         this.loader = new THREE.TextureLoader();
-        this.bg = this.loader.load(imgUrlDryWall);
+        this.rayCaster = new THREE.Raycaster();
+        this.bg = this.loader.load(imgUrlWater);
         this.bgWater = null;
         this.init();
     }
@@ -129,6 +131,7 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderer.clear();
         this.renderModel();
         this.renderWaterSurface();
+        this.rayCasting();
     }
     renderWaterSurface() {
         this.bufferA.uniforms.iTime.value += 0.01;
@@ -163,16 +166,30 @@ export default class SceneWaterSurface extends SceneBase {
         this.modelMesh.rotation.x += 0.005;
         this.modelMesh.rotation.y += 0.005;
     }
+    rayCasting(){
+        this.rayCaster.setFromCamera(this.pointer, this.camera);
+        const intersects = this.rayCaster.intersectObjects(this.mainScene.children);
+        if(intersects.length > 0){
+            this.isInteractive = true;
+        }
+    }
     eventMouse() {
         this.container.addEventListener("mousemove", (e) => {
+            const x = ( e.clientX / this.W ) * 2 - 1;
+            const y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+            this.pointer.x = x;
+            this.pointer.y = y;
             this.mouse.setX(e.clientX);
             this.mouse.setY(this.H - e.clientY);
         });
         this.container.addEventListener("mousedown", (e) => {
-            this.mouse.setZ(1);
+            if(this.isInteractive){ 
+                this.mouse.setZ(1);
+            }
         });
         this.container.addEventListener("mouseup", (e) => {
             this.mouse.setZ(0);
+            this.isInteractive = false;
         })
     }
 }
