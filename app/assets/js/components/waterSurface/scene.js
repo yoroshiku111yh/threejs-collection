@@ -156,14 +156,6 @@ export default class SceneWaterSurface extends SceneBase {
             console.error("Missing model url");
             return;
         }
-        new LoaderOBJ({
-            src: this.modelSrc,
-            resolve: (obj) => {
-                const mesh = obj.children[0];
-                this.replaceModel(this.modelName, mesh);
-                this.modelMesh.position.z = 1;
-            }
-        });
     }
     createBackground() {
         this.bgWall = getTextureCover(this.bgWall, { width: this.W, height: this.H }, { width: this.bgWallSize.x, height: this.bgWallSize.y });
@@ -181,15 +173,6 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderModel();
         this.renderWaterSurface();
         this.rayCasting();
-
-        //// for fun
-        if(this.dataUniformsModel.ior.value >= 0.99){
-            this.dataUniformsModel.ior.value = 0.99;
-        }
-        else{
-            this.dataUniformsModel.ior.value += 0.005;
-        }
-        ////
 
         if(this.transition)
             this.transition();
@@ -323,5 +306,6 @@ export default class SceneWaterSurface extends SceneBase {
         meshModel.name = uniqueName;
         this.modelMesh = meshModel;
         this.mainScene.add(this.modelMesh);
+        this.modelMesh.position.z = 1;
     }
 }
