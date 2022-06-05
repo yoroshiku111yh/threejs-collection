@@ -4,10 +4,11 @@ uniform sampler2D iChannel0;
 uniform vec4 iMouse;
 uniform float iTime;
 uniform int iFrame;
+uniform bool isAutoRegeneratorWaterDrop;
 
 //#define AUTO
 
-#define STRENGTH     (0.5) // wave of life
+#define STRENGTH     (0.75) // wave of life
 #define MODIFIER     (0.99) // circle
 #define STEP         (5.00) 
 
@@ -41,13 +42,16 @@ void main() {
 
     vec3 pos = getPos();
     if(pos.z > 0.5) {
-        d = STRENGTH * smoothstep(4.5, .5, length(pos.xy - gl_FragCoord.xy));
+        d = STRENGTH * smoothstep(2.5, .5, length(pos.xy - gl_FragCoord.xy));
     } else {
+        if(isAutoRegeneratorWaterDrop) {
+
         // Simulate rain drops
-        float t = iTime * 2.;
-        vec2 pos = fract(floor(t) * vec2(0.456665, 0.708618)) * iResolution.xy;
-        float amp = 1. - step(.05, fract(t));
-        d = -amp * smoothstep(2.5, .5, length(pos.xy - gl_FragCoord.xy));
+            float t = iTime * 2.;
+            vec2 pos = fract(floor(t) * vec2(0.456665, 0.708618)) * iResolution.xy;
+            float amp = 1. - step(.05, fract(t));
+            d = -amp * smoothstep(2.5, .5, length(pos.xy - gl_FragCoord.xy));
+        }
     }
 
    	// Calculate new state

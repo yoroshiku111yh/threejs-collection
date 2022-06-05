@@ -61,6 +61,6 @@
     "raw-loader": "^4.0.2",
     "simplex-noise": "^3.0.1",
     "three": "^0.137.5",
-    "tweakpane": "^3.0.7"
+    "tweakpane": "^3.0.8"
   }
 }

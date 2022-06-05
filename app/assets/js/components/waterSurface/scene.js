@@ -62,6 +62,9 @@ export default class SceneWaterSurface extends SceneBase {
             },
             iFrame: {
                 value: 0
+            },
+            isAutoRegeneratorWaterDrop : {
+                value : true
             }
         }
     }
@@ -152,10 +155,6 @@ export default class SceneWaterSurface extends SceneBase {
             new THREE.MeshBasicMaterial()
         );
         this.modelMesh.name = this.modelName;
-        if(!this.modelSrc) {
-            console.error("Missing model url");
-            return;
-        }
     }
     createBackground() {
         this.bgWall = getTextureCover(this.bgWall, { width: this.W, height: this.H }, { width: this.bgWallSize.x, height: this.bgWallSize.y });
