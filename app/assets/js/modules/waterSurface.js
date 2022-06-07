@@ -1,14 +1,17 @@
 
 import { Color, TextureLoader, Vector2 } from 'three';
-import { imgUrlBlack, imgUrlDeepSea, imgUrlWater } from '../ultilities/srcImgurl';
+import * as THREE from 'three';
+import { imgUrlBlack, imgUrlEnvNightShanghai } from '../ultilities/srcImgurl';
 import SceneWaterSurface from './../components/waterSurface/scene';
 
 import shark from './../../3dmodel/obj/shark.obj';
 import glassWhale from './../../3dmodel/obj/glass-whale.obj';
+import icosahedron from './../../3dmodel/obj/icosahedron.obj';
 import { LoaderOBJ } from './../ultilities/object3dLoader/obj';
 import { TweenMax, Power1 } from 'gsap/gsap-core';
 
 import { Pane } from 'tweakpane';
+import { imgUrlBannerText } from './../ultilities/srcImgurl';
 
 export default class WaterSurface {
     constructor() {
@@ -17,33 +20,39 @@ export default class WaterSurface {
             $container: this.$container
         });
         this.pane = new Pane();
+        this.pathSrcCubeMapShangHai = document.querySelector("#pathSrcShangHaiCubeMap").dataset.path;
         this.PARAMS = {
             ior: 0.99,
             "m-clear": true,
             "m-refract": true,
             "auto-wave": true,
-            "models" : [
+            "models": [
                 { text: 'Glass Whale', value: glassWhale },
-                { text: 'Shark', value: shark }
+                { text: 'Shark', value: shark },
+                { text: 'icosahedron', value: icosahedron }
             ],
-            "model" : shark
+            "model": icosahedron
         }
         this.init();
-        if(window.innerWidth > 767){
+        if (window.innerWidth > 767) {
             this.addPane();
         }
     }
     init() {
+        this.loadCubeMap();
         this.scene.setDataUniformsBuffer();
         this.scene.setDataUniformsBufferPlane();
         this.scene.setDataUniformsModel({
             ior: 0.0,
             colorReflect: new Color("#fff"),
             colorRefraction: new Color("rgb(255, 245, 245)"),
-            isRefract: this.PARAMS.isRefract
+            isRefract: this.PARAMS.isRefract,
+            envLightMap: new TextureLoader().load(imgUrlEnvNightShanghai),
+            envCubeMap : this.cubeMap,
+            isHaveEnvCubeMap : true
         });
-        this.scene.bgWall = new TextureLoader().load(imgUrlDeepSea);
-        this.scene.bgWallSize = new Vector2(1074, 806);
+        this.scene.bgWall = new TextureLoader().load(imgUrlBannerText);
+        this.scene.bgWallSize = new Vector2(1899, 838);
         this.scene.isModelNotTransparent = !this.PARAMS["m-clear"];
         this.scene.textureWaterSurface = new TextureLoader().load(imgUrlBlack);
         this.scene.transition = () => {
@@ -53,6 +62,7 @@ export default class WaterSurface {
             this.renderPane();
         };
         this.scene.modelName = "model-main";
+
         this.scene.init();
 
         new LoaderOBJ({
@@ -63,6 +73,18 @@ export default class WaterSurface {
                 this.startup();
             }
         })
+    }
+    loadCubeMap() {
+        this.cubeMap = new THREE.CubeTextureLoader()
+            .setPath(this.pathSrcCubeMapShangHai)
+            .load([
+                'px.png',
+                'nx.png',
+                'py.png',
+                'ny.png',
+                'pz.png',
+                'nz.png'
+            ]);
     }
     startup() {
         TweenMax.to(this.scene.dataUniformsModel.ior, 2., {
@@ -97,12 +119,12 @@ export default class WaterSurface {
 
         ////////////event
         this.pane.on('change', (ev) => {
-            if(ev.target.label === "change-model"){
-                if(this.PARAMS.model !== ev.value ){
+            if (ev.target.label === "change-model") {
+                if (this.PARAMS.model !== ev.value) {
                     this.PARAMS.model = ev.value;
                     new LoaderOBJ({
-                        src : ev.value,
-                        resolve : (obj) => {
+                        src: ev.value,
+                        resolve: (obj) => {
                             const mesh = obj.children[0];
                             this.scene.replaceModel(this.scene.modelName, mesh);
                         }
@@ -112,10 +134,3 @@ export default class WaterSurface {
         })
     }
 }
-
-/// tweakpane
-/// ior
-/// model
-/// bool transparent model
-/// bool refract
-/// bool auto regenator water drop

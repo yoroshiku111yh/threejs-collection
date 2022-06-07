@@ -2,12 +2,14 @@
 // multi-side refraction : https://codesandbox.io/s/w0ntb?file=/src/refraction-material/fragment.glsl:644-1536
 
 uniform sampler2D envMap;
+uniform samplerCube envCubeMap;
 uniform vec3 resolution;
 uniform float ior;
 uniform float uTime;
 uniform vec3 colorRefraction;
 uniform vec3 colorReflect;
 uniform bool isRefract;
+uniform bool isHaveEnvCubeMap;
 
 
 varying vec3 worldNormal;
@@ -15,7 +17,7 @@ varying vec3 viewDirection;
 varying vec3 eyeVector;
 
 float Fresnel(vec3 eyeVector, vec3 worldNormal) {
-	return pow( 1.0 + dot( eyeVector, worldNormal), 3.0 );
+	return pow( 1.0 + dot( eyeVector, worldNormal), 1.5 );
 }
 
 void main() {
@@ -42,8 +44,16 @@ void main() {
 	// calculate the Fresnel ratio
 	float f = Fresnel(eyeVector, normal);
 
+	///////////////cube map
+	vec3 normalizedWord = normalize(worldNormal);
+	vec4 _cubeMap = textureCube(envCubeMap, eyeVector);
+	//_cubeMap.rgb *= colorReflect;
 	// mix the refraction color and reflection color
-	outputTex.rgb = mix(outputTex.rgb, colorReflect, f);
-
+	if(isHaveEnvCubeMap == false){
+		outputTex.rgb = mix(outputTex.rgb, colorReflect, f);
+	}
+	else{
+		outputTex.rgb = mix(outputTex.rgb, _cubeMap.rgb, f);
+	}
 	gl_FragColor = vec4(outputTex.rgb, 1.0);
 }

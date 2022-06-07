@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import SceneBase from './../../ultilities/sceneBase';
 import { getResolutionVec3 } from '../../ultilities/resolution';
-import { imgUrlWater, imgUrlBrick } from './../../ultilities/srcImgurl';
+import { imgUrlWater, imgUrlBrick, imgUrlBlack, imgUrlEnvNightShanghai } from './../../ultilities/srcImgurl';
 import { BufferManager, BufferShader } from './../../ultilities/buffer';
 
 import fragmentBuffer from './../../../shaders/waterSurface/buffer.glsl';
@@ -63,18 +63,35 @@ export default class SceneWaterSurface extends SceneBase {
             iFrame: {
                 value: 0
             },
-            isAutoRegeneratorWaterDrop : {
-                value : true
+            isAutoRegeneratorWaterDrop: {
+                value: true
             }
         }
     }
-    setDataUniformsModel({ior = 0.85, colorReflect = new THREE.Color("#FFF"), colorRefraction = new THREE.Color("rgb(255, 245, 245)"), isRefract = true}) {
+    setDataUniformsModel({
+        ior = 0.85,
+        colorReflect = new THREE.Color("#FFF"),
+        colorRefraction = new THREE.Color("rgb(255, 245, 245)"),
+        isRefract = true,
+        envLightMap = null,
+        envCubeMap = null,
+        isHaveEnvCubeMap = false
+    }) {
         this.dataUniformsModel = {
+            envCubeMap: {
+                value: envCubeMap
+            },
+            isHaveEnvCubeMap : {
+                value : isHaveEnvCubeMap
+            },
             envMap: {
                 value: null
             },
             ior: {
                 value: ior
+            },
+            uTime: {
+                value: 0.0
             },
             colorReflect: {
                 value: colorReflect
@@ -90,6 +107,9 @@ export default class SceneWaterSurface extends SceneBase {
             },
             isRefract: {
                 value: isRefract
+            },
+            envLightMap: {
+                value: envLightMap
             }
         }
     }
@@ -173,18 +193,19 @@ export default class SceneWaterSurface extends SceneBase {
         this.renderWaterSurface();
         this.rayCasting();
 
-        if(this.transition)
+        if (this.transition)
             this.transition();
     }
     renderWaterSurface() {
         this.bufferA.uniforms.iTime.value += 0.01;
-
         this.bufferA.uniforms.iFrame.value += 1;
+
+        this.dataUniformsModel.uTime.value += 0.01;
 
         this.bufferA.uniforms.iChannel0.value = this.bufferATarget.readBuffer.texture;
 
         this.bufferImage.uniforms.iChannel0.value = this.bufferATarget.readBuffer.texture;
-        this.bufferImage.uniforms.iChannel1.value =  !this.isModelNotTransparent ? this.bgWaterSurface : this.textureWaterSurface;
+        this.bufferImage.uniforms.iChannel1.value = !this.isModelNotTransparent ? this.bgWaterSurface : this.textureWaterSurface;
 
 
         this.bufferATarget.render(this.bufferA.scene, this.camera);
@@ -296,11 +317,11 @@ export default class SceneWaterSurface extends SceneBase {
         }
         return z;
     }
-    removeModel(uniqueName){
+    removeModel(uniqueName) {
         const prevModel = this.mainScene.getObjectByName(uniqueName);
         this.mainScene.remove(prevModel);
     }
-    replaceModel(uniqueName, meshModel){
+    replaceModel(uniqueName, meshModel) {
         this.removeModel(uniqueName);
         meshModel.name = uniqueName;
         this.modelMesh = meshModel;
