@@ -12,6 +12,7 @@ import { TweenMax, Power1 } from 'gsap/gsap-core';
 
 import { Pane } from 'tweakpane';
 import { imgUrlBannerText } from './../ultilities/srcImgurl';
+import { loadNewCubeMap } from '../ultilities/jsm/loaders/cubemap';
 
 export default class WaterSurface {
     constructor() {
@@ -21,17 +22,30 @@ export default class WaterSurface {
         });
         this.pane = new Pane();
         this.pathSrcCubeMapShangHai = document.querySelector("#pathSrcShangHaiCubeMap").dataset.path;
+        this.pathSrcCubeMapOutSide = document.querySelector("#pathSrcCubeMapOutSide").dataset.path;
+        this.pathSrcCubeMapCityNight = document.querySelector("#pathSrcCubeMapCityNight").dataset.path;
+        this.cubeMap = [];
         this.PARAMS = {
             ior: 0.99,
+            power : 3.,
+            bias : 0.,
+            scale : 1.0,
             "m-clear": true,
             "m-refract": true,
             "auto-wave": true,
+            useLightColorEnv : false,
             "models": [
                 { text: 'Glass Whale', value: glassWhale },
                 { text: 'Shark', value: shark },
                 { text: 'icosahedron', value: icosahedron }
             ],
-            "model": icosahedron
+            "model": icosahedron,
+            "cubeMaps" : [
+                { text : 'Outside building', value : 0 },
+                { text : 'Shanghai night', value : 1 },
+                { text : 'City night', value : 2 },
+            ],
+            "cubeMapIndex" : 0,
         }
         this.init();
         if (window.innerWidth > 767) {
@@ -47,9 +61,12 @@ export default class WaterSurface {
             colorReflect: new Color("#fff"),
             colorRefraction: new Color("rgb(255, 245, 245)"),
             isRefract: this.PARAMS.isRefract,
-            envLightMap: new TextureLoader().load(imgUrlEnvNightShanghai),
-            envCubeMap : this.cubeMap,
-            isHaveEnvCubeMap : true
+            envCubeMap : this.cubeMap[this.PARAMS.cubeMapIndex],
+            isHaveEnvCubeMap : true,
+            power : this.PARAMS.power,
+            scale : this.PARAMS.scale,
+            bias : this.PARAMS.bias,
+            isHaveEnvCubeMap : !this.PARAMS.useLightColorEnv
         });
         this.scene.bgWall = new TextureLoader().load(imgUrlBannerText);
         this.scene.bgWallSize = new Vector2(1899, 838);
@@ -75,16 +92,18 @@ export default class WaterSurface {
         })
     }
     loadCubeMap() {
-        this.cubeMap = new THREE.CubeTextureLoader()
-            .setPath(this.pathSrcCubeMapShangHai)
-            .load([
-                'px.png',
-                'nx.png',
-                'py.png',
-                'ny.png',
-                'pz.png',
-                'nz.png'
-            ]);
+        new loadNewCubeMap({
+            path : this.pathSrcCubeMapOutSide,
+            resolve : (cubemap) => { this.cubeMap[0] = cubemap; }
+        });
+        new loadNewCubeMap({
+            path : this.pathSrcCubeMapShangHai,
+            resolve : (cubemap) => { this.cubeMap[1] = cubemap; }
+        });
+        new loadNewCubeMap({
+            path : this.pathSrcCubeMapCityNight,
+            resolve : (cubemap) => { this.cubeMap[2] = cubemap; }
+        })
     }
     startup() {
         TweenMax.to(this.scene.dataUniformsModel.ior, 2., {
@@ -100,15 +119,33 @@ export default class WaterSurface {
         this.scene.isModelNotTransparent = !this.PARAMS["m-clear"];
         this.scene.dataUniformsModel.isRefract.value = this.PARAMS["m-refract"];
         this.scene.dataUniformsBuffer.isAutoRegeneratorWaterDrop.value = this.PARAMS["auto-wave"];
+        this.scene.dataUniformsModel.power.value = this.PARAMS.power;
+        this.scene.dataUniformsModel.bias.value = this.PARAMS.bias;
+        this.scene.dataUniformsModel.scale.value = this.PARAMS.scale;
+        this.scene.dataUniformsModel.envCubeMap.value = this.cubeMap[this.PARAMS.cubeMapIndex];
+        this.scene.dataUniformsModel.isHaveEnvCubeMap.value = !this.PARAMS.useLightColorEnv;
     }
     addPane() {
         this.pane.addInput(this.PARAMS, "ior", {
             min: 0.0,
             max: 1.15
         });
+        this.pane.addInput(this.PARAMS, "power", {
+            min: 0.0,
+            max: 3.0
+        });
+        this.pane.addInput(this.PARAMS, "bias", {
+            min: 0.0,
+            max: 1.0
+        });
+        this.pane.addInput(this.PARAMS, "scale", {
+            min: 0.0,
+            max: 1.0
+        });
         this.pane.addInput(this.PARAMS, "m-clear");
         this.pane.addInput(this.PARAMS, "m-refract");
         this.pane.addInput(this.PARAMS, "auto-wave");
+        this.pane.addInput(this.PARAMS, "useLightColorEnv");
         this.pane.addBlade({
             view: 'list',
             label: 'change-model',
@@ -116,6 +153,12 @@ export default class WaterSurface {
             value: this.PARAMS.model,
         });
 
+        this.pane.addBlade({
+            view: 'list',
+            label: 'change-envLight',
+            options: this.PARAMS.cubeMaps,
+            value: this.PARAMS.cubeMapIndex,
+        });
 
         ////////////event
         this.pane.on('change', (ev) => {
@@ -129,6 +172,12 @@ export default class WaterSurface {
                             this.scene.replaceModel(this.scene.modelName, mesh);
                         }
                     })
+                }
+            }
+
+            if (ev.target.label === "change-envLight") {
+                if (this.PARAMS.cubeMapIndex !== ev.value) {
+                    this.PARAMS.cubeMapIndex = ev.value;
                 }
             }
         })

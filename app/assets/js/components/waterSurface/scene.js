@@ -9,7 +9,6 @@ import vertex from './../../../shaders/waterSurface/vertexShader.glsl';
 import fragmentImage from './../../../shaders/waterSurface/fragmentShader.glsl';
 import ShaderRefractMultisideCommon from './../../../shaders/refractMultisideCommon/index';
 import { clearColorDark } from './../../ultilities/variable';
-import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
 import { getTextureCover } from '../../ultilities/textureCover';
 
 //z = -15
@@ -73,11 +72,23 @@ export default class SceneWaterSurface extends SceneBase {
         colorReflect = new THREE.Color("#FFF"),
         colorRefraction = new THREE.Color("rgb(255, 245, 245)"),
         isRefract = true,
-        envLightMap = null,
         envCubeMap = null,
-        isHaveEnvCubeMap = false
+        isHaveEnvCubeMap = false,
+        power = 3.,
+        scale = 1.,
+        bias = 0.0
+
     }) {
         this.dataUniformsModel = {
+            power : {
+                value : power
+            },
+            scale : {
+                value : scale
+            },
+            bias : {
+                value : bias
+            },
             envCubeMap: {
                 value: envCubeMap
             },
@@ -107,9 +118,6 @@ export default class SceneWaterSurface extends SceneBase {
             },
             isRefract: {
                 value: isRefract
-            },
-            envLightMap: {
-                value: envLightMap
             }
         }
     }
