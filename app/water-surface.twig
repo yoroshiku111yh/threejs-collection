@@ -1,9 +1,10 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
 	<main id="main" data-module="waterSurface">
+		<input type="file" id="uploadFile" style="font-size : 16px; color : black; position : absolute; top : 10px; left : 10px"/>
 		<canvas id="cv-water-surface"></canvas>
-		<span id="pathSrcShangHaiCubeMap" data-path="{{assets_url}}/env/cubemap/shanghai/" ></span>
-		<span id="pathSrcCubeMapOutSide" data-path="{{assets_url}}/env/cubemap/building_outside/" ></span>
-		<span id="pathSrcCubeMapCityNight" data-path="{{assets_url}}/env/cubemap/city_night/" ></span>
+		<span id="pathSrcShangHaiCubeMap" data-path="{{assets_url}}/env/cubemap/shanghai/"></span>
+		<span id="pathSrcCubeMapOutSide" data-path="{{assets_url}}/env/cubemap/building_outside/"></span>
+		<span id="pathSrcCubeMapCityNight" data-path="{{assets_url}}/env/cubemap/city_night/"></span>
 	</main>
 {% endblock %}

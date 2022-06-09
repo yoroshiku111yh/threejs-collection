@@ -47,10 +47,33 @@ export default class WaterSurface {
             ],
             "cubeMapIndex" : 0,
         }
-        this.init();
         if (window.innerWidth > 767) {
             this.addPane();
         }
+        this.enableUploadBannerImage = true;
+        if(this.enableUploadBannerImage){  
+            this.uploadBannerImage();
+        }
+        else{
+            this.init();
+        }
+    }
+    uploadBannerImage(){
+        this.bannerImage = imgUrlBannerText;
+        this.bannerImageSize = new Vector2(1899, 838);
+        const uploadElm = document.getElementById("uploadFile");
+        uploadElm.addEventListener('change', (e) => {
+            const _this = e.currentTarget;
+            if(!_this.files) return;
+            const src = URL.createObjectURL(_this.files[0]);
+            const img = document.createElement("img");
+            img.src = src;
+            img.onload = () => {
+                this.bannerImageSize = new THREE.Vector2(img.width, img.height);
+                this.bannerImage = src;
+                this.init();
+            }
+        })
     }
     init() {
         this.loadCubeMap();
@@ -68,8 +91,8 @@ export default class WaterSurface {
             bias : this.PARAMS.bias,
             isHaveEnvCubeMap : !this.PARAMS.useLightColorEnv
         });
-        this.scene.bgWall = new TextureLoader().load(imgUrlBannerText);
-        this.scene.bgWallSize = new Vector2(1899, 838);
+        this.scene.bgWall = new TextureLoader().load(this.bannerImage);
+        this.scene.bgWallSize = this.bannerImageSize;
         this.scene.isModelNotTransparent = !this.PARAMS["m-clear"];
         this.scene.textureWaterSurface = new TextureLoader().load(imgUrlBlack);
         this.scene.transition = () => {
