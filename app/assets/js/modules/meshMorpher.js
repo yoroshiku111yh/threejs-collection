@@ -1,6 +1,8 @@
 
 import SceneMeshMorpher from './../components/meshMorpher/scene';
 
+import arrow from './../../3dmodel/obj/arrow.obj';
+import plane from './../../3dmodel/obj/plane.obj';
 import shark from './../../3dmodel/obj/shark.obj';
 import glassWhale from './../../3dmodel/obj/glass-whale.obj';
 import icosahedron from './../../3dmodel/obj/icosahedron.obj';
@@ -9,7 +11,7 @@ import { LoaderOBJ } from './../ultilities/object3dLoader/obj';
 export default class meshMorpher {
     constructor() {
         this.$container = document.getElementById("cv-mesh-morpher");
-        this.srcModels = [glassWhale, shark, icosahedron];
+        this.srcModels =  [ arrow, plane ]; // 960 //ico : 98
         this.models = [];
         this.isLoadedModels = false;
         this.loadAllModels();

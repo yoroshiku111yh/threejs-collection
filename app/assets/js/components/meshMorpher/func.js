@@ -24,6 +24,7 @@ function MeshMorpher() {
         var vertexCount = this.mesh.geometry.vertices.length;
         var vectorMath = new THREE.Vector3();
 
+        
         for (var i = 0; i < vertexCount; i++) {
             var pos1 = this.geometries[firstMesh].vertices[i].clone();
             var pos2 = this.geometries[secondMesh].vertices[i].clone();
