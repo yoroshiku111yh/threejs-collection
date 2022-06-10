@@ -11,7 +11,7 @@ import { LoaderOBJ } from './../ultilities/object3dLoader/obj';
 export default class meshMorpher {
     constructor() {
         this.$container = document.getElementById("cv-mesh-morpher");
-        this.srcModels =  [ arrow, plane ]; // 960 //ico : 98
+        this.srcModels =  [ arrow, icosahedron ]; // 960 //ico : 98
         this.models = [];
         this.isLoadedModels = false;
         this.loadAllModels();
