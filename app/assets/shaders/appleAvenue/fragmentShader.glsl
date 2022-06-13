@@ -8,6 +8,8 @@ uniform sampler2D uMask1;
 uniform sampler2D uMask2;
 uniform bool isRefract;
 
+uniform float lenghtDisplacement;
+
 const float PI2 = 6.28318530718;
 
 varying vec3 worldNormal;
@@ -33,7 +35,7 @@ void main() {
 
     if(isRefract) {
         vec3 refracted = refract(eyeVector, normal, 1.0 / 1.0);
-        st += refracted.xy;
+        st += refracted.xy*lenghtDisplacement; // 0.0 - 1.0
     }
     vec4 mask1 = texture2D(uMask1, st);
     vec4 mask2 = texture2D(uMask2, st);
@@ -56,7 +58,7 @@ void main() {
         col.a = mask1.r;
     }
     if(boxSide == 1.){
-        col.a = mask2.r;
+        col.a = mask2.r ;
     }
     if(boxSide == 2.){
         col.a = mask2.r;
@@ -72,6 +74,9 @@ void main() {
     }
     col.rgb = mix(col.rgb, vec3(0.0), f);
     if(f > 1.0){
+        discard;
+    }
+    if(col.a < 0.5){
         discard;
     }
     gl_FragColor = col;

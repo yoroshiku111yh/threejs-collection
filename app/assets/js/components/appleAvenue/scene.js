@@ -8,8 +8,10 @@ import ShaderAppleAvenueBorder from './../../../shaders/appleAvenue/border/index
 
 
 export default class SceneAppleAvenue extends SceneBase {
-    constructor({ $container, size = {} }) {
+    constructor({ $container, size = {}, options = {}, transition = null }) {
         super($container, size.width, size.height);
+        this.options = options;
+        this.transition = transition;
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.maskLogoSrc = document.getElementById("maskLogo").dataset.src;
         this.maskLogoTextSrc = document.getElementById("maskLogoText").dataset.src;
@@ -30,6 +32,7 @@ export default class SceneAppleAvenue extends SceneBase {
         this.createCubeBorder();
         this.createCube();
         this.update();
+        this.resize();
     }
     initOrthographicCamera() {
         this.orthoCamera = new THREE.OrthographicCamera(
@@ -62,7 +65,8 @@ export default class SceneAppleAvenue extends SceneBase {
         });
         this.planeLogo = new THREE.Mesh(geo, mat);
         this.planeLogo.layers.set(1);
-        this.planeLogo.scale.set(357 / 1, 610 / 1);
+        const scale = this.options.scale1 || 1;
+        this.planeLogo.scale.set(357 * scale, 610 * scale);
         this.sceneTarget.add(this.planeLogo);
     }
     createLogoTextPlane() {
@@ -72,7 +76,8 @@ export default class SceneAppleAvenue extends SceneBase {
         });
         this.planeLogoText = new THREE.Mesh(geo, mat);
         this.planeLogoText.layers.set(1);
-        this.planeLogoText.scale.set(1894 / 2, 610 / 2);
+        const scale = this.options.scale2 || 1;
+        this.planeLogoText.scale.set(1894 * scale, 610 * scale);
         this.sceneTarget2.add(this.planeLogoText);
     }
     updateCallback() {
@@ -94,11 +99,15 @@ export default class SceneAppleAvenue extends SceneBase {
 
         this.renderer.setRenderTarget(this.envFbo2);
         this.renderer.render(this.sceneTarget2, this.orthoCamera);
-        
+
         this.renderer.setRenderTarget(null);
 
 
         this.renderer.clearDepth();
+
+        if (this.transition) {
+            this.transition();
+        }
 
     }
     createCube() {
@@ -115,9 +124,15 @@ export default class SceneAppleAvenue extends SceneBase {
 
         geo.setAttribute('sides', new THREE.Float32BufferAttribute(boxSides, 1));
 
+        console.log(this.resolution);
+
         this.mat = new ShaderAppleAvenue({
             uResolution: {
-                value: this.resolution
+                value: {
+                    x: this.resolution.x * this.resolution.z,
+                    y: this.resolution.y * this.resolution.z,
+                    z: this.resolution.z
+                }
             },
             uTick: {
                 value: 0.0
@@ -130,18 +145,27 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             isRefract: {
                 value: true
+            },
+            lenghtDisplacement: {
+                value: this.options.lenghtDisplacement !== null ? this.options.lenghtDisplacement : 0.0
+            },
+            zPosition: {
+                value: 1.0
             }
         });
-
         this.cubeMesh = new THREE.Mesh(geo, this.mat);
         this.cubeMesh.position.z = 2.5;
         this.mainScene.add(this.cubeMesh);
     }
-    createCubeBorder(){
+    createCubeBorder() {
         const geo = new THREE.BoxGeometry(1, 1, 1, 1);
         this.mat = new ShaderAppleAvenueBorder({
             uResolution: {
-                value: this.resolution
+                value: {
+                    x: this.resolution.x * this.resolution.z,
+                    y: this.resolution.y * this.resolution.z,
+                    z: this.resolution.z
+                }
             },
             uTick: {
                 value: 0.0
@@ -149,9 +173,50 @@ export default class SceneAppleAvenue extends SceneBase {
             isRefract: {
                 value: true
             },
+            zPosition: {
+                value: 1.0
+            }
         });
         this.cubeBorderMesh = new THREE.Mesh(geo, this.mat);
         this.cubeBorderMesh.position.z = 2.5;
         this.mainScene.add(this.cubeBorderMesh);
+    }
+    resize() {
+        window.addEventListener("resize", () => {
+            this.W = window.innerWidth;
+            this.H = window.innerHeight;
+            this.resolution = getResolutionVec3({ W: this.W, H: this.H });
+            this.renderer.setSize(this.W, this.H);
+            this.camera.aspect = this.W / this.H;
+            this.camera.updateProjectionMatrix();
+
+            this.orthoCamera.left = this.W / -2;
+            this.orthoCamera.right = this.W / 2;
+            this.orthoCamera.top = this.H / 2;
+            this.orthoCamera.bottom = this.H / -2;
+            this.orthoCamera.updateProjectionMatrix();
+
+            this.cubeMesh.material.uniforms.uResolution.value = {
+                x: this.resolution.x * this.resolution.z,
+                y: this.resolution.y * this.resolution.z,
+                z: this.resolution.z
+            }
+
+            this.cubeBorderMesh.material.uniforms.uResolution.value = {
+                x: this.resolution.x * this.resolution.z,
+                y: this.resolution.y * this.resolution.z,
+                z: this.resolution.z
+            }
+
+            this.envFbo.setSize(
+                this.W * this.resolution.z,
+                this.H * this.resolution.z
+            );
+            
+            this.envFbo2.setSize(
+                this.W * this.resolution.z,
+                this.H * this.resolution.z
+            );
+        })
     }
 }

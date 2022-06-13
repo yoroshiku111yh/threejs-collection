@@ -306,7 +306,7 @@ const htmlWatch = series(html,reloadBrowser);
 const mergeDataWatch = series(mergeData,html,reloadBrowser);
 
 exports.serve = series(setDevMode,parallel(mergeData, spriteSVG, js, fonts), css, html, serve);
-exports.build = series(removeDevMode, removeCompressedSprites, parallel(mergeData, spriteSVG, js, fonts, imagemin), css, html);
+exports.build = series(removeDevMode, removeCompressedSprites, parallel(mergeData, spriteSVG, images, js, fonts/*, imagemin*/), css, html);
 exports.js = js;
 exports.jsWebpack = jsWebpack;
 exports.sprite = sprite;

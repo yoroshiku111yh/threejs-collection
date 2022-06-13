@@ -19,5 +19,5 @@ void main() {
 
 	//gl_Position = projectionMatrix * modelViewMatrix * vec4(sin(position.x*time*0.001), position.y, position.z, 1.0);
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, zPosition);
 }
