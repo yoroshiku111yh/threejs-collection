@@ -16,6 +16,7 @@ varying vec3 worldNormal;
 varying vec3 eyeVector;
 varying vec2 vUv;
 varying float vSides;
+varying vec4 v_worldPostion;
 
 float Fresnel(vec3 eyeVector, vec3 worldNormal) {
     return pow(1.0 + dot(eyeVector, worldNormal), 3.0);
@@ -24,21 +25,14 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 void main() {
     float a = 0.85;
     vec2 st = gl_FragCoord.xy / uResolution.xy;
+    vec2 st2 = st;
     float boxSide = floor(vSides + 0.1);
     vec3 normal = worldNormal;
 
-    // sample backface data from texture
-	//vec3 backfaceNormal = texture2D(backFaceMap, st).rgb;
-
-	// combine backface and frontface normal
-	//vec3 normal = worldNormal * (1.0 - a) - backfaceNormal * a;
-
     if(isRefract) {
         vec3 refracted = refract(eyeVector, normal, 1.0 / 1.0);
-        st += refracted.xy*lenghtDisplacement; // 0.0 - 1.0
+        st += refracted.xy * lenghtDisplacement; // 0.0 - 1.0
     }
-    vec4 mask1 = texture2D(uMask1, st);
-    vec4 mask2 = texture2D(uMask2, st);
 
     vec3 frontFace = vec3(0, 1, 1);
     vec3 rightFace = vec3(0, 0, 1);
@@ -47,36 +41,52 @@ void main() {
     vec3 topFace = vec3(1, 0, 0);
     vec3 bottomFace = vec3(1, 0, 1);
 
-
-
     float f = Fresnel(eyeVector, normal);
     //////////////
     vec2 posColor = vec2(0.0);
-    vec4 col = radialRainbow(st, uTick, posColor);
-    ////////////
-    if(boxSide == 0.){
+
+    ///////////////
+
+    vec2 toCenter = vUv - vec2(0.5);
+    float angle = (atan(toCenter.y, toCenter.x) / PI2) + 0.5;
+    float u_displacementLength = 0.05;
+    float displacement = borders(vUv, u_displacementLength) + borders(vUv, u_displacementLength * 2.143) * 0.3;
+    vec4 displace = vec4(angle, displacement, 0.0, 1.0);
+    float displace_k = displace.g * 0.0015;
+    vec2 newUv = st;
+    newUv += displace_k;
+    newUv += displace_k;
+    //////////////
+    vec4 col = radialRainbow(st, uTick*1.15, posColor);
+    //////////////
+
+    vec4 mask1 = texture2D(uMask1, newUv);
+    vec4 mask2 = texture2D(uMask2, newUv);
+
+    // ////////////
+    if(boxSide == 0.) {
         col.a = mask1.r;
     }
-    if(boxSide == 1.){
-        col.a = mask2.r ;
-    }
-    if(boxSide == 2.){
+    if(boxSide == 1.) {
         col.a = mask2.r;
     }
-    if(boxSide == 3.){
+    if(boxSide == 2.) {
+        col.a = mask2.r;
+    }
+    if(boxSide == 3.) {
         col.a = mask1.r;
     }
-    if(boxSide == 4.){
-        col.a= mask1.r;
+    if(boxSide == 4.) {
+        col.a = mask1.r;
     }
     if(boxSide == 5.) {
         col.a = mask2.r;
     }
     col.rgb = mix(col.rgb, vec3(0.0), f);
-    if(f > 1.0){
+    if(f > 1.0) {
         discard;
     }
-    if(col.a < 0.5){
+    if(col.a < 0.5) {
         discard;
     }
     gl_FragColor = col;

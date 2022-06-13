@@ -7,7 +7,7 @@ export default class AppleAvenue {
         this.$container = document.getElementById("cv-apple-avenue");
         this.pane = new Pane();
         this.options = {
-            scale1 : 0.7,
+            scale1 : 0.5,
             scale2 : 0.25,
             lenghtDisplacement : 0.
         };

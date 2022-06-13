@@ -21,7 +21,7 @@ void main() {
     vec2 posColor = vec2(0.0);
     vec4 borderColor = radialRainbow(st, uTick, posColor);
     float depth = clamp(smoothstep(-1.0, 1.0, 0.15), 0.6, 0.9);
-    borderColor *= vec4(borders(vUv, 0.011)) * depth;
+    borderColor *= vec4(borders(vUv, 0.02)) * depth;
 
     vec3 normal = worldNormal;
 
@@ -31,5 +31,6 @@ void main() {
     }
     vec4 col = radialRainbow(st, uTick*1.5, posColor);
     float f = Fresnel(eyeVector, normal);
-    gl_FragColor = borderColor + vec4(col.rgb, f*0.02);
+    col.rgb = mix(col.rgb, vec3(0.0), f*0.025);
+    gl_FragColor = borderColor + vec4(col.rgb, f*0.025);
 }
