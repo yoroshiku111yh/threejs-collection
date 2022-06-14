@@ -1,6 +1,7 @@
 
 
 #pragma glslify:radialRainbow=require('../helper/radialRainbow');
+#pragma glslify:gradients=require('../helper/gradients');
 #pragma glslify:borders=require('../helper/borders');
 uniform vec2 uResolution;
 uniform float uTick;
@@ -9,6 +10,8 @@ uniform sampler2D uMask2;
 uniform bool isRefract;
 
 uniform float lenghtDisplacement;
+uniform float lengthMaximum;
+uniform vec3 uPos;
 
 const float PI2 = 6.28318530718;
 
@@ -24,14 +27,13 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 
 void main() {
     float a = 0.85;
-    vec2 st = gl_FragCoord.xy / uResolution.xy;
-    vec2 st2 = st;
+    vec2 st = gl_FragCoord.xy / uResolution.xy - uPos.xy*0.038;
     float boxSide = floor(vSides + 0.1);
     vec3 normal = worldNormal;
 
     if(isRefract) {
         vec3 refracted = refract(eyeVector, normal, 1.0 / 1.0);
-        st += refracted.xy * lenghtDisplacement; // 0.0 - 1.0
+        st += refracted.xy;
     }
 
     vec3 frontFace = vec3(0, 1, 1);
@@ -47,17 +49,20 @@ void main() {
 
     ///////////////
 
-    vec2 toCenter = vUv - vec2(0.5);
+    vec2 toCenter = vUv ;
     float angle = (atan(toCenter.y, toCenter.x) / PI2) + 0.5;
-    float u_displacementLength = 0.05;
+    float u_displacementLength = lenghtDisplacement / 100.;
     float displacement = borders(vUv, u_displacementLength) + borders(vUv, u_displacementLength * 2.143) * 0.3;
     vec4 displace = vec4(angle, displacement, 0.0, 1.0);
-    float displace_k = displace.g * 0.0015;
+    float maximum = lengthMaximum / 1000.;
+    float displace_k = displace.g * maximum;
     vec2 newUv = st;
     newUv += displace_k;
     newUv += displace_k;
     //////////////
-    vec4 col = radialRainbow(st, uTick*1.15, posColor);
+    vec4 col1 = vec4(gradients(3, vUv, uTick), 1.0);
+    vec4 col2 = vec4(gradients(1, vUv, uTick), 1.0);
+    vec4 col;
     //////////////
 
     vec4 mask1 = texture2D(uMask1, newUv);
@@ -65,21 +70,27 @@ void main() {
 
     // ////////////
     if(boxSide == 0.) {
+        col = col1;
         col.a = mask1.r;
     }
     if(boxSide == 1.) {
+        col = col2;
         col.a = mask2.r;
     }
     if(boxSide == 2.) {
+        col = col2;
         col.a = mask2.r;
     }
     if(boxSide == 3.) {
+        col = col1;
         col.a = mask1.r;
     }
     if(boxSide == 4.) {
+        col = col1;
         col.a = mask1.r;
     }
     if(boxSide == 5.) {
+        col = col2;
         col.a = mask2.r;
     }
     col.rgb = mix(col.rgb, vec3(0.0), f);

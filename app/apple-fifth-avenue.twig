@@ -1,10 +1,29 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
-	<main id="main" data-module="appleAvenue" style="background : url('https://i.imgur.com/BEVTtQE.jpeg') no-repeat center; background-size: cover;">
-		<canvas id="cv-apple-avenue"></canvas>
+<style>
+	.cube-decor__wrapper{
+		position : absolute;
+		top : 0;
+		left : 0;
+		width: 45vw;
+    	height: 45vw;
+		transform: translate(112%, -12%);
+		{# translate(-2%, 99%) #}
+	}
+	.cube-decor__wrapper canvas{
+		width : 100% !important;
+		height : auto !important;
+	}
+</style>
+	<main id="main" data-module="appleAvenue" style="background-color : #000; background-size: cover; margin : 0;">
+		<div class="cube-decor__wrapper">
+			<canvas id="cv-apple-avenue"></canvas>
+		</div>
 		<ul style="padding : 0; margin : 0;">
 			<li id="maskLogo" data-src="{{assets_url}}/images/materials/masks/logo_wizzard.png"></li>
 			<li id="maskLogoText" data-src="{{assets_url}}/images/materials/masks/logo_wizzard_text.png"></li>
 		</ul>
+		<img src="{{assets_url}}/images/materials/backgrounds/banner_1.jpg" style="width : 100%; height : auto" />
+		<img src="{{assets_url}}/images/materials/backgrounds/banner_2.jpg" style="width : 100%; height : auto" />
 	</main>
 {% endblock %}
