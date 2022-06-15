@@ -8,7 +8,6 @@ uniform float zPosition;
 attribute float sides;
 varying float vSides;
 
-
 void main() {
     vSides = sides;
     vUv = uv;
@@ -18,6 +17,5 @@ void main() {
     worldNormal = normalize(modelViewMatrix * vec4(normal, 0.0)).xyz;
 
 	//gl_Position = projectionMatrix * modelViewMatrix * vec4(sin(position.x*time*0.001), position.y, position.z, 1.0);
-
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, zPosition);
 }

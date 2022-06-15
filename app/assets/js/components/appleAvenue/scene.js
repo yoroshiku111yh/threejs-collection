@@ -9,7 +9,7 @@ import { TweenMax } from 'gsap/gsap-core';
 
 export default class SceneAppleAvenue extends SceneBase {
     constructor({ $container, size = {}, options = {}, transition = null }) {
-        super($container, size.width, size.height);
+        super($container, size.width, size.height, true);
         this.options = options;
         this.transition = transition;
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
@@ -25,12 +25,11 @@ export default class SceneAppleAvenue extends SceneBase {
         //this.renderer.setClearColor(clearColorDark);
         this.initPerspectiveCamera();
         this.initOrthographicCamera();
-        this.camera.position.z = 4.5;
-        this.orthoCamera.position.z = 4.5;
-        this.camera.lookAt(this.groupCube.position);
-        this.speedRotate = 0.007;
-        this.zPositionCube = 1.45;
-        this.isRotate = true;
+        this.camera.position.z = this.options.zCameraPer;
+        this.orthoCamera.position.z = this.options.zCameraOrtho;
+        this.speedRotate = this.options.speedRotate;
+        this.zPositionCube = this.options.zPositionCube;
+        this.isRotate = this.options.isRotate;
         this.mainScene.add(this.groupCube);
         this.setPosCamera();
         this.createFbo();
@@ -80,6 +79,10 @@ export default class SceneAppleAvenue extends SceneBase {
         this.planeLogo.layers.set(1);
         const scale = this.options.scale1 || 1;
         this.planeLogo.scale.set(1071 * scale, 1830 * scale);
+        ///
+        this.planeLogo.position.x = this.groupCube.position.x;
+        this.planeLogo.position.y = this.groupCube.position.y;
+        ///
         this.sceneTarget.add(this.planeLogo);
     }
     createLogoTextPlane() {
@@ -91,6 +94,10 @@ export default class SceneAppleAvenue extends SceneBase {
         this.planeLogoText.layers.set(1);
         const scale = this.options.scale2 || 1;
         this.planeLogoText.scale.set(5682 * scale, 1830 * scale);
+        ///
+        this.planeLogoText.position.x = this.groupCube.position.x;
+        this.planeLogoText.position.y = this.groupCube.position.y;
+        ///
         this.sceneTarget2.add(this.planeLogoText);
     }
     updateCallback() {
@@ -109,8 +116,6 @@ export default class SceneAppleAvenue extends SceneBase {
             this.cubeBorderMesh.material.uniforms.uTick.value += 0.001;
         }
 
-        this.camera.lookAt(this.groupCube.position);
-        
         this.renderer.clear();
 
         this.renderer.setRenderTarget(this.envFbo);
@@ -173,14 +178,12 @@ export default class SceneAppleAvenue extends SceneBase {
             }
         });
         this.cubeMesh = new THREE.Mesh(geo, this.mat);
-        this.cubeMesh.position.z = this.zPositionCube ;
+        this.cubeMesh.position.z = this.zPositionCube - 0.05 ;
         this.groupCube.add(this.cubeMesh);
     }
     createCubeBorder() {
 
         const geo = new THREE.BoxGeometry(1, 1, 1, 1);
-
-        geo.setAttribute('sides', new THREE.Float32BufferAttribute(this.createArraySidesCube(), 1));
 
         this.mat = new ShaderAppleAvenueBorder({
             uPos : {

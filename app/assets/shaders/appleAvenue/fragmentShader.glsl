@@ -27,7 +27,7 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 
 void main() {
     float a = 0.85;
-    vec2 st = gl_FragCoord.xy / uResolution.xy - uPos.xy*0.038;
+    vec2 st = gl_FragCoord.xy / uResolution.xy;
     float boxSide = floor(vSides + 0.1);
     vec3 normal = worldNormal;
 
@@ -56,7 +56,7 @@ void main() {
     vec4 displace = vec4(angle, displacement, 0.0, 1.0);
     float maximum = lengthMaximum / 1000.;
     float displace_k = displace.g * maximum;
-    vec2 newUv = st;
+    vec2 newUv = st; /// st - uPos*0.4
     newUv += displace_k;
     newUv += displace_k;
     //////////////

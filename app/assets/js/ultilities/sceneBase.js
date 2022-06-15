@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 export default class SceneBase{
-    constructor($container, sizeWidth = window.innerWidth, sizeHeight = window.innerHeight){
+    constructor($container, sizeWidth = window.innerWidth, sizeHeight = window.innerHeight, antialias = false){
         this.container = $container;
         this.W = sizeWidth;
         this.H = sizeHeight;
+        this.antialias = antialias;
         this.perspective = 5;
         this.maxPerspective = 100;
         this.minPerspective = 0.01;
@@ -15,6 +16,7 @@ export default class SceneBase{
         this.renderer = new THREE.WebGLRenderer({
             canvas : this.container,
             alpha : true,
+            antialias : this.antialias
         });
         this.renderer.setSize(this.W, this.H);
         this.renderer.setPixelRatio(window.devicePixelRatio);
