@@ -1,6 +1,6 @@
 import { CubeTextureLoader } from 'three';
 
-export class loadNewCubeMap {
+export class LoadNewCubeMap {
     constructor({ path, resolve }) {
         this.resolve = resolve;
         this.path = path;

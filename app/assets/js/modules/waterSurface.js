@@ -12,7 +12,7 @@ import { TweenMax, Power1 } from 'gsap/gsap-core';
 
 import { Pane } from 'tweakpane';
 import { imgUrlBannerText } from './../ultilities/srcImgurl';
-import { loadNewCubeMap } from '../ultilities/jsm/loaders/cubemap';
+import { LoadNewCubeMap } from '../ultilities/jsm/loaders/cubemap';
 
 export default class WaterSurface {
     constructor() {
@@ -115,15 +115,15 @@ export default class WaterSurface {
         })
     }
     loadCubeMap() {
-        new loadNewCubeMap({
+        new LoadNewCubeMap({
             path : this.pathSrcCubeMapOutSide,
             resolve : (cubemap) => { this.cubeMap[0] = cubemap; }
         });
-        new loadNewCubeMap({
+        new LoadNewCubeMap({
             path : this.pathSrcCubeMapShangHai,
             resolve : (cubemap) => { this.cubeMap[1] = cubemap; }
         });
-        new loadNewCubeMap({
+        new LoadNewCubeMap({
             path : this.pathSrcCubeMapCityNight,
             resolve : (cubemap) => { this.cubeMap[2] = cubemap; }
         })

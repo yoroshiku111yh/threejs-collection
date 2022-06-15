@@ -4,10 +4,12 @@ import { Pane } from 'tweakpane';
 import gsap, { Power1 } from 'gsap';
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TweenMax } from 'gsap/gsap-core';
+import { LoadNewCubeMap } from './../ultilities/jsm/loaders/cubemap';
 gsap.registerPlugin(ScrollTrigger);
 export default class AppleAvenue {
     constructor() {
         this.$container = document.getElementById("cv-apple-avenue");
+        this.path = document.getElementById("path-cube-env").dataset.path;
         this.pane = new Pane();
         this.elmWrapper = ".cube-decor__wrapper";
         this.options = {
@@ -19,13 +21,40 @@ export default class AppleAvenue {
             zCameraOrtho: 4.5,
             speedRotate: 0.007,
             zPositionCube: 1.45,
-            isRotate: true
+            isRotate: true,
+            opacityGlass : 4.5,
+            envMap : true
         };
         this.bounce = {
             min : 0.0,
             max : 0.025,
             current : 0.0
         };
+        
+        this.gui();
+
+        if (!window.bodyScrollBar) {
+            window.bodyScrollBar = this.bodyScrollBar;
+            window.ScrollTrigger = ScrollTrigger;
+        }
+        this.init();
+        this.loadCubeMap();
+        this.tweenBounce();
+        this.initSmoothScroll();
+        this.timeLineScrollTrigger();
+        this.scene.transition = this.animate.bind(this);
+    }
+    loadCubeMap(){
+        this.cubeMap = new LoadNewCubeMap({
+            path : this.path,
+            resolve : (cube) => {
+                if(this.scene.cubeBorderMesh){
+                    this.scene.cubeBorderMesh.material.uniforms.uEnvMap.value = cube;
+                }
+            }
+        })
+    }
+    init(){
         this.scene = new SceneAppleAvenue({
             $container: this.$container,
             options: this.options,
@@ -34,16 +63,6 @@ export default class AppleAvenue {
                 height: 900
             }
         });
-        this.scene.transition = this.animate.bind(this);
-        //this.gui();
-
-        if (!window.bodyScrollBar) {
-            window.bodyScrollBar = this.bodyScrollBar;
-            window.ScrollTrigger = ScrollTrigger;
-        }
-        this.tweenBounce();
-        this.initSmoothScroll();
-        this.timeLineScrollTrigger();
     }
     tweenBounce(){
         const tweenBounce = TweenMax.to(this.bounce, 2,{ current : this.bounce.max, ease : Power1.easeInOut});
@@ -64,6 +83,8 @@ export default class AppleAvenue {
                 this.scene.cubeBorderMesh.rotation.x += this.options.speedRotate;
                 this.scene.cubeBorderMesh.rotation.y += this.options.speedRotate;
             }
+            this.scene.cubeBorderMesh.material.uniforms.uOpacity.value = this.options.opacityGlass;
+            this.scene.cubeBorderMesh.material.uniforms.isUseEnvMap.value = this.options.envMap;
         }
     }
     gui() {
@@ -75,7 +96,12 @@ export default class AppleAvenue {
             min: 0.00,
             max: 10.
         });
+        this.pane.addInput(this.options, "opacityGlass", {
+            min: 0.0,
+            max: 30.
+        });
         this.pane.addInput(this.options, "isRotate");
+        this.pane.addInput(this.options, "envMap");
     }
     initSmoothScroll() {
         document.querySelector('body').classList.add("smooth-scroll-wrapper-body");

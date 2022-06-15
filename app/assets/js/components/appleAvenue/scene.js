@@ -7,7 +7,7 @@ import ShaderAppleAvenueBorder from './../../../shaders/appleAvenue/border/index
 
 
 export default class SceneAppleAvenue extends SceneBase {
-    constructor({ $container, size = {}, options = {}, transition = null }) {
+    constructor({ $container, size = {}, options = {}, transition = null, cubeMap = null }) {
         super($container, size.width, size.height, true);
         this.options = options;
         this.transition = transition;
@@ -16,6 +16,7 @@ export default class SceneAppleAvenue extends SceneBase {
         this.maskLogoTextSrc = document.getElementById("maskLogoText").dataset.src;
         this.loader = new THREE.TextureLoader();
         this.groupCube = new THREE.Group();
+        this.cubeMap = cubeMap;
         this.init();
     }
     init() {
@@ -99,7 +100,7 @@ export default class SceneAppleAvenue extends SceneBase {
         if (this.cubeBorderMesh) {
             this.cubeBorderMesh.material.uniforms.uTick.value += 0.001;
         }
-        
+
         this.renderer.clear();
         this.renderer.setRenderTarget(this.envFbo);
         this.renderer.render(this.sceneTarget, this.orthoCamera);
@@ -125,14 +126,14 @@ export default class SceneAppleAvenue extends SceneBase {
         geo.setAttribute('sides', new THREE.Float32BufferAttribute(this.createArraySidesCube(), 1));
 
         this.mat = new ShaderAppleAvenue({
-            uPos : {
-                value : this.groupCube.position
+            uPos: {
+                value: this.groupCube.position
             },
-            uType : {
-                value : 1
+            uType: {
+                value: 1
             },
-            uBounce : {
-                value : 0.0
+            uBounce: {
+                value: 0.0
             },
             uResolution: {
                 value: {
@@ -159,12 +160,12 @@ export default class SceneAppleAvenue extends SceneBase {
             zPosition: {
                 value: 1.0
             },
-            lengthMaximum : {
-                value : this.options.lengthMaximum !== null ? this.options.lengthMaximum : 2.2
+            lengthMaximum: {
+                value: this.options.lengthMaximum !== null ? this.options.lengthMaximum : 2.2
             }
         });
         this.cubeMesh = new THREE.Mesh(geo, this.mat);
-        this.cubeMesh.position.z = this.zPositionCube - 0.05 ;
+        this.cubeMesh.position.z = this.zPositionCube - 0.05;
         this.groupCube.add(this.cubeMesh);
     }
     createCubeBorder() {
@@ -172,8 +173,8 @@ export default class SceneAppleAvenue extends SceneBase {
         const geo = new THREE.BoxGeometry(1, 1, 1, 1);
 
         this.mat = new ShaderAppleAvenueBorder({
-            uPos : {
-                value : this.groupCube.position
+            uPos: {
+                value: this.groupCube.position
             },
             uResolution: {
                 value: {
@@ -182,18 +183,27 @@ export default class SceneAppleAvenue extends SceneBase {
                     z: this.resolution.z
                 }
             },
+            isUseEnvMap : {
+                value : true
+            },
+            uOpacity : {
+                value : this.options.opacityGlass
+            },
             uTick: {
                 value: 0.0
             },
             zPosition: {
                 value: 1.0
+            },
+            uEnvMap: {
+                value: this.cubeMap
             }
         });
         this.cubeBorderMesh = new THREE.Mesh(geo, this.mat);
         this.cubeBorderMesh.position.z = this.zPositionCube;
         this.groupCube.add(this.cubeBorderMesh);
     }
-    createArraySidesCube(){
+    createArraySidesCube() {
         const side1 = [0, 0, 0, 0];
         const side2 = [1, 1, 1, 1];
         const side3 = [2, 2, 2, 2];
