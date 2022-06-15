@@ -22,14 +22,17 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 void main() {
     vec2 st = gl_FragCoord.xy / uResolution.xy;
     vec3 normal = worldNormal;
-    vec2 posColor = vec2(0.0);
+    vec2 posColor = vec2(0.5);
     float f = Fresnel(eyeVector, normal);
 
-    vec4 borderColor = vec4(gradients(1, vUv, uTick*1.15), 1.0);
+    //vec4 borderColor = vec4(gradients(1, vUv, uTick*1.15), 1.0);
+    vec4 borderColor = radialRainbow(st, uTick, posColor);
     float depth = clamp(smoothstep(-1.0, 1.0, 1.0), 0.6, 0.9);
     borderColor *= vec4(borders(vUv, 0.012)*depth);
 
-    vec4 col = vec4(gradients(1, vUv, uTick*1.15), 0.045*f + 0.01);
+    //vec4 col = vec4(gradients(1, vUv, uTick*1.15), 0.045*f + 0.01);
+    vec4 col = radialRainbow(st, uTick, posColor);
+    col.a = 0.045*f + 0.01;
     col.rgb = mix(col.rgb, vec3(0.75), 0.15);
 
     gl_FragColor = borderColor + col;
