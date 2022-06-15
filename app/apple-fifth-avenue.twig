@@ -1,29 +1,50 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
-<style>
-	.cube-decor__wrapper{
-		position : absolute;
-		top : 0;
-		left : 0;
-		width: 45vw;
-    	height: 45vw;
-		transform: translate(112%, -12%);
-		{# translate(-2%, 99%) #}
-	}
-	.cube-decor__wrapper canvas{
-		width : 100% !important;
-		height : auto !important;
-	}
-</style>
+	<style>
+		.cube-decor__wrapper {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 45vw;
+			height: 45vw;
+			transform: translate(112%, -12%);
+			{
+				# translate(-2%, 99%) #
+			}
+		}
+		.js-end-trigger{
+			position : absolute;
+			z-index: -1;
+			top :35%;
+			left : 0;
+			background : black;
+			width: 1px;
+			height: 1px; 
+		}
+		.smooth-scroll-wrapper-body {
+			position: fixed !important;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			overflow : hidden !important; 
+		}
+		.cube-decor__wrapper canvas {
+			width: 100% !important;
+			height: auto !important;
+		}
+	</style>
 	<main id="main" data-module="appleAvenue" style="background-color : #000; background-size: cover; margin : 0;">
-		<div class="cube-decor__wrapper">
+		<div class="cube-decor__wrapper js-start-trigger">
 			<canvas id="cv-apple-avenue"></canvas>
 		</div>
+		<div class="js-end-trigger"></div>
 		<ul style="padding : 0; margin : 0;">
 			<li id="maskLogo" data-src="{{assets_url}}/images/materials/masks/logo_wizzard.png"></li>
 			<li id="maskLogoText" data-src="{{assets_url}}/images/materials/masks/logo_wizzard_text.png"></li>
 		</ul>
-		<img src="{{assets_url}}/images/materials/backgrounds/banner_1.jpg" style="width : 100%; height : auto" />
-		<img src="{{assets_url}}/images/materials/backgrounds/banner_2.jpg" style="width : 100%; height : auto" />
+		<img src="{{assets_url}}/images/materials/backgrounds/banner_1.jpg" style="width : 100%; height : auto"/>
+		<img src="{{assets_url}}/images/materials/backgrounds/banner_2.jpg" style="width : 100%; height : auto"/>
 	</main>
+	<script src="https://unpkg.com/smooth-scrollbar@8.7.4/dist/smooth-scrollbar.js"></script>
 {% endblock %}

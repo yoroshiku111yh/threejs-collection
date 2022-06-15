@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import ShaderAppleAvenue from './../../../shaders/appleAvenue/index';
 import { getResolutionVec3 } from './../../ultilities/resolution';
 import ShaderAppleAvenueBorder from './../../../shaders/appleAvenue/border/index';
-import { TweenMax } from 'gsap/gsap-core';
 
 
 export default class SceneAppleAvenue extends SceneBase {
@@ -27,24 +26,17 @@ export default class SceneAppleAvenue extends SceneBase {
         this.initOrthographicCamera();
         this.camera.position.z = this.options.zCameraPer;
         this.orthoCamera.position.z = this.options.zCameraOrtho;
-        this.speedRotate = this.options.speedRotate;
         this.zPositionCube = this.options.zPositionCube;
         this.isRotate = this.options.isRotate;
         this.mainScene.add(this.groupCube);
-        this.setPosCamera();
         this.createFbo();
         this.createLogoPlane();
         this.createLogoTextPlane();
         this.createCubeBorder();
         this.createCube();
         this.update();
+
         //this.resize();
-    }
-    setPosCamera(){
-        TweenMax.to(this.groupCube.position, {
-            x : 0,
-            y : 0
-        }, 0.5);
     }
     initOrthographicCamera() {
         this.orthoCamera = new THREE.OrthographicCamera(
@@ -102,22 +94,13 @@ export default class SceneAppleAvenue extends SceneBase {
     }
     updateCallback() {
         if (this.cubeMesh) {
-            if(this.isRotate){
-                this.cubeMesh.rotation.x += this.speedRotate;
-                this.cubeMesh.rotation.y += this.speedRotate;
-            }
             this.cubeMesh.material.uniforms.uTick.value += 0.001;
         }
         if (this.cubeBorderMesh) {
-            if(this.isRotate){
-                this.cubeBorderMesh.rotation.x += this.speedRotate;
-                this.cubeBorderMesh.rotation.y += this.speedRotate;
-            }
             this.cubeBorderMesh.material.uniforms.uTick.value += 0.001;
         }
-
+        
         this.renderer.clear();
-
         this.renderer.setRenderTarget(this.envFbo);
         this.renderer.render(this.sceneTarget, this.orthoCamera);
 
@@ -147,6 +130,9 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             uType : {
                 value : 1
+            },
+            uBounce : {
+                value : 0.0
             },
             uResolution: {
                 value: {

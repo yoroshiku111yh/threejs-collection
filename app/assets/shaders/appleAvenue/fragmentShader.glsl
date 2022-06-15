@@ -12,6 +12,7 @@ uniform bool isRefract;
 uniform float lenghtDisplacement;
 uniform float lengthMaximum;
 uniform vec3 uPos;
+uniform float uBounce;
 
 const float PI2 = 6.28318530718;
 
@@ -65,8 +66,8 @@ void main() {
     vec4 col;
     //////////////
 
-    vec4 mask1 = texture2D(uMask1, newUv);
-    vec4 mask2 = texture2D(uMask2, newUv);
+    vec4 mask1 = texture2D(uMask1, newUv + vec2(0.0, uBounce));
+    vec4 mask2 = texture2D(uMask2, newUv + + vec2(0.0, uBounce));
 
     // ////////////
     if(boxSide == 0.) {
