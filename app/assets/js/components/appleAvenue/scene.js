@@ -14,6 +14,7 @@ export default class SceneAppleAvenue extends SceneBase {
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.maskLogoSrc = document.getElementById("maskLogo").dataset.src;
         this.maskLogoTextSrc = document.getElementById("maskLogoText").dataset.src;
+        this.mapBumpSrc = document.getElementById("map-bump-env").dataset.src;
         this.loader = new THREE.TextureLoader();
         this.groupCube = new THREE.Group();
         this.cubeMap = cubeMap;
@@ -202,6 +203,9 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             uEnvMap: {
                 value: this.cubeMap
+            },
+            uMapTexture : {
+                value : this.loader.load(this.mapBumpSrc)
             }
         });
         this.cubeBorderMesh = new THREE.Mesh(geo, this.mat);

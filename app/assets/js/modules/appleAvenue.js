@@ -21,8 +21,8 @@ export default class AppleAvenue {
             zCameraOrtho: 4.5,
             speedRotate: 0.007,
             zPositionCube: 1.45,
-            isRotate: true,
-            opacityGlass : 4.5,
+            isRotate: false,
+            opacityGlass : 30.0,
             envMap : false,
             caustics : [
                 {

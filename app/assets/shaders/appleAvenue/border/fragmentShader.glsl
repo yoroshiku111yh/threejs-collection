@@ -5,6 +5,7 @@
 #pragma glslify:borders=require('../../helper/borders');
 #pragma glslify:causticAmoebas=require('../../helper/caustic/causticAmoebas');
 #pragma glslify:causticCrystal=require('../../helper/caustic/causticCrystal');
+#pragma glslify:quickBumpMapping=require('../../helper/bumpmapping/quickBumpMapping');
 uniform vec3 uResolution;
 uniform float uTick;
 uniform bool isUseEnvMap;
@@ -19,8 +20,7 @@ varying vec2 vUv;
 
 varying float vSides;
 
-uniform sampler2D uMask1;
-uniform sampler2D uMask2;
+uniform sampler2D uMapTexture;
 
 uniform samplerCube uEnvMap;
 uniform float uOpacity;
@@ -45,11 +45,12 @@ void main() {
     vec4 borderColor = radialRainbow(st, uTick, posColor);
     float depth = clamp(smoothstep(-1.0, 1.0, 1.0), 0.6, 0.9);
     borderColor *= vec4(borders(vUv, 0.012)*depth);
+    float opacityOfFresnel = uOpacity/100.*f + 0.01;
     //
     vec2 thetaphi = ((st * 2.0) - vec2(1.0)) * vec2(3.1415926535897932384626433832795, 1.5707963267948966192313216916398); 
     vec3 rayDirection = vec3(cos(thetaphi.y) * cos(thetaphi.x), sin(thetaphi.y), cos(thetaphi.y) * sin(thetaphi.x));
 	vec4 _cubeMap = textureCube(uEnvMap, rayDirection);
-    _cubeMap.a = uOpacity/100.*f + 0.01;
+    _cubeMap.a = opacityOfFresnel;
     /////
     vec4 col;
     if(uCausticType == 0){
@@ -58,12 +59,16 @@ void main() {
     if(uCausticType == 1){
         col = causticAmoebas(st2, uTick*5.);
     }
-    col.a = uOpacity/100.*f + 0.01;
+    ///
+    vec4 bumpmap = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0);
+    bumpmap.a = opacityOfFresnel;
+    //vec3 mixBump = mix(bumpmap.rgb, col.rgb, 0.5);
+    vec4 mixBump = bumpmap * col * 2.0;
     ///
     if(isUseEnvMap){
         gl_FragColor = borderColor + _cubeMap;
     }
     else{
-        gl_FragColor = borderColor + col;
+        gl_FragColor = borderColor + vec4(mixBump.rgb, opacityOfFresnel);
     }
 }

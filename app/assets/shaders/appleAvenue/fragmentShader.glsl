@@ -63,6 +63,7 @@ void main() {
     //////////////
     vec4 col1 = vec4(gradients(3, vUv, uTick), 1.0);
     vec4 col2 = vec4(gradients(1, vUv, uTick), 1.0);
+    vec4 col3 = vec4(gradients(2, vUv, uTick), 1.0);
     vec4 col;
     //////////////
 
@@ -79,11 +80,11 @@ void main() {
         col.a = mask2.r;
     }
     if(boxSide == 2.) {
-        col = col2;
+        col = col3;
         col.a = mask2.r;
     }
     if(boxSide == 3.) {
-        col = col1;
+        col = col3;
         col.a = mask1.r;
     }
     if(boxSide == 4.) {
