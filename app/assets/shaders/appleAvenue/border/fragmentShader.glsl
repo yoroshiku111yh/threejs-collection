@@ -60,10 +60,11 @@ void main() {
         col = causticAmoebas(st2, uTick*5.);
     }
     ///
-    vec4 bumpmap = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0);
+    vec4 bumpmap = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0, 3.0);
+    vec4 bumpmap2 = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0, 5.0);
     bumpmap.a = opacityOfFresnel;
-    //vec3 mixBump = mix(bumpmap.rgb, col.rgb, 0.5);
-    vec4 mixBump = bumpmap * col * 2.0;
+    bumpmap2.a = opacityOfFresnel;
+    vec4 mixBump = bumpmap*col + bumpmap2*0.5;
     ///
     if(isUseEnvMap){
         gl_FragColor = borderColor + _cubeMap;

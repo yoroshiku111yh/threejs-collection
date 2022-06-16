@@ -17,21 +17,21 @@ float texelHeight(vec4 rgba) {
     return luminance(rgba.rgb);
 }
 
-vec4 quickBumpMapping( vec2 uv, vec3 iResolution, sampler2D iChannel0, float iTime )
+vec4 quickBumpMapping( vec2 uv, vec3 iResolution, sampler2D iChannel0, float iTime, float h_multi )
 {
     vec4 fragColor;
     // Normal map strength
     const float normal_strength = 7.0;
     
     // Bump height multiplier
-    const float height_multiplier = 5.0;
-    const float texel_offset = 2.0;
+    float height_multiplier = h_multi;
+    const float texel_offset = 1.0;
     
     //vec2 uv = fragCoord/iResolution.xy;
     
     vec3 offset = vec3(texel_offset / iResolution.xy, 0.0);
     
-    vec3 surfaceColor = texture(iChannel0, uv).rgb;
+    vec3 surfaceColor = vec3(0.0); //texture(iChannel0, uv).rgb;
 	float height = texelHeight(surfaceColor.rgbb) * height_multiplier;
     vec3 worldPosition = vec3(uv, height);
     
