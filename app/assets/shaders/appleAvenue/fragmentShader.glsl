@@ -3,7 +3,7 @@
 #pragma glslify:radialRainbow=require('../helper/radialRainbow');
 #pragma glslify:gradients=require('../helper/gradients');
 #pragma glslify:borders=require('../helper/borders');
-uniform vec2 uResolution;
+uniform vec3 uResolution;
 uniform float uTick;
 uniform sampler2D uMask1;
 uniform sampler2D uMask2;

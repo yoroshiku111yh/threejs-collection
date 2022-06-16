@@ -3,7 +3,9 @@
 #pragma glslify:radialRainbow=require('../../helper/radialRainbow');
 #pragma glslify:gradients=require('../../helper/gradients');
 #pragma glslify:borders=require('../../helper/borders');
-uniform vec2 uResolution;
+#pragma glslify:causticAmoebas=require('../../helper/caustic/causticAmoebas');
+#pragma glslify:causticCrystal=require('../../helper/caustic/causticCrystal');
+uniform vec3 uResolution;
 uniform float uTick;
 uniform bool isUseEnvMap;
 
@@ -15,8 +17,15 @@ varying vec3 worldNormal;
 varying vec3 eyeVector;
 varying vec2 vUv;
 
+varying float vSides;
+
+uniform sampler2D uMask1;
+uniform sampler2D uMask2;
+
 uniform samplerCube uEnvMap;
 uniform float uOpacity;
+
+uniform int uCausticType;
 
 float Fresnel(vec3 eyeVector, vec3 worldNormal) {
     return pow(1.0 + dot(eyeVector, worldNormal), 1.0);
@@ -24,6 +33,7 @@ float Fresnel(vec3 eyeVector, vec3 worldNormal) {
 
 void main() {
     vec2 st = gl_FragCoord.xy / uResolution.xy;
+    vec2 st2 = st;
     vec3 normal = worldNormal;
     vec2 posColor = vec2(0.5);
     float f = Fresnel(eyeVector, normal);
@@ -41,10 +51,14 @@ void main() {
 	vec4 _cubeMap = textureCube(uEnvMap, rayDirection);
     _cubeMap.a = uOpacity/100.*f + 0.01;
     /////
-    //vec4 col = vec4(gradients(1, vUv, uTick*1.15), 0.045*f + 0.01);
-    vec4 col = radialRainbow(st, uTick, posColor);
+    vec4 col;
+    if(uCausticType == 0){
+        col = causticCrystal(uResolution, uTick*5., gl_FragCoord.xy);
+    }
+    if(uCausticType == 1){
+        col = causticAmoebas(st2, uTick*5.);
+    }
     col.a = uOpacity/100.*f + 0.01;
-    col.rgb = mix(col.rgb, vec3(0.75), 0.15);
     ///
     if(isUseEnvMap){
         gl_FragColor = borderColor + _cubeMap;

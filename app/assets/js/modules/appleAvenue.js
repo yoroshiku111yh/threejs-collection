@@ -23,7 +23,18 @@ export default class AppleAvenue {
             zPositionCube: 1.45,
             isRotate: true,
             opacityGlass : 4.5,
-            envMap : true
+            envMap : false,
+            caustics : [
+                {
+                    text : "Crystal",
+                    value : 0
+                },
+                {
+                    text : "Amoebas",
+                    value : 1
+                }
+            ],
+            causticType : 0
         };
         this.bounce = {
             min : 0.0,
@@ -88,10 +99,6 @@ export default class AppleAvenue {
         }
     }
     gui() {
-        this.pane.addInput(this.options, "lenghtDisplacement", {
-            min: 0.00,
-            max: 5.
-        });
         this.pane.addInput(this.options, "lengthMaximum", {
             min: 0.00,
             max: 10.
@@ -100,8 +107,22 @@ export default class AppleAvenue {
             min: 0.0,
             max: 30.
         });
+        this.pane.addBlade({
+            view : 'list',
+            label : 'Caustic',
+            options : this.options.caustics,
+            value : this.options.causticType
+        })
         this.pane.addInput(this.options, "isRotate");
         this.pane.addInput(this.options, "envMap");
+        ////////////////
+        ///////////////
+        this.pane.on('change', (ev) => {
+            if (ev.target.label === "Caustic") {
+                this.options.causticType = ev.value;
+                this.scene.cubeBorderMesh.material.uniforms.uCausticType.value = ev.value;
+            }
+        })
     }
     initSmoothScroll() {
         document.querySelector('body').classList.add("smooth-scroll-wrapper-body");

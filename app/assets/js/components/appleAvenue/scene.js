@@ -30,6 +30,7 @@ export default class SceneAppleAvenue extends SceneBase {
         this.zPositionCube = this.options.zPositionCube;
         this.isRotate = this.options.isRotate;
         this.mainScene.add(this.groupCube);
+        this.causticType = this.options.causticType;
         this.createFbo();
         this.createLogoPlane();
         this.createLogoTextPlane();
@@ -75,6 +76,7 @@ export default class SceneAppleAvenue extends SceneBase {
         ///
         this.planeLogo.position.x = this.groupCube.position.x;
         this.planeLogo.position.y = this.groupCube.position.y;
+        ///
         ///
         this.sceneTarget.add(this.planeLogo);
     }
@@ -185,6 +187,9 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             isUseEnvMap : {
                 value : true
+            },
+            uCausticType : {
+                value : this.causticType
             },
             uOpacity : {
                 value : this.options.opacityGlass
