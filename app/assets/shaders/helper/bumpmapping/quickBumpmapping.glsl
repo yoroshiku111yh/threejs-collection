@@ -31,7 +31,7 @@ vec4 quickBumpMapping( vec2 uv, vec3 iResolution, sampler2D iChannel0, float iTi
     
     vec3 offset = vec3(texel_offset / iResolution.xy, 0.0);
     
-    vec3 surfaceColor = vec3(0.0); //texture(iChannel0, uv).rgb;
+    vec3 surfaceColor = texture(iChannel0, uv).rgb;
 	float height = texelHeight(surfaceColor.rgbb) * height_multiplier;
     vec3 worldPosition = vec3(uv, height);
     

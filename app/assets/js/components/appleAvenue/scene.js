@@ -206,6 +206,12 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             uMapTexture : {
                 value : this.loader.load(this.mapBumpSrc)
+            },
+            uPositionLight : {
+                value : new THREE.Vector2(this.options.positionLight.x, this.options.positionLight.y)
+            },
+            uLightPower : {
+                value : this.options.lightPower
             }
         });
         this.cubeBorderMesh = new THREE.Mesh(geo, this.mat);

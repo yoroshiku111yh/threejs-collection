@@ -24,6 +24,11 @@ export default class AppleAvenue {
             isRotate: false,
             opacityGlass : 30.0,
             envMap : false,
+            positionLight : {
+                x : 1.24,
+                y : 1.24
+            },
+            lightPower : 5,
             caustics : [
                 {
                     text : "Crystal",
@@ -81,21 +86,25 @@ export default class AppleAvenue {
     }
     animate() {
         if (this.scene.cubeMesh) {
-            this.scene.cubeMesh.material.uniforms.lenghtDisplacement.value = this.options.lenghtDisplacement;
-            this.scene.cubeMesh.material.uniforms.lengthMaximum.value = this.options.lengthMaximum;
-            this.scene.cubeMesh.material.uniforms.uBounce.value = this.bounce.current;
+            const uniformsCube = this.scene.cubeMesh.material.uniforms;
+            uniformsCube.lenghtDisplacement.value = this.options.lenghtDisplacement;
+            uniformsCube.lengthMaximum.value = this.options.lengthMaximum;
+            uniformsCube.uBounce.value = this.bounce.current;
             if(this.options.isRotate){
                 this.scene.cubeMesh.rotation.x += this.options.speedRotate;
                 this.scene.cubeMesh.rotation.y += this.options.speedRotate;
             }
         }
         if(this.scene.cubeBorderMesh){
+            const uniformsBorder = this.scene.cubeBorderMesh.material.uniforms;
             if(this.options.isRotate){
                 this.scene.cubeBorderMesh.rotation.x += this.options.speedRotate;
                 this.scene.cubeBorderMesh.rotation.y += this.options.speedRotate;
             }
-            this.scene.cubeBorderMesh.material.uniforms.uOpacity.value = this.options.opacityGlass;
-            this.scene.cubeBorderMesh.material.uniforms.isUseEnvMap.value = this.options.envMap;
+            uniformsBorder.uOpacity.value = this.options.opacityGlass;
+            uniformsBorder.isUseEnvMap.value = this.options.envMap;
+            uniformsBorder.uPositionLight.value = this.options.positionLight;
+            uniformsBorder.uLightPower.value = this.options.lightPower;
         }
     }
     gui() {
@@ -116,13 +125,27 @@ export default class AppleAvenue {
         this.pane.addInput(this.options, "isRotate");
         this.pane.addInput(this.options, "envMap");
         ////////////////
+        this.pane.addInput(this.options.positionLight, "x", {
+            min : 0.0,
+            max : 1.5
+        });
+        ///////////////
+        this.pane.addInput(this.options.positionLight, "y", {
+            min : 0.0,
+            max : 1.5
+        });
+        ///////////////
+        this.pane.addInput(this.options, "lightPower", {
+            min : 0.0,
+            max : 10
+        });
         ///////////////
         this.pane.on('change', (ev) => {
             if (ev.target.label === "Caustic") {
                 this.options.causticType = ev.value;
                 this.scene.cubeBorderMesh.material.uniforms.uCausticType.value = ev.value;
             }
-        })
+        });
     }
     initSmoothScroll() {
         document.querySelector('body').classList.add("smooth-scroll-wrapper-body");

@@ -5,7 +5,7 @@
 #pragma glslify:borders=require('../../helper/borders');
 #pragma glslify:causticAmoebas=require('../../helper/caustic/causticAmoebas');
 #pragma glslify:causticCrystal=require('../../helper/caustic/causticCrystal');
-#pragma glslify:quickBumpMapping=require('../../helper/bumpmapping/quickBumpMapping');
+#pragma glslify:pointLightPhysic=require('../../helper/light/pointLightPhysic');
 uniform vec3 uResolution;
 uniform float uTick;
 uniform bool isUseEnvMap;
@@ -20,7 +20,9 @@ varying vec2 vUv;
 
 varying float vSides;
 
-uniform sampler2D uMapTexture;
+//uniform sampler2D uMapTexture;
+uniform vec2 uPositionLight;
+uniform float uLightPower;
 
 uniform samplerCube uEnvMap;
 uniform float uOpacity;
@@ -59,17 +61,15 @@ void main() {
     if(uCausticType == 1){
         col = causticAmoebas(st2, uTick*5.);
     }
-    ///
-    vec4 bumpmap = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0, 3.0);
-    vec4 bumpmap2 = quickBumpMapping(vUv, uResolution, uMapTexture, uTick*5.0, 5.0);
-    bumpmap.a = opacityOfFresnel;
-    bumpmap2.a = opacityOfFresnel;
-    vec4 mixBump = bumpmap*col + bumpmap2*0.5;
+    col.a = opacityOfFresnel;
+    //
+    vec2 positionLight = st - uPositionLight;
+    vec4 pointLight1 = pointLightPhysic(positionLight, uTick*5., uLightPower/ 100.);
     ///
     if(isUseEnvMap){
         gl_FragColor = borderColor + _cubeMap;
     }
     else{
-        gl_FragColor = borderColor + vec4(mixBump.rgb, opacityOfFresnel);
+        gl_FragColor = vec4(pointLight1.rgb, pointLight1.a) + borderColor + col;
     }
 }
