@@ -41,8 +41,9 @@ vec3 spectral_colour(float l) // RGB <0,1> <- lambda l <400,700> [nm]
 }
 
 vec4 solubleRainbow(vec2 fragCoord, vec3 iResolution, float iTime) {
-    vec4 fragColor = vec4(vec3(0.0) 1.0);
-    vec2 p = (2.0 * fragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);
+    vec4 fragColor = vec4(vec3(0.0), 1.0);
+    float power = 3.5;
+    vec2 p = (power * fragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);
 
     p *= 2.0;
 

@@ -37,6 +37,22 @@ export default class AppleAvenue {
                 {
                     text : "Amoebas",
                     value : 1
+                },
+                {
+                    text : "Soluble",
+                    value : 2
+                },
+                {
+                    text : "Turbo color map",
+                    value : 3
+                },
+                {
+                    text : "Blob Rainbow",
+                    value : 4
+                },
+                {
+                    text : "Tileable water",
+                    value : 5
                 }
             ],
             causticType : 0

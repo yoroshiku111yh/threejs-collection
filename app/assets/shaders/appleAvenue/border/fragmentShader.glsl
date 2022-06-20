@@ -6,6 +6,11 @@
 #pragma glslify:causticAmoebas=require('../../helper/caustic/causticAmoebas');
 #pragma glslify:causticCrystal=require('../../helper/caustic/causticCrystal');
 #pragma glslify:pointLightPhysic=require('../../helper/light/pointLightPhysic');
+#pragma glslify:solubleRainbow=require('../../helper/caustic/solubleRainbow');
+#pragma glslify:turboColorMapInit=require('../../helper/caustic/turboColorMap');
+#pragma glslify:blobRainbow=require('../../helper/caustic/blobRainbow');
+#pragma glslify:tileableWater=require('../../helper/caustic/causticTileableWater');
+
 uniform vec3 uResolution;
 uniform float uTick;
 uniform bool isUseEnvMap;
@@ -60,6 +65,23 @@ void main() {
     }
     if(uCausticType == 1){
         col = causticAmoebas(st2, uTick*5.);
+    }
+    if(uCausticType == 2){
+        col = solubleRainbow(gl_FragCoord.xy, uResolution, uTick*5.);
+    }
+    if(uCausticType == 3){
+        col = turboColorMapInit(st2, uTick*10.);
+    }
+    if(uCausticType == 4){
+        vec3 col1 = blobRainbow(st, uTick*5., vec2(0.25, 0.25), 10.);
+        col1 = 0.75 - col1;
+        col = vec4(col1, 1.0);
+    }
+    if(uCausticType == 5){
+        float tick = uTick * 5.;
+        vec3 bgColor = vec3(sin(0.57 + 7. + tick * .7), sin(0.59 - 15. - tick * .65), sin( 0.6 + tick * .9)) * 0.5;
+        vec3 col1 = tileableWater(st2, tick, uResolution.xy, bgColor);
+        col = vec4(col1, 1.0);
     }
     col.a = opacityOfFresnel;
     //
