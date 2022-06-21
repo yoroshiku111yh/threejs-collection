@@ -33,7 +33,7 @@
 //     return fragColor = vec4(col,1.0);
 // }
 
-vec3 blobRainbow( vec2 uv, float iTime, vec2 posPin, float distanceMulti) //out vec4 fragColor, in vec2 fragCoord
+vec3 blobRainbow( vec2 uv, float iTime, vec2 posPin, float distanceMulti, bool noUseModify, vec3 colorModify) //out vec4 fragColor, in vec2 fragCoord
 {
     vec2 relCenter = vec2(0.5,0.5);
     
@@ -58,8 +58,13 @@ vec3 blobRainbow( vec2 uv, float iTime, vec2 posPin, float distanceMulti) //out 
 
     // Time varying pixel color
     vec3 timeVarying = cos(iTime+uv.xyx+initialRotationDirection);
-    
-    vec3 col = distanceFromCenter*circleArea *0.03 + 0.5*timeVarying;
+    vec3 col;
+    if(noUseModify){
+        col = distanceFromCenter*circleArea *0.03 + 0.5*timeVarying;
+    }
+    else{
+        col = distanceFromCenter*circleArea *0.03 + 0.5*colorModify;
+    }
     // Output to screen
     return col;
 }

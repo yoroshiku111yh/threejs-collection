@@ -57,6 +57,42 @@ export default class AppleAvenue {
             ],
             causticType : 0
         };
+        this.optionsColorSideLogo = {
+            "side1" : {
+                color1 : "rgb(227, 31, 199)",
+                color2 : "rgb(74, 173, 242)",
+            },
+            "side2" : {
+                color1 : "rgb(227, 31, 199)",
+                color2 : "rgb(255, 204, 51)",
+            },
+            "side3" : {
+                color1 : "rgb(255, 204, 51)",
+                color2 : "rgb(235, 51, 36)",
+            },
+            "side4" : {
+                color1 : "rgb(255, 204, 51)",
+                color2 : "rgb(235, 51, 36)",
+            },
+            "side5" : {
+                color1 : "rgb(255, 255, 255)",
+                color2 : "rgb(255, 255, 255)",
+            },
+            "side6" : {
+                color1 : "rgb(227, 31, 199)",
+                color2 : "rgb(255, 204, 51)",
+            },
+        };
+        this.optionsColorGlassCube = {
+            color1 : "rgb(255, 255, 255)",
+            color2 : "rgb(255, 255, 255)",
+            notUse : false
+        };
+        this.optionsColorBorder = {
+            color1 : "rgb(255, 255, 255)",
+            color2 : "rgb(255, 255, 255)",
+            notUse : true
+        };
         this.bounce = {
             min : 0.0,
             max : 0.025,
@@ -90,6 +126,9 @@ export default class AppleAvenue {
         this.scene = new SceneAppleAvenue({
             $container: this.$container,
             options: this.options,
+            optionsColorSideLogo : this.optionsColorSideLogo,
+            optionsColorGlassCube : this.optionsColorGlassCube,
+            optionsColorBorder : this.optionsColorBorder,
             size: {
                 width: 900,
                 height: 900
@@ -110,6 +149,7 @@ export default class AppleAvenue {
                 this.scene.cubeMesh.rotation.x += this.options.speedRotate;
                 this.scene.cubeMesh.rotation.y += this.options.speedRotate;
             }
+            this.guiColorLogoUpdate();
         }
         if(this.scene.cubeBorderMesh){
             const uniformsBorder = this.scene.cubeBorderMesh.material.uniforms;
@@ -121,7 +161,66 @@ export default class AppleAvenue {
             uniformsBorder.isUseEnvMap.value = this.options.envMap;
             uniformsBorder.uPositionLight.value = this.options.positionLight;
             uniformsBorder.uLightPower.value = this.options.lightPower;
+            this.guiColorGlassUpdate();
+            this.guiColorBorderUpdate();
         }
+    }
+    guiColorGlassUpdate(){
+        const color1 = this.scene.colorToVector(this.optionsColorGlassCube.color1);
+        const color2 = this.scene.colorToVector(this.optionsColorGlassCube.color2);
+        const material = this.scene.cubeBorderMesh.material;
+        ///////////
+        material.uniforms.colorGlass.value = [
+            color1,
+            color2
+        ];
+        material.uniforms.isNoUseModifyColors.value = this.optionsColorGlassCube.notUse;
+    }
+    guiColorBorderUpdate(){
+        const color1 = this.scene.colorToVector(this.optionsColorBorder.color1);
+        const color2 = this.scene.colorToVector(this.optionsColorBorder.color2);
+        const material = this.scene.cubeBorderMesh.material;
+        ///////////
+        material.uniforms.colorBorder.value = [
+            color1,
+            color2
+        ];
+        material.uniforms.isNoUseModifyColorsBorder.value = this.optionsColorBorder.notUse;
+    }
+    guiColorLogoUpdate(){
+        const obj = this.scene.getColorLogoSideCube();
+        const material = this.scene.cubeMesh.material;
+        ////////////
+        material.uniforms.colorSide1.value = [
+            obj.side1.color1,
+            obj.side1.color2
+        ]
+        ////////////
+        material.uniforms.colorSide2.value = [
+            obj.side2.color1,
+            obj.side2.color2
+        ]
+        ////////////
+        material.uniforms.colorSide3.value = [
+            obj.side3.color1,
+            obj.side3.color2
+        ]
+        ////////////
+        material.uniforms.colorSide4.value = [
+            obj.side4.color1,
+            obj.side4.color2
+        ]
+        ////////////
+        material.uniforms.colorSide5.value = [
+            obj.side5.color1,
+            obj.side5.color2
+        ]
+        ////////////
+        material.uniforms.colorSide6.value = [
+            obj.side6.color1,
+            obj.side6.color2
+        ]
+        ////////////
     }
     gui() {
         this.pane.addInput(this.options, "lengthMaximum", {
@@ -156,6 +255,128 @@ export default class AppleAvenue {
             max : 10
         });
         ///////////////
+        this.paneOnChange();
+        this.paneFolderColorBorder();
+        this.paneFolderColorGlass();
+        this.paneFolderColorLogo();
+        ///////////////
+    }
+    paneFolderColorBorder(){
+        this.folderColorBorder = this.pane.addFolder({
+            title : 'Color border cube',
+            expanded : true
+        });
+        this.folderColorBorder.addInput(
+            this.optionsColorBorder,
+            'color1'
+        );
+        this.folderColorBorder.addInput(
+            this.optionsColorBorder,
+            'color2'
+        );
+        this.folderColorBorder.addInput(
+            this.optionsColorBorder,
+            'notUse'
+        );
+    }
+    paneFolderColorGlass(){
+        this.folderColorGlass = this.pane.addFolder({
+            title : 'Color glass cube',
+            expanded : true
+        });
+        this.folderColorGlass.addInput(
+            this.optionsColorGlassCube,
+            'color1'
+        );
+        this.folderColorGlass.addInput(
+            this.optionsColorGlassCube,
+            'color2'
+        );
+        this.folderColorGlass.addInput(
+            this.optionsColorGlassCube,
+            'notUse'
+        );
+    }
+    paneFolderColorLogo(){
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 1',
+            expanded: false,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side1,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side1,
+            'color2'
+        );
+        ///////////////////////
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 2',
+            expanded: false,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side2,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side2,
+            'color2'
+        );
+        ///////////////////////
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 3',
+            expanded: false,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side3,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side3,
+            'color2'
+        );
+        ///////////////////////
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 4',
+            expanded: false,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side4,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side4,
+            'color2'
+        );
+        ///////////////////////
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 5',
+            expanded: true,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side5,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side5,
+            'color2'
+        );
+        ///////////////////////
+        this.folderColors1 = this.pane.addFolder({
+            title : 'Logo color face 6',
+            expanded: false,
+        });
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side6,
+            'color1'
+        );
+        this.folderColors1.addInput(
+            this.optionsColorSideLogo.side6,
+            'color2'
+        );
+    }
+    paneOnChange(){
         this.pane.on('change', (ev) => {
             if (ev.target.label === "Caustic") {
                 this.options.causticType = ev.value;

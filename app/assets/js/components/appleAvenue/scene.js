@@ -7,9 +7,21 @@ import ShaderAppleAvenueBorder from './../../../shaders/appleAvenue/border/index
 
 
 export default class SceneAppleAvenue extends SceneBase {
-    constructor({ $container, size = {}, options = {}, transition = null, cubeMap = null }) {
+    constructor({
+        $container,
+        size = {},
+        options = {},
+        transition = null,
+        cubeMap = null,
+        optionsColorSideLogo = null,
+        optionsColorGlassCube = null,
+        optionsColorBorder = null
+    }) {
         super($container, size.width, size.height, true);
         this.options = options;
+        this.optionsColorSideLogo = optionsColorSideLogo;
+        this.optionsColorGlassCube = optionsColorGlassCube;
+        this.optionsColorBorder = optionsColorBorder;
         this.transition = transition;
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.maskLogoSrc = document.getElementById("maskLogo").dataset.src;
@@ -123,11 +135,41 @@ export default class SceneAppleAvenue extends SceneBase {
         }
 
     }
+    getColorLogoSideCube() {
+        if (!this.optionsColorSideLogo) return false;
+        const objColor = {};
+        const { side1, side2, side3, side4, side5, side6 } = this.optionsColorSideLogo;
+        objColor.side1 = {};
+        objColor.side1.color1 = this.colorToVector(side1.color1);
+        objColor.side1.color2 = this.colorToVector(side1.color2);
+        ////
+        objColor.side2 = {};
+        objColor.side2.color1 = this.colorToVector(side2.color1);
+        objColor.side2.color2 = this.colorToVector(side2.color2);
+        ////
+        objColor.side3 = {};
+        objColor.side3.color1 = this.colorToVector(side3.color1);
+        objColor.side3.color2 = this.colorToVector(side3.color2);
+        ////
+        objColor.side4 = {};
+        objColor.side4.color1 = this.colorToVector(side4.color1);
+        objColor.side4.color2 = this.colorToVector(side4.color2);
+        ////
+        objColor.side5 = {};
+        objColor.side5.color1 = this.colorToVector(side5.color1);
+        objColor.side5.color2 = this.colorToVector(side5.color2);
+        ////
+        objColor.side6 = {};
+        objColor.side6.color1 = this.colorToVector(side6.color1);
+        objColor.side6.color2 = this.colorToVector(side6.color2);
+        return objColor;
+    }
     createCube() {
         const geo = new THREE.BoxGeometry(1, 1, 1, 1);
 
         geo.setAttribute('sides', new THREE.Float32BufferAttribute(this.createArraySidesCube(), 1));
 
+        const colorSides = this.getColorLogoSideCube();
         this.mat = new ShaderAppleAvenue({
             uPos: {
                 value: this.groupCube.position
@@ -165,6 +207,42 @@ export default class SceneAppleAvenue extends SceneBase {
             },
             lengthMaximum: {
                 value: this.options.lengthMaximum !== null ? this.options.lengthMaximum : 2.2
+            },
+            colorSide1: {
+                value: [
+                    colorSides.side1.color1,
+                    colorSides.side1.color2,
+                ]
+            },
+            colorSide2: {
+                value: [
+                    colorSides.side2.color1,
+                    colorSides.side2.color2,
+                ]
+            },
+            colorSide3: {
+                value: [
+                    colorSides.side3.color1,
+                    colorSides.side3.color2,
+                ]
+            },
+            colorSide4: {
+                value: [
+                    colorSides.side4.color1,
+                    colorSides.side4.color2,
+                ]
+            },
+            colorSide5: {
+                value: [
+                    colorSides.side5.color1,
+                    colorSides.side5.color2,
+                ]
+            },
+            colorSide6: {
+                value: [
+                    colorSides.side6.color1,
+                    colorSides.side6.color2,
+                ]
             }
         });
         this.cubeMesh = new THREE.Mesh(geo, this.mat);
@@ -186,14 +264,14 @@ export default class SceneAppleAvenue extends SceneBase {
                     z: this.resolution.z
                 }
             },
-            isUseEnvMap : {
-                value : true
+            isUseEnvMap: {
+                value: true
             },
-            uCausticType : {
-                value : this.causticType
+            uCausticType: {
+                value: this.causticType
             },
-            uOpacity : {
-                value : this.options.opacityGlass
+            uOpacity: {
+                value: this.options.opacityGlass
             },
             uTick: {
                 value: 0.0
@@ -204,19 +282,40 @@ export default class SceneAppleAvenue extends SceneBase {
             uEnvMap: {
                 value: this.cubeMap
             },
-            uMapTexture : {
-                value : this.loader.load(this.mapBumpSrc)
+            uMapTexture: {
+                value: this.loader.load(this.mapBumpSrc)
             },
-            uPositionLight : {
-                value : new THREE.Vector2(this.options.positionLight.x, this.options.positionLight.y)
+            uPositionLight: {
+                value: new THREE.Vector2(this.options.positionLight.x, this.options.positionLight.y)
             },
-            uLightPower : {
-                value : this.options.lightPower
+            uLightPower: {
+                value: this.options.lightPower
+            },
+            colorGlass: {
+                value: [
+                    new THREE.Color(this.optionsColorGlassCube.color1),
+                    new THREE.Color(this.optionsColorGlassCube.color2)
+                ]
+            },
+            colorBorder : {
+                value : [
+                    new THREE.Color(this.optionsColorBorder.color1),
+                    new THREE.Color(this.optionsColorBorder.color2)
+                ]
+            },
+            isNoUseModifyColors: {
+                value: this.optionsColorGlassCube.notUse
+            },
+            isNoUseModifyColorsBorder: {
+                value: this.optionsColorBorder.notUse
             }
         });
         this.cubeBorderMesh = new THREE.Mesh(geo, this.mat);
         this.cubeBorderMesh.position.z = this.zPositionCube;
         this.groupCube.add(this.cubeBorderMesh);
+    };
+    colorToVector(color) {
+        return new THREE.Color(color);
     }
     createArraySidesCube() {
         const side1 = [0, 0, 0, 0];

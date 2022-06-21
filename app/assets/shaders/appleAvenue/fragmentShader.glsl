@@ -2,6 +2,7 @@
 
 #pragma glslify:radialRainbow=require('../helper/radialRainbow');
 #pragma glslify:gradients=require('../helper/gradients');
+#pragma glslify:gradientMix2Colors=require('../helper/gradientMix2Colors');
 #pragma glslify:borders=require('../helper/borders');
 uniform vec3 uResolution;
 uniform float uTick;
@@ -13,6 +14,13 @@ uniform float lenghtDisplacement;
 uniform float lengthMaximum;
 uniform vec3 uPos;
 uniform float uBounce;
+
+uniform vec3 colorSide1[2];
+uniform vec3 colorSide2[2];
+uniform vec3 colorSide3[2];
+uniform vec3 colorSide4[2];
+uniform vec3 colorSide5[2];
+uniform vec3 colorSide6[2];
 
 const float PI2 = 6.28318530718;
 
@@ -46,8 +54,7 @@ void main() {
 
     float f = Fresnel(eyeVector, normal);
     //////////////
-    vec2 posColor = vec2(0.0);
-
+    vec2 posLogoColor = vec2(0.25);
     ///////////////
 
     vec2 toCenter = vUv ;
@@ -60,10 +67,14 @@ void main() {
     vec2 newUv = st; /// st - uPos*0.4
     newUv += displace_k;
     newUv += displace_k;
-    //////////////
-    vec4 col1 = vec4(gradients(3, vUv, uTick), 1.0);
-    vec4 col2 = vec4(gradients(1, vUv, uTick), 1.0);
-    vec4 col3 = vec4(gradients(2, vUv, uTick), 1.0);
+    /////
+    float speed = 4.;
+    vec4 col1 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide1[0], colorSide1[1], posLogoColor), 1.0);
+    vec4 col2 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide2[0], colorSide2[1], posLogoColor), 1.0);
+    vec4 col3 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide3[0], colorSide3[1], posLogoColor), 1.0);
+    vec4 col4 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide4[0], colorSide4[1], posLogoColor), 1.0);
+    vec4 col5 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide5[0], colorSide5[1], posLogoColor), 1.0);
+    vec4 col6 = vec4(gradientMix2Colors(vUv, uTick*speed, colorSide6[0], colorSide6[1], posLogoColor), 1.0);
     vec4 col;
     //////////////
 
@@ -84,15 +95,15 @@ void main() {
         col.a = mask2.r;
     }
     if(boxSide == 3.) {
-        col = col3;
+        col = col4;
         col.a = mask1.r;
     }
     if(boxSide == 4.) {
-        col = col1;
+        col = col5;
         col.a = mask1.r;
     }
     if(boxSide == 5.) {
-        col = col2;
+        col = col6;
         col.a = mask2.r;
     }
     col.rgb = mix(col.rgb, vec3(0.0), f);

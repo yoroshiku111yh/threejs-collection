@@ -3,7 +3,10 @@
 #define FIELD 10.0
 #define HEIGHT 0.7
 #define ITERATION 2.0
-#define TONE vec4(.2,.4,.8,0)
+#define POPUP_TONE_R .2 
+#define POPUP_TONE_G .4
+#define POPUP_TONE_B .8
+#define TONE vec4(POPUP_TONE_R, POPUP_TONE_G, POPUP_TONE_B, 0)
 #define SPEED 0.5
 
 float eq(vec2 p,float t){
