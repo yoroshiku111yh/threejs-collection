@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import SceneBase from './../../ultilities/sceneBase';
 import { getResolutionVec3 } from '../../ultilities/resolution';
-import { imgUrlWater, imgUrlBrick, imgUrlBlack, imgUrlEnvNightShanghai } from './../../ultilities/srcImgurl';
 import { BufferManager, BufferShader } from './../../ultilities/buffer';
 
 import fragmentBuffer from './../../../shaders/waterSurface/buffer.glsl';

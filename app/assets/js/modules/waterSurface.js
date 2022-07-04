@@ -27,51 +27,51 @@ export default class WaterSurface {
         this.cubeMap = [];
         this.PARAMS = {
             ior: 0.99,
-            power : 3.,
-            bias : 0.,
-            scale : 1.0,
+            power: 3.,
+            bias: 0.,
+            scale: 1.0,
             "m-clear": true,
             "m-refract": true,
             "auto-wave": true,
-            useLightColorEnv : false,
+            useLightColorEnv: false,
             "models": [
                 { text: 'Glass Whale', value: glassWhale },
                 { text: 'Shark', value: shark },
                 { text: 'icosahedron', value: icosahedron }
             ],
             "model": icosahedron,
-            "cubeMaps" : [
-                { text : 'Outside building', value : 0 },
-                { text : 'Shanghai night', value : 1 },
-                { text : 'City night', value : 2 },
+            "cubeMaps": [
+                { text: 'Outside building', value: 0 },
+                { text: 'Shanghai night', value: 1 },
+                { text: 'City night', value: 2 },
             ],
-            "cubeMapIndex" : 0,
-            "enabled-Refraction-color" : false,
-            "zPosition" : -4.88,
-            "zVertex" : 0.46,
-            "zWorldPosition" : 3.0
+            "cubeMapIndex": 0,
+            "enabled-Refraction-color": false,
+            "zPosition": -4.88,
+            "zVertex": 0.46,
+            "zWorldPosition": 3.0
         }
         if (window.innerWidth > 767) {
             this.addPane();
         }
 
         this.enableUploadBannerImage = false;
-        
+
         this.bannerImage = imgUrlBannerText;
         this.bannerImageSize = new Vector2(1899, 838);
 
-        if(this.enableUploadBannerImage){  
+        if (this.enableUploadBannerImage) {
             this.uploadBannerImage();
         }
-        else{
+        else {
             this.init();
         }
     }
-    uploadBannerImage(){
+    uploadBannerImage() {
         const uploadElm = document.getElementById("uploadFile");
         uploadElm.addEventListener('change', (e) => {
             const _this = e.currentTarget;
-            if(!_this.files) return;
+            if (!_this.files) return;
             const src = URL.createObjectURL(_this.files[0]);
             const img = document.createElement("img");
             img.src = src;
@@ -91,15 +91,15 @@ export default class WaterSurface {
             colorReflect: new Color("#fff"),
             colorRefraction: new Color("rgb(255, 245, 245)"),
             isRefract: this.PARAMS.isRefract,
-            envCubeMap : this.cubeMap[this.PARAMS.cubeMapIndex],
-            isHaveEnvCubeMap : true,
-            power : this.PARAMS.power,
-            scale : this.PARAMS.scale,
-            bias : this.PARAMS.bias,
-            isHaveEnvCubeMap : !this.PARAMS.useLightColorEnv,
-            isEnableRefractionColor : this.PARAMS['enabled-Refraction-color'],
-            zVertex : this.PARAMS.zVertex,
-            zWorldPosition : this.PARAMS.zWorldPosition
+            envCubeMap: this.cubeMap[this.PARAMS.cubeMapIndex],
+            isHaveEnvCubeMap: true,
+            power: this.PARAMS.power,
+            scale: this.PARAMS.scale,
+            bias: this.PARAMS.bias,
+            isHaveEnvCubeMap: !this.PARAMS.useLightColorEnv,
+            isEnableRefractionColor: this.PARAMS['enabled-Refraction-color'],
+            zVertex: this.PARAMS.zVertex,
+            zWorldPosition: this.PARAMS.zWorldPosition
         });
         this.scene.zPositionModel = this.PARAMS.zPosition;
         this.scene.bgWall = new TextureLoader().load(this.bannerImage);
@@ -128,16 +128,16 @@ export default class WaterSurface {
     }
     loadCubeMap() {
         new LoadNewCubeMap({
-            path : this.pathSrcCubeMapOutSide,
-            resolve : (cubemap) => { this.cubeMap[0] = cubemap; }
+            path: this.pathSrcCubeMapOutSide,
+            resolve: (cubemap) => { this.cubeMap[0] = cubemap; }
         });
         new LoadNewCubeMap({
-            path : this.pathSrcCubeMapShangHai,
-            resolve : (cubemap) => { this.cubeMap[1] = cubemap; }
+            path: this.pathSrcCubeMapShangHai,
+            resolve: (cubemap) => { this.cubeMap[1] = cubemap; }
         });
         new LoadNewCubeMap({
-            path : this.pathSrcCubeMapCityNight,
-            resolve : (cubemap) => { this.cubeMap[2] = cubemap; }
+            path: this.pathSrcCubeMapCityNight,
+            resolve: (cubemap) => { this.cubeMap[2] = cubemap; }
         })
     }
     startup() {
@@ -172,7 +172,9 @@ export default class WaterSurface {
             });
             window.addEventListener("touchmove", (e) => {
                 //this.scene.eventMouseMove(e);
-                this.scene.followMouseFn(e, 3.0);
+                if (window.innerWidth > 768) {
+                    this.scene.followMouseFn(e, 3.0);
+                }
             });
             window.addEventListener("touchend", () => {
                 //this.scene.eventMouseUp();
@@ -183,7 +185,9 @@ export default class WaterSurface {
             });
             window.addEventListener("mousemove", (e) => {
                 //this.scene.eventMouseMove(e);
-                this.scene.followMouseFn(e, 3.0);
+                if (window.innerWidth > 768) {
+                    this.scene.followMouseFn(e, 3.0);
+                }
             });
             window.addEventListener("mouseup", () => {
                 //this.scene.eventMouseUp();

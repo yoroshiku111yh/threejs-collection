@@ -1,6 +1,8 @@
 
 // multi-side refraction : https://codesandbox.io/s/w0ntb?file=/src/refraction-material/fragment.glsl:644-1536
 
+#pragma glslify:gaussianBlur=require('../helper/blur/gaussianBlur');
+
 uniform sampler2D envMap;
 uniform samplerCube envCubeMap;
 uniform vec3 resolution;
@@ -43,12 +45,16 @@ void main() {
 	// sample the background texture
 	vec4 tex;
 	if(isEnableRefractionColor){
-		tex.r = texture2D(envMap, uv * colorRefraction.r).r;
-		tex.g = texture2D(envMap, uv * colorRefraction.g).g;
-		tex.b = texture2D(envMap, uv * colorRefraction.b).b;
+		// tex.r = texture2D(envMap, uv * colorRefraction.r).r;
+		// tex.g = texture2D(envMap, uv * colorRefraction.g).g;
+		// tex.b = texture2D(envMap, uv * colorRefraction.b).b;
+		tex.r = gaussianBlur(envMap, uv* colorRefraction.r, resolution).r;
+		tex.g = gaussianBlur(envMap, uv* colorRefraction.g, resolution).g;
+		tex.b = gaussianBlur(envMap, uv* colorRefraction.b, resolution).b;
 	}
 	else{
-		tex = texture2D(envMap, uv);
+		//tex = texture2D(envMap, uv);
+		tex = gaussianBlur(envMap, uv, resolution);
 	}
 	vec4 outputTex = tex;
 
