@@ -14,6 +14,8 @@ uniform float bias; // 0.0
 uniform float scale; // 1.0
 uniform float power; // 3.0
 
+uniform bool isEnableRefractionColor;
+
 varying vec3 worldNormal;
 varying vec3 viewDirection;
 varying vec3 eyeVector;
@@ -40,10 +42,14 @@ void main() {
 
 	// sample the background texture
 	vec4 tex;
-	tex.r = texture2D(envMap, uv * colorRefraction.r).r;
-	tex.g = texture2D(envMap, uv * colorRefraction.g).g;
-	tex.b = texture2D(envMap, uv * colorRefraction.b).b;
-
+	if(isEnableRefractionColor){
+		tex.r = texture2D(envMap, uv * colorRefraction.r).r;
+		tex.g = texture2D(envMap, uv * colorRefraction.g).g;
+		tex.b = texture2D(envMap, uv * colorRefraction.b).b;
+	}
+	else{
+		tex = texture2D(envMap, uv);
+	}
 	vec4 outputTex = tex;
 
 	// calculate the Fresnel ratio

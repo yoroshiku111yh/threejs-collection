@@ -10,6 +10,7 @@ import fragmentImage from './../../../shaders/waterSurface/fragmentShader.glsl';
 import ShaderRefractMultisideCommon from './../../../shaders/refractMultisideCommon/index';
 import { clearColorDark } from './../../ultilities/variable';
 import { getTextureCover } from '../../ultilities/textureCover';
+import { TweenMax } from 'gsap/gsap-core';
 
 //z = -15
 export default class SceneWaterSurface extends SceneBase {
@@ -17,6 +18,7 @@ export default class SceneWaterSurface extends SceneBase {
         super($container, size.width, size.height);
         this.resolution = getResolutionVec3({ W: this.W, H: this.H });
         this.mouse = new THREE.Vector4();
+        this.mouseFollow = new THREE.Vector2();
         this.pointer = new THREE.Vector2();
         this.loader = new THREE.TextureLoader();
         this.rayCaster = new THREE.Raycaster();
@@ -76,10 +78,15 @@ export default class SceneWaterSurface extends SceneBase {
         isHaveEnvCubeMap = false,
         power = 3.,
         scale = 1.,
-        bias = 0.0
-
+        bias = 0.0,
+        isEnableRefractionColor,
+        zVertex,
+        zWorldPosition
     }) {
         this.dataUniformsModel = {
+            isEnableRefractionColor : {
+                value : isEnableRefractionColor
+            },
             power : {
                 value : power
             },
@@ -113,8 +120,11 @@ export default class SceneWaterSurface extends SceneBase {
             resolution: {
                 value: new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z)
             },
-            zPosition: {
-                value: this.getZmodel()
+            zVertex: {
+                value: zVertex
+            },
+            zWorldPosition : {
+                value : zWorldPosition
             },
             isRefract: {
                 value: isRefract
@@ -132,7 +142,6 @@ export default class SceneWaterSurface extends SceneBase {
         this.createBufferA();
         this.createBufferPlane();
         this.createModel();
-        this.eventMouse();
         window.addEventListener("resize", this.resize.bind(this));
         this.update();
     }
@@ -174,10 +183,8 @@ export default class SceneWaterSurface extends SceneBase {
             });
     }
     createModel() {
-        //const geo = new THREE.IcosahedronGeometry(1, 0);
         this.materialModel = new ShaderRefractMultisideCommon(this.dataUniformsModel);
         this.materialModel.uniforms.envMap.value = this.envFbo.texture;
-        //this.modelMesh = new THREE.Mesh(geo, this.materialModel);
         this.modelMesh = new THREE.Mesh(
             new THREE.PlaneGeometry(),
             new THREE.MeshBasicMaterial()
@@ -244,17 +251,6 @@ export default class SceneWaterSurface extends SceneBase {
             this.isInteractive = true;
         }
     }
-    eventMouse() {
-        if ("ontouchmove" in window) {
-            window.addEventListener("touchstart", this.eventMouseDown.bind(this));
-            window.addEventListener("touchmove", this.eventMouseMove.bind(this));
-            window.addEventListener("touchend", this.eventMouseUp.bind(this));
-        } else {
-            window.addEventListener("mousedown", this.eventMouseDown.bind(this));
-            window.addEventListener("mousemove", this.eventMouseMove.bind(this));
-            window.addEventListener("mouseup", this.eventMouseUp.bind(this));
-        }
-    }
     eventMouseDown() {
         if (this.isInteractive) {
             this.mouse.setZ(1);
@@ -303,27 +299,22 @@ export default class SceneWaterSurface extends SceneBase {
         this.quad.scale.set(this.W, this.H, 1);
 
         this.materialModel.uniforms.resolution.value = new THREE.Vector3(this.resolution.x * this.resolution.z, this.resolution.y * this.resolution.z, this.resolution.z);
-        this.materialModel.uniforms.zPosition.value = this.getZmodel();
+    }
+    followMouseFn(e, rangeFollow){
+        const x = e.touches ? e.touches[0].clientX : e.clientX;
+        const y = e.touches ? e.touches[0].clientY : e.clientY;
+        TweenMax.to(this.mouseFollow, 0.5, {
+            x: (x / this.W) * 2 * rangeFollow - 1 * rangeFollow,
+            y: -(y / this.H) * 2 * rangeFollow/2 + 1 * rangeFollow/2,
+        });
+        TweenMax.to(this.modelMesh.position, 0.5, {
+            x : this.mouseFollow.x,
+            y : this.mouseFollow.y
+        })
     }
     resizeSurface() {
         this.bufferA.resize({ x: this.resolution.x, y: this.resolution.y });
         this.bufferImage.resize({ x: this.resolution.x, y: this.resolution.y });
-    }
-    getZmodel() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        let z = 1;
-        if (width > height) return z;
-        if (width < 900) {
-            z = 1.5 * 900 / width;
-            if (z < 1.0) {
-                z = 1.0;
-            }
-            if (z > 2.0) {
-                z = 2.0;
-            }
-        }
-        return z;
     }
     removeModel(uniqueName) {
         const prevModel = this.mainScene.getObjectByName(uniqueName);
@@ -334,6 +325,6 @@ export default class SceneWaterSurface extends SceneBase {
         meshModel.name = uniqueName;
         this.modelMesh = meshModel;
         this.mainScene.add(this.modelMesh);
-        this.modelMesh.position.z = 1;
+        this.modelMesh.position.z = this.zPositionModel || 1;
     }
 }

@@ -10,7 +10,7 @@ uniform bool isAutoRegeneratorWaterDrop;
 
 #define STRENGTH     (0.75) // wave of life
 #define MODIFIER     (0.99) // circle
-#define STEP         (5.00) 
+#define STEP         (3.00) 
 
 #define S(e) (texture(iChannel0, p+e).x) // Sample
 

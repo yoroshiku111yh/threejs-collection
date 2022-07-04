@@ -46,11 +46,20 @@ export default class WaterSurface {
                 { text : 'City night', value : 2 },
             ],
             "cubeMapIndex" : 0,
+            "enabled-Refraction-color" : false,
+            "zPosition" : -4.88,
+            "zVertex" : 0.46,
+            "zWorldPosition" : 3.0
         }
         if (window.innerWidth > 767) {
             this.addPane();
         }
-        this.enableUploadBannerImage = true;
+
+        this.enableUploadBannerImage = false;
+        
+        this.bannerImage = imgUrlBannerText;
+        this.bannerImageSize = new Vector2(1899, 838);
+
         if(this.enableUploadBannerImage){  
             this.uploadBannerImage();
         }
@@ -59,8 +68,6 @@ export default class WaterSurface {
         }
     }
     uploadBannerImage(){
-        this.bannerImage = imgUrlBannerText;
-        this.bannerImageSize = new Vector2(1899, 838);
         const uploadElm = document.getElementById("uploadFile");
         uploadElm.addEventListener('change', (e) => {
             const _this = e.currentTarget;
@@ -80,7 +87,7 @@ export default class WaterSurface {
         this.scene.setDataUniformsBuffer();
         this.scene.setDataUniformsBufferPlane();
         this.scene.setDataUniformsModel({
-            ior: 0.0,
+            ior: 0.99,
             colorReflect: new Color("#fff"),
             colorRefraction: new Color("rgb(255, 245, 245)"),
             isRefract: this.PARAMS.isRefract,
@@ -89,8 +96,12 @@ export default class WaterSurface {
             power : this.PARAMS.power,
             scale : this.PARAMS.scale,
             bias : this.PARAMS.bias,
-            isHaveEnvCubeMap : !this.PARAMS.useLightColorEnv
+            isHaveEnvCubeMap : !this.PARAMS.useLightColorEnv,
+            isEnableRefractionColor : this.PARAMS['enabled-Refraction-color'],
+            zVertex : this.PARAMS.zVertex,
+            zWorldPosition : this.PARAMS.zWorldPosition
         });
+        this.scene.zPositionModel = this.PARAMS.zPosition;
         this.scene.bgWall = new TextureLoader().load(this.bannerImage);
         this.scene.bgWallSize = this.bannerImageSize;
         this.scene.isModelNotTransparent = !this.PARAMS["m-clear"];
@@ -102,9 +113,10 @@ export default class WaterSurface {
             this.renderPane();
         };
         this.scene.modelName = "model-main";
-
         this.scene.init();
-
+        /////////
+        this.eventMouse();
+        /////////
         new LoaderOBJ({
             src: this.PARAMS.model,
             resolve: (obj) => {
@@ -147,6 +159,36 @@ export default class WaterSurface {
         this.scene.dataUniformsModel.scale.value = this.PARAMS.scale;
         this.scene.dataUniformsModel.envCubeMap.value = this.cubeMap[this.PARAMS.cubeMapIndex];
         this.scene.dataUniformsModel.isHaveEnvCubeMap.value = !this.PARAMS.useLightColorEnv;
+        this.scene.dataUniformsModel.isEnableRefractionColor.value = this.PARAMS['enabled-Refraction-color'];
+        /////////
+        this.scene.modelMesh.position.z = this.PARAMS.zPosition;
+        this.scene.dataUniformsModel.zVertex.value = this.PARAMS.zVertex;
+        this.scene.dataUniformsModel.zWorldPosition.value = this.PARAMS.zWorldPosition;
+    }
+    eventMouse() {
+        if ("ontouchmove" in window) {
+            window.addEventListener("touchstart", (e) => {
+                //this.scene.eventMouseDown();
+            });
+            window.addEventListener("touchmove", (e) => {
+                //this.scene.eventMouseMove(e);
+                this.scene.followMouseFn(e, 3.0);
+            });
+            window.addEventListener("touchend", () => {
+                //this.scene.eventMouseUp();
+            });
+        } else {
+            window.addEventListener("mousedown", () => {
+                //this.scene.eventMouseDown();
+            });
+            window.addEventListener("mousemove", (e) => {
+                //this.scene.eventMouseMove(e);
+                this.scene.followMouseFn(e, 3.0);
+            });
+            window.addEventListener("mouseup", () => {
+                //this.scene.eventMouseUp();
+            });
+        }
     }
     addPane() {
         this.pane.addInput(this.PARAMS, "ior", {
@@ -183,7 +225,20 @@ export default class WaterSurface {
             value: this.PARAMS.cubeMapIndex,
         });
 
-        ////////////event
+        this.pane.addInput(this.PARAMS, "enabled-Refraction-color");
+        this.pane.addInput(this.PARAMS, "zVertex", {
+            min: 0.0,
+            max: 3.0
+        });
+        this.pane.addInput(this.PARAMS, "zPosition", {
+            min: -7.0,
+            max: 1.0
+        });
+        this.pane.addInput(this.PARAMS, "zWorldPosition", {
+            min: 1.0,
+            max: 5.0
+        });
+        ////////////event   
         this.pane.on('change', (ev) => {
             if (ev.target.label === "change-model") {
                 if (this.PARAMS.model !== ev.value) {
