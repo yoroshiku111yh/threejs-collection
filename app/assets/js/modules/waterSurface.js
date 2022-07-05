@@ -49,13 +49,14 @@ export default class WaterSurface {
             "enabled-Refraction-color": false,
             "zPosition": -4.88,
             "zVertex": 0.46,
-            "zWorldPosition": 3.0
+            "zWorldPosition": 3.0,
+            "blur" : 14.0
         }
         if (window.innerWidth > 767) {
             this.addPane();
         }
 
-        this.enableUploadBannerImage = false;
+        this.enableUploadBannerImage = true;
 
         this.bannerImage = imgUrlBannerText;
         this.bannerImageSize = new Vector2(1899, 838);
@@ -99,7 +100,8 @@ export default class WaterSurface {
             isHaveEnvCubeMap: !this.PARAMS.useLightColorEnv,
             isEnableRefractionColor: this.PARAMS['enabled-Refraction-color'],
             zVertex: this.PARAMS.zVertex,
-            zWorldPosition: this.PARAMS.zWorldPosition
+            zWorldPosition: this.PARAMS.zWorldPosition,
+            powerBlur : this.PARAMS.blur
         });
         this.scene.zPositionModel = this.PARAMS.zPosition;
         this.scene.bgWall = new TextureLoader().load(this.bannerImage);
@@ -164,6 +166,7 @@ export default class WaterSurface {
         this.scene.modelMesh.position.z = this.PARAMS.zPosition;
         this.scene.dataUniformsModel.zVertex.value = this.PARAMS.zVertex;
         this.scene.dataUniformsModel.zWorldPosition.value = this.PARAMS.zWorldPosition;
+        this.scene.dataUniformsModel.powerBlur.value = this.PARAMS.blur;
     }
     eventMouse() {
         if ("ontouchmove" in window) {
@@ -241,6 +244,10 @@ export default class WaterSurface {
         this.pane.addInput(this.PARAMS, "zWorldPosition", {
             min: 1.0,
             max: 5.0
+        });
+        this.pane.addInput(this.PARAMS, "blur", {
+            min: 0.0,
+            max: 20.0
         });
         ////////////event   
         this.pane.on('change', (ev) => {

@@ -80,9 +80,13 @@ export default class SceneWaterSurface extends SceneBase {
         bias = 0.0,
         isEnableRefractionColor,
         zVertex,
-        zWorldPosition
+        zWorldPosition,
+        powerBlur
     }) {
         this.dataUniformsModel = {
+            powerBlur : {
+                value : powerBlur
+            },
             isEnableRefractionColor : {
                 value : isEnableRefractionColor
             },

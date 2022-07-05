@@ -16,6 +16,8 @@ uniform float bias; // 0.0
 uniform float scale; // 1.0
 uniform float power; // 3.0
 
+uniform float powerBlur;
+
 uniform bool isEnableRefractionColor;
 
 varying vec3 worldNormal;
@@ -48,13 +50,13 @@ void main() {
 		// tex.r = texture2D(envMap, uv * colorRefraction.r).r;
 		// tex.g = texture2D(envMap, uv * colorRefraction.g).g;
 		// tex.b = texture2D(envMap, uv * colorRefraction.b).b;
-		tex.r = gaussianBlur(envMap, uv* colorRefraction.r, resolution).r;
-		tex.g = gaussianBlur(envMap, uv* colorRefraction.g, resolution).g;
-		tex.b = gaussianBlur(envMap, uv* colorRefraction.b, resolution).b;
+		tex.r = gaussianBlur(envMap, uv* colorRefraction.r, resolution, powerBlur).r;
+		tex.g = gaussianBlur(envMap, uv* colorRefraction.g, resolution, powerBlur).g;
+		tex.b = gaussianBlur(envMap, uv* colorRefraction.b, resolution, powerBlur).b;
 	}
 	else{
 		//tex = texture2D(envMap, uv);
-		tex = gaussianBlur(envMap, uv, resolution);
+		tex = gaussianBlur(envMap, uv, resolution, powerBlur);
 	}
 	vec4 outputTex = tex;
 
