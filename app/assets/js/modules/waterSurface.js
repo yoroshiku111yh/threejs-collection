@@ -26,7 +26,7 @@ export default class WaterSurface {
         this.pathSrcCubeMapCityNight = document.querySelector("#pathSrcCubeMapCityNight").dataset.path;
         this.cubeMap = [];
         this.PARAMS = {
-            ior: 0.99,
+            ior: 2.0,
             power: 3.,
             bias: 0.,
             scale: 1.0,
@@ -50,14 +50,16 @@ export default class WaterSurface {
             "zPosition": -4.88,
             "zVertex": 0.46,
             "zWorldPosition": 3.0,
-            "blur" : 14.0
+            "blur" : 4.35,
+            "rangeFollow" : 10.0,
+            "powerRefract" : 0.15
         }
         if (window.innerWidth > 767) {
             this.addPane();
         }
 
         this.enableUploadBannerImage = true;
-
+        console.log(this.enableUploadBannerImage);
         this.bannerImage = imgUrlBannerText;
         this.bannerImageSize = new Vector2(1899, 838);
 
@@ -101,7 +103,8 @@ export default class WaterSurface {
             isEnableRefractionColor: this.PARAMS['enabled-Refraction-color'],
             zVertex: this.PARAMS.zVertex,
             zWorldPosition: this.PARAMS.zWorldPosition,
-            powerBlur : this.PARAMS.blur
+            powerBlur : this.PARAMS.blur,
+            powerRefract : this.PARAMS.powerRefract
         });
         this.scene.zPositionModel = this.PARAMS.zPosition;
         this.scene.bgWall = new TextureLoader().load(this.bannerImage);
@@ -167,6 +170,7 @@ export default class WaterSurface {
         this.scene.dataUniformsModel.zVertex.value = this.PARAMS.zVertex;
         this.scene.dataUniformsModel.zWorldPosition.value = this.PARAMS.zWorldPosition;
         this.scene.dataUniformsModel.powerBlur.value = this.PARAMS.blur;
+        this.scene.dataUniformsModel.powerRefract.value = this.PARAMS.powerRefract;
     }
     eventMouse() {
         if ("ontouchmove" in window) {
@@ -176,7 +180,7 @@ export default class WaterSurface {
             window.addEventListener("touchmove", (e) => {
                 //this.scene.eventMouseMove(e);
                 if (window.innerWidth > 768) {
-                    this.scene.followMouseFn(e, 3.0);
+                    this.scene.followMouseFn(e, this.PARAMS.rangeFollow);
                 }
             });
             window.addEventListener("touchend", () => {
@@ -189,7 +193,7 @@ export default class WaterSurface {
             window.addEventListener("mousemove", (e) => {
                 //this.scene.eventMouseMove(e);
                 if (window.innerWidth > 768) {
-                    this.scene.followMouseFn(e, 3.0);
+                    this.scene.followMouseFn(e, this.PARAMS.rangeFollow);
                 }
             });
             window.addEventListener("mouseup", () => {
@@ -200,7 +204,7 @@ export default class WaterSurface {
     addPane() {
         this.pane.addInput(this.PARAMS, "ior", {
             min: 0.0,
-            max: 1.15
+            max: 3.0//1.15
         });
         this.pane.addInput(this.PARAMS, "power", {
             min: 0.0,
@@ -247,7 +251,15 @@ export default class WaterSurface {
         });
         this.pane.addInput(this.PARAMS, "blur", {
             min: 0.0,
+            max: 50.0
+        });
+        this.pane.addInput(this.PARAMS, "rangeFollow", {
+            min: 0.0,
             max: 20.0
+        });
+        this.pane.addInput(this.PARAMS, "powerRefract", {
+            min: 0.0,
+            max: 2.0
         });
         ////////////event   
         this.pane.on('change', (ev) => {

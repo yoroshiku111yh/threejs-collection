@@ -3,7 +3,7 @@
 #define PI2 6.2831853072 // PI * 2
 #define PI_O_2 1.5707963268 // PI / 2
 
-const float passes = 1.0;
+const float passes = 7.0;
 const float radius = 6.0;
 const float lossiness = 2.0;
 const float preserveOriginal = 0.0;
