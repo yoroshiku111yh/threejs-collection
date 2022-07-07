@@ -21,9 +21,12 @@ export default class WaterSurface {
             $container: this.$container
         });
         this.pane = new Pane();
-        this.pathSrcCubeMapShangHai = document.querySelector("#pathSrcShangHaiCubeMap").dataset.path;
-        this.pathSrcCubeMapOutSide = document.querySelector("#pathSrcCubeMapOutSide").dataset.path;
-        this.pathSrcCubeMapCityNight = document.querySelector("#pathSrcCubeMapCityNight").dataset.path;
+        this.pathSrcNeon1 = document.querySelector("#pathSrcNeon1").dataset.path;
+        this.pathSrcNeon2 = document.querySelector("#pathSrcNeon2").dataset.path;
+        this.pathSrcNeon3 = document.querySelector("#pathSrcNeon3").dataset.path;
+        this.pathSrcNeon4 = document.querySelector("#pathSrcNeon4").dataset.path;
+        this.pathSrcNeon5 = document.querySelector("#pathSrcNeon5").dataset.path;
+        this.pathSrcNeon6 = document.querySelector("#pathSrcNeon6").dataset.path;
         this.cubeMap = [];
         this.PARAMS = {
             ior: 2.0,
@@ -41,9 +44,12 @@ export default class WaterSurface {
             ],
             "model": icosahedron,
             "cubeMaps": [
-                { text: 'Outside building', value: 0 },
-                { text: 'Shanghai night', value: 1 },
-                { text: 'City night', value: 2 },
+                { text: 'Neon 1', value: 0 },
+                { text: 'Neon 2', value: 1 },
+                { text: 'Neon 3', value: 2 },
+                { text: 'Neon 4', value: 3 },
+                { text: 'Neon 5', value: 4 },
+                { text: 'Neon 6', value: 5 },
             ],
             "cubeMapIndex": 0,
             "enabled-Refraction-color": false,
@@ -133,17 +139,29 @@ export default class WaterSurface {
     }
     loadCubeMap() {
         new LoadNewCubeMap({
-            path: this.pathSrcCubeMapOutSide,
+            path: this.pathSrcNeon1,
             resolve: (cubemap) => { this.cubeMap[0] = cubemap; }
         });
         new LoadNewCubeMap({
-            path: this.pathSrcCubeMapShangHai,
+            path: this.pathSrcNeon2,
             resolve: (cubemap) => { this.cubeMap[1] = cubemap; }
         });
         new LoadNewCubeMap({
-            path: this.pathSrcCubeMapCityNight,
+            path: this.pathSrcNeon3,
             resolve: (cubemap) => { this.cubeMap[2] = cubemap; }
-        })
+        });
+        new LoadNewCubeMap({
+            path: this.pathSrcNeon4,
+            resolve: (cubemap) => { this.cubeMap[3] = cubemap; }
+        });
+        new LoadNewCubeMap({
+            path: this.pathSrcNeon5,
+            resolve: (cubemap) => { this.cubeMap[4] = cubemap; }
+        });
+        new LoadNewCubeMap({
+            path: this.pathSrcNeon6,
+            resolve: (cubemap) => { this.cubeMap[5] = cubemap; }
+        });
     }
     startup() {
         TweenMax.to(this.scene.dataUniformsModel.ior, 2., {
