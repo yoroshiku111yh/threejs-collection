@@ -27,69 +27,73 @@ export default class GooeyEffects {
         
         this.init();
     }
-    init(){
-        this.grabAllTile();
-        this.createSceneEachTile();
-        this.renderTiles();
-        this.requestAnimationSceneTiles();
+    init() {
+        if (window.innerWidth < 768) {
+            return;
+        }
+        this.grabAllTile((obj) => {
+            this.tiles.push(obj);
+            const scene = this.createSceneEachTile(obj);
+            this.sceneTiles.push(scene);
+            const tileRendered = this.renderTile(obj, scene);
+            this.tilesRendered.push(tileRendered);
+            this.requestAnimationSceneTile(tileRendered, scene);
+        });
     }
-    grabAllTile(){
+    grabAllTile(callback = null) {
         const tiles = document.querySelectorAll(this.tilesSelector);
-        for(let i = 0; i < tiles.length; i++){
+        for (let i = 0; i < tiles.length; i++) {
             const tile = tiles[i];
             const img = tile.querySelector(".js-tile");
-            const obj = {
-                id : `tile${i}`,
-                idCanvas : `stage${i}`,
-                imgSrc : img.src,
-                hoverSrc : img.dataset.hover,
-                effect : img.getAttribute("data-effect"),
-                dataUniform : convertStringToUniform(img.getAttribute("data-uniform")),
-                width : img.width,
-                height : img.height,
-                imgDom : img
-            }
-            this.tiles.push(obj);
-        }
-    }
-    createSceneEachTile(){
-        for(let i = 0; i < this.tiles.length; i++){
-            const { idCanvas, width, height } = this.tiles[i];
-            const canvas = document.getElementById(idCanvas);
-            const scene = new SceneCard({
-                $container : canvas,
-                size : {
-                    width : width,
-                    height : height
-                },
-                cameraOption : {
-                    far : 10000,
-                    near : 1
+            const newImg = new Image();
+            newImg.src = img.src;
+            newImg.onload = () => {
+                const obj = {
+                    id: `tile${i}`,
+                    idCanvas: `stage${i}`,
+                    imgSrc: img.src,
+                    hoverSrc: img.dataset.hover,
+                    effect: img.getAttribute("data-effect"),
+                    dataUniform: convertStringToUniform(img.getAttribute("data-uniform")),
+                    width: img.width,
+                    height: img.height,
+                    imgDom: img
                 }
-            });
-            this.sceneTiles.push(scene);
+                callback && callback(obj);
+            };
         }
     }
-    renderTiles(){
-        for(let i = 0 ; i < this.tiles.length; i++){
-            const effect = effects[this.tiles[i].effect];
-            if(!effect) continue;
-            const tileRendered = new Tile({
-                scene : this.sceneTiles[i],
-                tile : this.tiles[i],
-                effectShape : effect,
-                duration : 0.5,
-            });
-            this.tilesRendered.push(tileRendered);
-        }
+    createSceneEachTile(tile) {
+        const { idCanvas, width, height } = tile;
+        const canvas = document.getElementById(idCanvas);
+        const scene = new SceneCard({
+            $container: canvas,
+            size: {
+                width: width,
+                height: height
+            },
+            cameraOption: {
+                far: 10000,
+                near: 1
+            }
+        });
+        return scene;
     }
-    requestAnimationSceneTiles(){
-        for(let i = 0 ; i < this.tilesRendered.length; i++){
-            const scene = this.sceneTiles[i];
-            scene.setUpdateCallback(() => {
-                this.tilesRendered[i].update();
-            })
-            scene.update();
-        }
+    renderTile(tile, scene) {
+        const effect = effects[tile.effect];
+        if (!effect) return;
+        const tileRendered = new Tile({
+            scene: scene,
+            tile: tile,
+            effectShape: effect,
+            duration: 1.0,
+        });
+        return tileRendered;
+    }
+    requestAnimationSceneTile(tileRendered, scene) {
+        scene.setUpdateCallback(() => {
+            tileRendered.update();
+        })
+        scene.update();
     }
 }
