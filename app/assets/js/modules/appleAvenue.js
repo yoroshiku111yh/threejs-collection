@@ -113,6 +113,8 @@ export default class AppleAvenue {
         this.scene.transition = this.animate.bind(this);
     }
     loadCubeMap(){
+        /// make heavy load , crash device
+        return;
         this.cubeMap = new LoadNewCubeMap({
             path : this.path,
             resolve : (cube) => {
