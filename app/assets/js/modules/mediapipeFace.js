@@ -8,7 +8,7 @@ export default class MediaPipeFace {
         this.inputVideo = document.getElementById("mediapipe-vid-input");
         this.outputCanvas = document.getElementById("mediapipe-output");
         this.ctx = this.outputCanvas.getContext("2d");
-        this.isUseVideoInput = true;
+        this.isUseVideoInput = false;
         this.init()
     }
     init() {
@@ -36,7 +36,7 @@ export default class MediaPipeFace {
         this.outputCanvas.height = size.height;
     }
     onResults(results) {
-
+        console.log(results);
         this.ctx.save();
         this.ctx.clearRect(0, 0, this.outputCanvas.width, this.outputCanvas.height);
         this.ctx.drawImage(
