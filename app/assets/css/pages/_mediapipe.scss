@@ -1,0 +1,51 @@
+.mediapipe{
+    &__wrapper{
+        background-color: rgb(110, 108, 108);
+        position: absolute;
+        top : 0;
+        left : 0;
+        bottom : 0;
+        right : 0;
+    }
+    &__container{
+        position: relative;
+        box-sizing: none;
+        font-size: 0;
+    }
+    &__material-img{
+        width : 50%;
+        display: inline-block;
+        vertical-align: top;
+        img{
+            width : 100%;
+            height : auto;
+        }
+        display: none;
+        &.active{
+            display: inline-block;
+        }
+    }
+    &__material-vid{
+        width : 50%;
+        display: inline-block;
+        vertical-align: top;
+        video{
+            width : 100%;
+            height : auto;
+        }
+        display: none;
+        &.active{
+            display: inline-block;
+        }
+    }
+    &__canvas{
+        width : 50%;
+        min-height : 300px;
+        display: inline-block;
+        vertical-align: top;
+        canvas{
+            width : 100% !important;
+            height : auto;
+        }
+    }
+}

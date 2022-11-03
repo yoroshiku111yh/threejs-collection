@@ -1,1 +1,1 @@
-new(require(`./modules/main.js`).default)();
+// new(require(`./modules/main.js`).default)();
