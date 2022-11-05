@@ -7,6 +7,8 @@ export default class PlaneText{
         this.group = new THREE.Group();
         this.plane;
         this.scale = 1;
+        this.textureText;
+        this.imageTextUpdated = false;
         this.sizeDimension = sizeDimension;
     }
     create(){
@@ -18,13 +20,37 @@ export default class PlaneText{
         this.scaleFactor = bbox.getSize(new THREE.Vector3()).x;
 
         this.group.add(this.plane);
+    }
+    createText(){
+        const geo = new THREE.PlaneGeometry(185, 85);
+        const mat = new THREE.MeshBasicMaterial({
+            color : new THREE.Color("#ffffff") 
+        });
+        this.planeTextInner = new THREE.Mesh(geo, mat);
+         this.group.add(this.planeTextInner);
+    }
+    setTextureText(srcTexture){
+        this.textureText = srcTexture;
+        this.imageTextUpdated = true;
+    }
+    update(){
+        if(this.imageTextUpdated){
+            this.planeTextInner.material = new THREE.MeshBasicMaterial({
+                map : new THREE.TextureLoader().load(this.textureText)
+            });
+            this.imageTextUpdated = false;
+        }
+    }
+    addToScene(){
         this.scene.add(this.group);
     }
     hide(){
         this.plane.visible = false;
+        this.planeTextInner.visible = false;
     }
     show(){
         this.plane.visible = true;
+        this.planeTextInner.visible = true;
     }
     setPosition(landmarks){
         const { width, height } = this.sizeDimension;
@@ -36,6 +62,7 @@ export default class PlaneText{
         let topHead = scaleLandmark(modifiedTopHeadLandMarks, width, height);
         let Z = Math.max(topHead.z, 30);
         this.plane.position.set( topHead.x, topHead.y*1.25, Z);
+        this.planeTextInner.position.set( topHead.x, topHead.y*1.25, Z);
     }
     scalePlane(landmarks){
         const { width, height } = this.sizeDimension;
@@ -48,6 +75,7 @@ export default class PlaneText{
           );
         this.scale = eyeDist / this.scaleFactor;
         this.plane.scale.set(this.scale*2, this.scale*2, this.scale*2);
+        this.planeTextInner.scale.set(this.scale*2, this.scale*2, this.scale*2);
     }
     rotationFollow(landmarks){
         const { width, height } = this.sizeDimension;

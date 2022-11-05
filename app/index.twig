@@ -6,8 +6,8 @@
 				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
 			</div>
             <div class="mediapipe__material-vid">
-                <video id="mediapipe-vid-input" crossOrigin="anonymous" playsinline   controls>
-                    <source src="{{assets_url}}/mediapipe/face-video.mp4" type="video/mp4" />
+                <video id="mediapipe-vid-input" crossOrigin="anonymous" playsinline muted controls>
+                    <source src="{{assets_url}}/mediapipe/720p-face-3.mp4" type="video/mp4" />
                 </video>
             </div>
 			<div class="mediapipe__canvas">
@@ -16,6 +16,10 @@
 		</div>
 		<div class="mediapipe__masks2d">
 			<img id="mediapipe-face-place-holder" src="{{assets_url}}/mediapipe/face-place-holder.png"/>
+		</div>
+		<div class="hidden">
+			<img id="mediapipe-text-1" src="{{assets_url}}/mediapipe/text-banner-1.jpg"/>
+			<img id="mediapipe-text-2" src="{{assets_url}}/mediapipe/text-banner-2.jpg"/>
 		</div>
 	</main>
 	{% block before_js %}
