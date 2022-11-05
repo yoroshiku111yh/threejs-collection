@@ -21,6 +21,7 @@ export default class SceneBase {
         this.createBg();
 
         this.animate();
+        this.resize();
     }
     setSize(width, height) {
         this.size.width = width;
@@ -69,5 +70,11 @@ export default class SceneBase {
     update() {
         this.bg.update();
         this.renderer.render(this.scene, this.camera);
+    }
+    resize(){
+        return;
+        window.addEventListener("resize", () => { 
+            this.bg.updateSize(this.size.width, this.size.height);
+        })
     }
 }
