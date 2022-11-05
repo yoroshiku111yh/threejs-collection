@@ -62,3 +62,13 @@ export const makeGeometry = (landmarks) => {
 
     return geometry;
 }
+
+export const scaleLandmark = (landmark, width, height) => {
+    let { x, y, z } = landmark;
+    return {
+        ...landmark,
+        x: x * width,
+        y: y * height,
+        z: z * width,
+    }
+}

@@ -3,33 +3,30 @@ import { makeGeometry } from '../helpers/landmarksHelper';
 
 
 export default class PlaneMask2d {
-    constructor(scene, size = {}, landmarks = []) {
+    constructor(scene, sizeDimension = {}, landmarks = []) {
         this.scene = scene;
         this.texture;
         this.plane;
-        this.size = size;
+        this.sizeDimension = sizeDimension;
         this.imageUpdated = false;
         this.sizeUpdated = false;
         this.needsUpdate = false;
         this.landmarks = landmarks
     }
     updateSize(width, height) {
-        this.size.width = width;
-        this.size.height = height;
+        this.sizeDimension.width = width;
+        this.sizeDimension.height = height;
         this.sizeUpdated = true;
     }
     setTexture(texture) {
         this.texture = texture;
         this.imageUpdated = true;
     }
-    updateVerticeAr(verticeAr) {
-        this.verticeAr = verticeAr;
-    }
     createPlane() {
         const geo = makeGeometry(this.landmarks);
         const mat = this.createMaterial();
         this.plane = new THREE.Mesh(geo, mat);
-        this.plane.scale.set(this.size.width, this.size.height, this.size.width);
+        this.plane.scale.set(this.sizeDimension.width, this.sizeDimension.height, this.sizeDimension.width);
         this.addPlane();
     }
     addPlane() {

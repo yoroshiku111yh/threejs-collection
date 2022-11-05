@@ -2,11 +2,12 @@
 import * as THREE from 'three';
 
 export default class PlaneBg {
-    constructor(scene, size = {}){
+    constructor(scene, size = {}, typeTex = "IMAGE"){
         this.scene = scene;
         this.texture;
         this.plane;
         this.size = size;
+        this.typeTex = typeTex;
         this.imageUpdated = false;
         this.sizeUpdated = false;
     }
@@ -40,9 +41,20 @@ export default class PlaneBg {
                 color : new THREE.Color(0xcccccc)
             });
         }
+        let tex;
+        if(this.typeTex === "IMAGE"){
+            tex = new THREE.TextureLoader().load(this.texture);
+        }
+        if(this.typeTex === "VIDEO"){
+            tex = new THREE.VideoTexture( this.texture );  
+            tex.needsUpdate = true;
+        }
         let mat = new THREE.MeshBasicMaterial({
-            map : new THREE.TextureLoader().load(this.texture)
+            map : tex
         });
+        if(this.typeTex === "VIDEO"){  
+            mat.needsUpdate = true;
+        }
         return mat;
     }
 

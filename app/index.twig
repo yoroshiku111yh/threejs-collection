@@ -1,12 +1,12 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
-	<main id="main" class="mediapipe__wrapper" data-module="mediapipeFace">
+	<main id="main" data-module="mediapipeFace">
 		<div class="mediapipe__container">
 			<div class="mediapipe__material-img active">
 				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
 			</div>
             <div class="mediapipe__material-vid">
-                <video id="mediapipe-vid-input" controls>
+                <video id="mediapipe-vid-input" crossOrigin="anonymous" playsinline   controls>
                     <source src="{{assets_url}}/mediapipe/face-video.mp4" type="video/mp4" />
                 </video>
             </div>
@@ -14,7 +14,7 @@
                 <canvas id="mediapipe-output" width="1280px" height="720px"></canvas>
             </div>
 		</div>
-		<div>
+		<div class="mediapipe__masks2d">
 			<img id="mediapipe-face-place-holder" src="{{assets_url}}/mediapipe/face-place-holder.png"/>
 		</div>
 	</main>

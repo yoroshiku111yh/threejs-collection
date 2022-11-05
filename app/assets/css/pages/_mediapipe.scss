@@ -1,6 +1,6 @@
 .mediapipe{
     &__wrapper{
-        background-color: rgb(110, 108, 108);
+        background-color: rgb(110, 108, 108) !important;
         position: absolute;
         top : 0;
         left : 0;
@@ -45,7 +45,16 @@
         vertical-align: top;
         canvas{
             width : 100% !important;
-            height : auto;
+            height : auto !important;
+        }
+    }
+    &__masks2d{
+        font-size:  0;
+        img {
+            display: inline-block;
+            vertical-align: top;
+            width : 20%;
+            height: auto;
         }
     }
 }

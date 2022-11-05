@@ -6,20 +6,23 @@ const cameraDistance = (height, fov) => {
 }
 
 export default class SceneBase {
-    constructor(canvasElm, size = {}, useOrtho = true) {
+    constructor({
+        canvasElm, size = {}, typeTex = "img" ,useOrtho = true, callbackAnimate = () => {}
+    }) {
         this.canvasElm = canvasElm;
         this.size = size;
         this.scene = new THREE.Scene();
         this.debug = false;
         this.useOrtho = useOrtho;
         this.fov = 63;
-        this.init();
+        this.typeTex = typeTex;
+        this.callbackAnimate = callbackAnimate;
     }
     init() {
         this.initRenderer();
         this.createCamera();
-        this.createBg();
 
+        this.createBg();
         this.animate();
         this.resize();
     }
@@ -35,7 +38,7 @@ export default class SceneBase {
         this.renderer.setSize(this.size.width, this.size.height);
     }
     createBg() {
-        this.bg = new PlaneBg(this.scene, this.size);
+        this.bg = new PlaneBg(this.scene, this.size, this.typeTex);
     }
     createCamera() {
         this.useOrtho ? this.createOrtho() : this.createPerspective();
@@ -46,8 +49,8 @@ export default class SceneBase {
             this.size.width / 2,
             this.size.height / 2,
             -this.size.height / 2,
-            -2000,
-            2000
+            -10000,
+            100000
         );
         this.camera.position.z = 1;
     }
@@ -68,7 +71,10 @@ export default class SceneBase {
         this.update();
     }
     update() {
-        this.bg.update();
+        if(this.bg){
+            this.bg.update();
+        }
+        this.callbackAnimate();
         this.renderer.render(this.scene, this.camera);
     }
     resize(){
