@@ -6,6 +6,8 @@ import PlaneMask2d from './../components/planeMask2d';
 import PlaneText from '../components/planeText';
 import FaceMeshMediapipe from '../components/faceMeshMediapipe';
 
+import modelHatXMas from '../../mediapipe/models/hat/hat.gltf';
+
 const typeInput = {
     img: "IMAGE",
     video: "VIDEO"
