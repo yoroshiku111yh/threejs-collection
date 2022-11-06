@@ -282,7 +282,7 @@ export default class MediaPipeFace {
                 case "HAT":
                     for (let i = 0; i < this.arFaceLandmarks.length; i++) {
                         const faceLandmarks = this.arFaceLandmarks[i];
-                        this.putHatOnTheHead(this.objectModels3dRendered[this.choicedModel].cloneModel(), faceLandmarks);
+                        this.putHatOnTheHead(this.objectModels3dRendered["hat"].cloneModel(), faceLandmarks);
                     }
                     break;
                 case "MASK_TIGER":
