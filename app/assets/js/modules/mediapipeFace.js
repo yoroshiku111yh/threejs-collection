@@ -53,7 +53,7 @@ export default class MediaPipeFace {
         //this.init();
     }
     //////////////////
-    eventChoiceTypeInput(){
+    eventChoiceTypeInput() {
         const btnTypeInputImage = document.getElementById("btn-input-img");
         const btnTypeInputVideo = document.getElementById("btn-input-video");
         const btnTypeInputWebcam = document.getElementById("btn-input-webcam");
@@ -62,72 +62,72 @@ export default class MediaPipeFace {
         const playground = document.getElementById("playground");
 
         btnTypeInputImage.addEventListener("click", () => {
-            if(this.pickedChoiceTypeInput) return;
+            if (this.pickedChoiceTypeInput) return;
             this.pickedChoiceTypeInput = true;
             this.typeInput = typeInputBg.img;
             playground.classList.remove("hidden");
             const value = document.querySelector('input[name="effectShow"]:checked').value;
-            if(value === "mini-game"){
+            if (value === "mini-game") {
                 this.singlePlayer = true;
             }
-            if(value === "hat"){
+            if (value === "hat") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "hat";
             }
-            if(value === "glasses"){
+            if (value === "glasses") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "glasses";
             }
-            if(value === "mask"){
+            if (value === "mask") {
                 this.choiceEffect = this.typeEffect[0];
             }
             this.init();
         });
 
         btnTypeInputVideo.addEventListener("click", () => {
-            if(this.pickedChoiceTypeInput) return;
+            if (this.pickedChoiceTypeInput) return;
             this.pickedChoiceTypeInput = true;
             this.typeInput = typeInputBg.video;
             playground.classList.remove("hidden");
 
             const value = document.querySelector('input[name="effectShow"]:checked').value;
-            if(value === "mini-game"){
+            if (value === "mini-game") {
                 this.singlePlayer = true;
             }
-            if(value === "hat"){
+            if (value === "hat") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "hat";
             }
-            if(value === "glasses"){
+            if (value === "glasses") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "glasses";
             }
-            if(value === "mask"){
+            if (value === "mask") {
                 this.choiceEffect = this.typeEffect[0];
             }
             this.init();
         });
 
         btnTypeInputWebcam.addEventListener("click", () => {
-            if(this.pickedChoiceTypeInput) return;
+            if (this.pickedChoiceTypeInput) return;
             this.pickedChoiceTypeInput = true;
             this.typeInput = typeInputBg.video;
             this.useWebcam = true;
             playground.classList.remove("hidden");
 
             const value = document.querySelector('input[name="effectShow"]:checked').value;
-            if(value === "mini-game"){
+            if (value === "mini-game") {
                 this.singlePlayer = true;
             }
-            if(value === "hat"){
+            if (value === "hat") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "hat";
             }
-            if(value === "glasses"){
+            if (value === "glasses") {
                 this.choiceEffect = this.typeEffect[1];
                 this.choicedModel = "glasses";
             }
-            if(value === "mask"){
+            if (value === "mask") {
                 this.choiceEffect = this.typeEffect[0];
             }
             this.init();
@@ -137,21 +137,29 @@ export default class MediaPipeFace {
     //////////////////
     accessWebcam() {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-
-            const constraints = { video: { width: 1280, height: 720, facingMode: 'user' } };
-
+            const constraints = {
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'user'
+                }
+            };
+            const video = document.createElement("video");
+            video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
             navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
                 // apply the stream to the video element used in the texture
-                const video = document.createElement("video");
                 video.srcObject = stream;
                 video.play();
-                this.inputWebcamVideo = {
-                    video : video,
-                    videoWidth : 1280,
-                    videoHeight : 800
-                };
                 video.addEventListener("loadedmetadata", (e) => {
+
+                    this.inputWebcamVideo = {
+                        video: video,
+                        videoWidth: video.videoWidth,
+                        videoHeight: video.videoHeight
+                    };
                     this.initScanInWebcam();
                 });
 
@@ -181,7 +189,7 @@ export default class MediaPipeFace {
                     this.accessWebcam();
                     this.outputCanvas.classList.add("-mirror");
                 }
-                else{
+                else {
                     this.initScanInVideo();
                 }
                 break;
@@ -207,7 +215,7 @@ export default class MediaPipeFace {
     hiddenOtherType() {
         this.inputImage.parentNode.classList.remove("active");
         this.inputVideo.parentNode.classList.remove("active");
-        if(this.useWebcam) return;
+        if (this.useWebcam) return;
         switch (this.typeInput) {
             case typeInputBg.img:
                 this.inputImage.parentNode.classList.add("active");
@@ -232,7 +240,7 @@ export default class MediaPipeFace {
         this.eventPlayVideo();
     }
     initScanInWebcam() {
-        const {video, videoWidth, videoHeight} = this.inputWebcamVideo;
+        const { video, videoWidth, videoHeight } = this.inputWebcamVideo;
         this.mainScene.setSize(videoWidth, videoHeight);
         this.mainScene.init();
         this.mainScene.bg.setTexture(video);
@@ -240,7 +248,7 @@ export default class MediaPipeFace {
     }
 
     async getFrameVideo(video) {
-        if(!this.useWebcam){
+        if (!this.useWebcam) {
             if (video.ended || video.paused) return;
         }
         await this.trackingFaceMesh.faceMesh.send({
@@ -380,7 +388,7 @@ export default class MediaPipeFace {
             modelSrc: modelHatXMas
         });
         const model2 = new Object3dModel({
-            modelSrc : modelGlass
+            modelSrc: modelGlass
         });
         this.objectModels3dRendered["hat"] = model;
         this.objectModels3dRendered["glasses"] = model2;
