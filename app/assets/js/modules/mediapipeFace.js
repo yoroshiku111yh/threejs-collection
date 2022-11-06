@@ -4,6 +4,7 @@ import { transformLandmarks } from '../helpers/landmarksHelper';
 import SceneBase from '../components/sceneBase';
 import PlaneMask2d from './../components/planeMask2d';
 import PlaneText from '../components/planeText';
+import FaceMeshMediapipe from '../components/faceMeshMediapipe';
 
 const typeInput = {
     img: "IMAGE",
@@ -18,7 +19,7 @@ export default class MediaPipeFace {
         this.inputTextImg2 = document.getElementById("mediapipe-text-2");
         this.outputCanvas = document.getElementById("mediapipe-output");
         this.inputFacePlaceHolder = document.getElementById("mediapipe-face-place-holder");
-        this.typeInput = typeInput.video;
+        this.typeInput = typeInput.img;
         this.facesPlaneMask2d = [];
         this.arFaceLandmarks = [];
         this.pickedEffect = false;
@@ -26,13 +27,16 @@ export default class MediaPipeFace {
         this.isDetectFace = false;
         this.startGame = false;
         this.choiceEffect = 1;
-        this.singlePlayer = false;
+        this.singlePlayer = true;
         this.maxFaces = this.singlePlayer ? 1 : 3;
         this.typeEffect = [
             "MASK_TIGER",
             "HAT"
-        ]
-        this.initFaceMesh();
+        ];
+        this.faceMesh;
+        this.trackingFaceMesh = new FaceMeshMediapipe(this.onResults.bind(this), {
+            maxNumFaces : this.maxFaces
+        });
         this.init();
     }
     init() {
@@ -74,7 +78,7 @@ export default class MediaPipeFace {
         this.mainScene.setSize(this.inputImage.width, this.inputImage.height);
         this.mainScene.init();
         this.mainScene.bg.setTexture(this.inputImage.src);
-        this.faceMesh.send({
+        this.trackingFaceMesh.faceMesh.send({
             image: this.inputImage
         });
     }
@@ -89,7 +93,7 @@ export default class MediaPipeFace {
     async getFrameVideo() {
         const video = this.inputVideo;
         if (video.ended || video.paused) return;
-        await this.faceMesh.send({
+        await this.trackingFaceMesh.faceMesh.send({
             image: video
         });
         await new Promise(requestAnimationFrame);
@@ -102,25 +106,10 @@ export default class MediaPipeFace {
     }
     loadVideo(callback) {
         this.inputVideo.addEventListener("loadedmetadata", (e) => {
+            console.log("loadmetadata");
             const $this = e.target;
             callback && callback($this);
         })
-    }
-    initFaceMesh() {
-        this.faceMesh = new FaceMesh({
-            locateFile: (file) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-            }
-        });
-
-        this.faceMesh.setOptions({
-            maxNumFaces: this.maxFaces,
-            refineLandmarks: true,
-            minDetectionConfidence: 0.5,
-            minTrackingConfidence: 0.5
-        });
-
-        this.faceMesh.onResults(this.onResults.bind(this));
     }
     onResults(results) {
         if (results.multiFaceLandmarks) {
