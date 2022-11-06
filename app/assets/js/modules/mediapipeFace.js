@@ -290,7 +290,7 @@ export default class MediaPipeFace {
                 case "HAT":
                     for (let i = 0; i < this.arFaceLandmarks.length; i++) {
                         const faceLandmarks = this.arFaceLandmarks[i];
-                        this.putHatOnTheHead(this.objectModels3dRendered["hat"].cloneModel(), faceLandmarks);
+                        this.putHatOnTheHead(this.objectModels3dRendered[this.choicedModel].cloneModel(), faceLandmarks);
                     }
                     break;
                 case "MASK_TIGER":
@@ -320,6 +320,7 @@ export default class MediaPipeFace {
                 this.pickedEffect = true;
                 clearInterval(interval);
                 interval = null;
+                this.choicedModel = "hat";
                 return;
             }
             pick = pickAr.sort(() => 0.5 - Math.random())[0];
