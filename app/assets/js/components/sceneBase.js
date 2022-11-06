@@ -12,9 +12,10 @@ export default class SceneBase {
         this.canvasElm = canvasElm;
         this.size = size;
         this.scene = new THREE.Scene();
-        this.ambientLight = new THREE.AmbientLight(0xFFFFFF);
-        this.ambientLight.intensity = 1.15;
-        this.scene.add( this.ambientLight );
+        this.light = new THREE.HemisphereLight(0xFFFFFF, 0xFFFFFF, 0.5);
+        this.light.position.set(0, 0, 0);
+        this.light.intensity = 1.15;
+        this.scene.add( this.light );
         this.debug = false;
         this.useOrtho = useOrtho;
         this.fov = 63;

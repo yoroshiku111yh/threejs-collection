@@ -6,8 +6,9 @@ import PlaneMask2d from './../components/planeMask2d';
 import PlaneText from '../components/planeText';
 import FaceMeshMediapipe from '../components/faceMeshMediapipe';
 
-import modelHatXMas from '../../mediapipe/models/hat/hat.glb';
+import modelHatXMas from '../../mediapipe/models/hat/hat-2.glb';
 import Object3dModel from './../components/obj3d';
+import HatOnTheHead from '../components/hatOnTheHead';
 
 const typeInput = {
     img: "IMAGE",
@@ -22,23 +23,26 @@ export default class MediaPipeFace {
         this.inputTextImg2 = document.getElementById("mediapipe-text-2");
         this.outputCanvas = document.getElementById("mediapipe-output");
         this.inputFacePlaceHolder = document.getElementById("mediapipe-face-place-holder");
-        this.typeInput = typeInput.img;
+        this.typeInput = typeInput.video;
         this.facesPlaneMask2d = [];
         this.arFaceLandmarks = [];
+        this.objectModels3dRendered = [];
         this.pickedEffect = false;
         this.time = 0;
         this.isDetectFace = false;
         this.startGame = false;
-        this.choiceEffect = 1;
-        this.singlePlayer = true;
+        this.isPlayGame = false;
+        this.singlePlayer = false;
+        this.hatsPutted = [];
         this.maxFaces = this.singlePlayer ? 1 : 3;
         this.typeEffect = [
             "MASK_TIGER",
             "HAT"
         ];
+        this.choiceEffect = this.typeEffect[0];
         this.faceMesh;
         this.trackingFaceMesh = new FaceMeshMediapipe(this.onResults.bind(this), {
-            maxNumFaces : this.maxFaces
+            maxNumFaces: this.maxFaces
         });
         this.init();
     }
@@ -50,16 +54,7 @@ export default class MediaPipeFace {
             callbackAnimate: () => { this.updateAnimateScene() }
         });
         this.createPlaneText();
-
-        const modelTest = new Object3dModel({
-            scene : this.mainScene.scene, 
-            sizeDimensions : this.mainScene.size, 
-            modelSrc : modelHatXMas,
-            resolve : (gltf) => {
-                this.mainScene.scene.add(gltf.scene);
-            }
-        });
-
+        this.createModel3dCore(); /// we will need load all model before start game
         switch (this.typeInput) {
             case typeInput.img:
                 this.initScanInImage();
@@ -72,6 +67,9 @@ export default class MediaPipeFace {
     updateAnimateScene() {
         if (this.pickedEffect) {
             this.planeText.hide();
+        }
+        if (this.isPlayGame) {
+           this.gameBoxRandomPick();
         }
         this.planeText.update();
     }
@@ -126,32 +124,67 @@ export default class MediaPipeFace {
     }
     onResults(results) {
         if (results.multiFaceLandmarks) {
+            this.removeHats();
             this.removeFacesMask();
+            this.arFaceLandmarks = [];
             for (const landmarks of results.multiFaceLandmarks) {
                 const faceLandmarks = transformLandmarks(landmarks);
                 this.arFaceLandmarks.push(faceLandmarks);
-                this.gameBoxRandomPick();
+                this.isPlayGame = true;
                 if (!this.singlePlayer) {
-                    this.addMask2d(faceLandmarks);
+                    this.playFreeForAll(faceLandmarks);
+                }
+                else if(this.typeTex === this.typeInput.video){
+                    this.pickEffect();
                 }
             }
             this.modifiedPlaneText(transformLandmarks(results.multiFaceLandmarks[0]));
         }
     }
+    playFreeForAll(faceLandmarks) {
+        switch (this.choiceEffect) {
+            case "HAT":
+                this.putHatOnTheHead(this.objectModels3dRendered[0].cloneModel(), faceLandmarks);
+                break;
+            case "MASK_TIGER":
+                this.addMask2d(faceLandmarks);
+                break;
+        }
+    }
+    putHatOnTheHead(model, landmarks) {
+        const hat = new HatOnTheHead({
+            scene: this.mainScene.scene,
+            sizeDimension: this.mainScene.size,
+            model: model
+        });
+        hat.add();
+        hat.show();
+        hat.setPosition(landmarks);
+        hat.scaleModel(landmarks);
+        hat.rotationFollow(landmarks);
+        this.hatsPutted.push(hat);
+    }
+    removeHats() {
+        if(this.choiceEffect !== "HAT") return;
+        for (let i = 0; i < this.hatsPutted.length; i++) {
+            this.hatsPutted[i].remove();
+        }
+        this.hatsPutted = [];
+    }
     gameBoxRandomPick() {
         if (!this.singlePlayer) return;
         this.randomChoiceText();
-        if (this.mainScene.typeTex === typeInput.video) {
+        if (this.mainScene.typeTex === typeInput.img) {
             this.pickEffect();
         }
     }
     pickEffect() {
         if (this.pickedEffect) {
-            switch (this.typeEffect[Number(this.choiceEffect)]) {
+            switch (this.choiceEffect) {
                 case "HAT":
                     for (let i = 0; i < this.arFaceLandmarks.length; i++) {
                         const faceLandmarks = this.arFaceLandmarks[i];
-                        this.addMask2d(faceLandmarks);
+                        this.putHatOnTheHead(this.objectModels3dRendered[0].cloneModel(), faceLandmarks);
                     }
                     break;
                 case "MASK_TIGER":
@@ -169,34 +202,35 @@ export default class MediaPipeFace {
         this.planeText.createText();
         this.planeText.setTextureText(this.inputTextImg2.src);
         this.planeText.addToScene();
+        this.planeText.hide();
     }
     randomChoiceText() {
         if (this.startGame) return;
-        let choiceLeft = false;
         let countdown = 3000;
+        let pick = 0;
+        let pickAr = [0, 1, 0, 1];
         let interval = setInterval(() => {
             if (countdown <= 0) {
                 this.pickedEffect = true;
-                this.pickEffect();
                 clearInterval(interval);
                 interval = null;
                 return;
             }
-            if (choiceLeft) {
+            pick = pickAr.sort(() => 0.5 - Math.random())[0];
+            this.choiceEffect = this.typeEffect[pick];
+            if (this.choiceEffect === "MASK_TIGER") {
                 this.planeText.setTextureText(this.inputTextImg1.src);
             }
-            else {
+            if((this.choiceEffect === "HAT")) {
                 this.planeText.setTextureText(this.inputTextImg2.src);
             }
             countdown -= 1000;
-            choiceLeft = !choiceLeft
-            this.choiceEffect = !this.choiceEffect;
         }, 500);
         this.startGame = true;
     }
     modifiedPlaneText(landmarks) {
         if (!this.planeText) return;
-        if (!landmarks || !this.singlePlayer) {
+        if (!landmarks || !this.singlePlayer || !this.isPlayGame) {
             this.planeText.hide();
             return;
         }
@@ -212,11 +246,17 @@ export default class MediaPipeFace {
         this.facesPlaneMask2d.push(mask);
     }
     removeFacesMask() {
+        if(this.choiceEffect !== "MASK_TIGER") return;
         if (this.facesPlaneMask2d.length === 0) return;
         for (let i = 0; i < this.facesPlaneMask2d.length; i++) {
             this.facesPlaneMask2d[i].removePlane();
         }
         this.facesPlaneMask2d = [];
-        this.arFaceLandmarks = [];
+    }
+    createModel3dCore() {
+        const model = new Object3dModel({
+            modelSrc: modelHatXMas
+        });
+        this.objectModels3dRendered.push(model);
     }
 }

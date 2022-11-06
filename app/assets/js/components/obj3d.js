@@ -1,18 +1,30 @@
 
 import { LoaderGLTF } from './../utils/object3dLoader/gltf';
+import { clone } from './../utils/jsm/SkeletonUtils';
 
 export default class Object3dModel {
-    constructor({scene, sizeDimensions ={}, modelSrc, resolve = () => {}}){
-        this.scene = scene;
-        this.sizeDimensions = sizeDimensions;
+    constructor({modelSrc}){
         this.modelSrc = modelSrc;
-        this.resolve = resolve;
+        this.model;
+        this.loadGLTF;
+        this.isLoaded = false;
         this.load();
     }
     load(){
-        const model1 = new LoaderGLTF({
+        this.loadGLTF = new LoaderGLTF({
             src : this.modelSrc,
-            resolve : this.resolve
+            resolve : this.resolve.bind(this)
         })
+    }
+    resolve(gltf){
+        this.model = gltf.scene;
+        this.isLoaded = true;
+    }
+    cloneModel(){
+        if(!this.isLoaded){
+            console.error("File model not loaded yet");
+            return;
+        }
+        return clone(this.model);
     }
 }
