@@ -28,6 +28,13 @@ module.exports = {
                         presets: ['@babel/preset-env']
                     }
                 }
+            },
+            {
+                test: /\.(obj|glb|gltf)$/,
+                loader: 'file-loader',
+                options: {
+                    esModule: false
+                }
             }
         ]
     },

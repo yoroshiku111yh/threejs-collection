@@ -6,7 +6,8 @@ import PlaneMask2d from './../components/planeMask2d';
 import PlaneText from '../components/planeText';
 import FaceMeshMediapipe from '../components/faceMeshMediapipe';
 
-import modelHatXMas from '../../mediapipe/models/hat/hat.gltf';
+import modelHatXMas from '../../mediapipe/models/hat/hat.glb';
+import Object3dModel from './../components/obj3d';
 
 const typeInput = {
     img: "IMAGE",
@@ -49,6 +50,16 @@ export default class MediaPipeFace {
             callbackAnimate: () => { this.updateAnimateScene() }
         });
         this.createPlaneText();
+
+        const modelTest = new Object3dModel({
+            scene : this.mainScene.scene, 
+            sizeDimensions : this.mainScene.size, 
+            modelSrc : modelHatXMas,
+            resolve : (gltf) => {
+                this.mainScene.scene.add(gltf.scene);
+            }
+        });
+
         switch (this.typeInput) {
             case typeInput.img:
                 this.initScanInImage();
