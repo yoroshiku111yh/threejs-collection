@@ -10,9 +10,10 @@ import modelHatXMas from '../../mediapipe/models/hat/hat-2.glb';
 import Object3dModel from './../components/obj3d';
 import HatOnTheHead from '../components/hatOnTheHead';
 
-const typeInput = {
+const typeInputBg = {
     img: "IMAGE",
-    video: "VIDEO"
+    video: "VIDEO",
+    webcam : "WEBCAM"
 }
 
 export default class MediaPipeFace {
@@ -23,7 +24,7 @@ export default class MediaPipeFace {
         this.inputTextImg2 = document.getElementById("mediapipe-text-2");
         this.outputCanvas = document.getElementById("mediapipe-output");
         this.inputFacePlaceHolder = document.getElementById("mediapipe-face-place-holder");
-        this.typeInput = typeInput.video;
+        this.typeInput = typeInputBg.video;
         this.singlePlayer = true;
         this.facesPlaneMask2d = [];
         this.arFaceLandmarks = [];
@@ -45,7 +46,7 @@ export default class MediaPipeFace {
         this.trackingFaceMesh = new FaceMeshMediapipe(this.onResults.bind(this), {
             maxNumFaces: this.maxFaces
         });
-        this.init();
+        //this.init();
     }
     init() {
         this.hiddenOtherType();
@@ -57,10 +58,10 @@ export default class MediaPipeFace {
         this.createPlaneText();
         this.createModel3dCore(); /// we will need load all model before start game
         switch (this.typeInput) {
-            case typeInput.img:
+            case typeInputBg.img:
                 this.initScanInImage();
                 break;
-            case typeInput.video:
+            case typeInputBg.video:
                 this.initScaneInVideo();
                 break;
         };
@@ -86,10 +87,10 @@ export default class MediaPipeFace {
         this.inputImage.parentNode.classList.remove("active");
         this.inputVideo.parentNode.classList.remove("active");
         switch (this.typeInput) {
-            case typeInput.img:
+            case typeInputBg.img:
                 this.inputImage.parentNode.classList.add("active");
                 break;
-            case typeInput.video:
+            case typeInputBg.video:
                 this.inputVideo.parentNode.classList.add("active");
                 break;
         }

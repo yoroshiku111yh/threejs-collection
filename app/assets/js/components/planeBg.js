@@ -42,22 +42,25 @@ export default class PlaneBg {
             });
         }
         let tex;
-        if(this.typeTex === "IMAGE"){
-            tex = new THREE.TextureLoader().load(this.texture);
-        }
-        if(this.typeTex === "VIDEO"){
-            tex = new THREE.VideoTexture( this.texture );  
-            tex.needsUpdate = true;
+        switch(this.typeTex){
+            case "IMAGE" :
+                tex = this.materialTypeImage(); 
+                break;
+            case "VIDEO" : 
+                tex = this.materialTypeVideo();
+                break;
         }
         let mat = new THREE.MeshBasicMaterial({
             map : tex
         });
-        if(this.typeTex === "VIDEO"){  
-            mat.needsUpdate = true;
-        }
         return mat;
     }
-
+    materialTypeImage(){
+        return new THREE.TextureLoader().load(this.texture);
+    }
+    materialTypeVideo(){
+        return new THREE.VideoTexture( this.texture );  
+    }
     removePlane(){
         this.scene.remove(this.plane);
         this.plane = null;
