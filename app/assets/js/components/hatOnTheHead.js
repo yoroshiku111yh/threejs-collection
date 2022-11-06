@@ -15,7 +15,7 @@ export default class HatOnTheHead {
 
         this.group.add(this.model);
         this.scene.add(this.group);
-        this.model.children[0].rotation.y = 80;
+        //this.model.children[0].rotation.y = 80;
         this.hide();
     }
     hide() {
@@ -46,7 +46,8 @@ export default class HatOnTheHead {
             (leftEyeUpper1.z - rightEyeUpper1.z) ** 2
         );
         this.scale = eyeDist / this.scaleFactor;
-        this.model.scale.set(this.scale * 2.25, this.scale * 2.25, this.scale * 2.35);
+        //this.model.scale.set(this.scale * 2.25, this.scale * 2.25, this.scale * 2.35);
+        this.model.scale.set(this.scale, this.scale, this.scale);
     }
     rotationFollow(landmarks) {
         const { width, height } = this.sizeDimension;

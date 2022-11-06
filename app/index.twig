@@ -1,7 +1,16 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
 	<main id="main" data-module="mediapipeFace">
-		<div class="mediapipe__container">
+		<div>
+			<p style="color : #fff">Try mini game ?<input type="radio" class="js-radio-box" name="effectShow" value="mini-game" id="checkbox1"/></p>
+			<p style="color : #fff">Hat 3d wrong perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox2" value="hat"/></p>
+			<p style="color : #fff">Glasses 3d right perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox4" value="glasses"/></p>
+			<p style="color : #fff">Mask 2d<input type="radio" class="js-radio-box" name="effectShow" id="checkbox3" value="mask" checked/></p>
+			<button id="btn-input-img">Play with image</button>
+			<button id="btn-input-video">Play with video</button>
+			<button id="btn-input-webcam">Play with webcam</button>
+		</div>
+		<div class="mediapipe__container hidden" id="playground">
 			<div class="mediapipe__material-img active">
 				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
 			</div>
@@ -15,6 +24,7 @@
             </div>
 		</div>
 		<div class="mediapipe__masks2d">
+		<h4 style="color : #fff">Mask sample</h4>
 			<img id="mediapipe-face-place-holder" src="{{assets_url}}/mediapipe/face-place-holder.png"/>
 		</div>
 		<div class="hidden">
