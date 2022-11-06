@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { makeGeometry } from '../helpers/landmarksHelper';
-
+import { clone } from './../utils/jsm/SkeletonUtils';
 
 export default class PlaneMask2d {
     constructor(scene, sizeDimension = {}, landmarks = []) {
@@ -11,6 +11,7 @@ export default class PlaneMask2d {
         this.imageUpdated = false;
         this.sizeUpdated = false;
         this.needsUpdate = false;
+        this.isLoaded = false;
         this.landmarks = landmarks
     }
     updateSize(width, height) {
@@ -48,9 +49,11 @@ export default class PlaneMask2d {
         });
         return mat;
     }
-    removePlane() {
-        this.scene.remove(this.plane);
-        this.plane = null;
+    remove() {
+        setTimeout(() => {
+            this.scene.remove(this.plane);
+            this.plane = null;
+        }, 1)
     }
     update() {
         if (this.needsUpdate) {
