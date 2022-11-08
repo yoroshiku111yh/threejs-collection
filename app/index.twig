@@ -1,7 +1,7 @@
 {% extends "_layout/layout.twig" %}
 {% block page %}
 	<main id="main" data-module="mediapipeFace">
-		<div>
+		{# <div>
 			<p style="color : #fff">Try mini game ?<input type="radio" class="js-radio-box" name="effectShow" value="mini-game" id="checkbox1"/></p>
 			<p style="color : #fff">Hat 3d wrong perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox2" value="hat"/></p>
 			<p style="color : #fff">Glasses 3d right perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox4" value="glasses"/></p>
@@ -9,8 +9,8 @@
 			<button id="btn-input-img" class="hidden-xs">Play with image</button>
 			<button id="btn-input-video" class="hidden-xs">Play with video</button>
 			<button id="btn-input-webcam">Play with webcam</button>
-		</div>
-		<div class="mediapipe__container hidden" id="playground">
+		</div> #}
+		{# <div class="mediapipe__container hidden" id="playground">
 			<div class="mediapipe__material-img active">
 				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
 			</div>
@@ -21,6 +21,14 @@
             </div>
 			<div class="mediapipe__canvas">
                 <canvas id="mediapipe-output" width="1280px" height="720px"></canvas>
+            </div>
+		</div> #}
+		<div class="mediapipe__container ">
+			<div class="mediapipe__material-img active">
+				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
+			</div>
+			<div class="mediapipe__canvas">
+                <canvas id="canvas-input-image-1" width="1280px" height="720px"></canvas>
             </div>
 		</div>
 		<div class="mediapipe__masks2d">
