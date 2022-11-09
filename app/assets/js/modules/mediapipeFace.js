@@ -10,7 +10,7 @@ import modelHatXMas from '../../mediapipe/models/hat/hat-2.glb';
 import modelGlasses from '../../mediapipe/models/glass/scene.gltf';
 import Object3dModel from './../components/obj3d';
 import HatOnTheHead from '../components/hatOnTheHead';
-import FaceMeshWithImage from './../components/faceMeshWithImage';
+import FaceMeshWithImage from '../components/faceMeshFeaturev1';
 import Texture2d from './../components/texture2d';
 
 const typeInputBg = {
@@ -81,6 +81,7 @@ export default class MediaPipeFace {
         //this.requestAnimate();
     }
     initImageFaceMesh1() {
+        this.loadingElm1 = document.getElementById("loading-1");
         this.faceMeshImage1 = new FaceMeshWithImage({
             size: {
                 width: document.getElementById("mediapipe-image-input").width,
@@ -90,7 +91,6 @@ export default class MediaPipeFace {
         });
         this.faceMeshImage1.loadTextures(materialsEffect);
         this.faceMeshImage1.setBg();
-        this.faceMeshImage1.sendImage();
     }
     // requestAnimate() {
     //     this.eventLoadedAllMask();

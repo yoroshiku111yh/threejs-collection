@@ -1,0 +1,58 @@
+{% extends "_layout/layout.twig" %}
+{% block page %}
+	<main id="main" data-module="faceMeshv2">
+		{# <div>
+			<p style="color : #fff">Try mini game ?<input type="radio" class="js-radio-box" name="effectShow" value="mini-game" id="checkbox1"/></p>
+			<p style="color : #fff">Hat 3d wrong perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox2" value="hat"/></p>
+			<p style="color : #fff">Glasses 3d right perspective<input type="radio" class="js-radio-box" name="effectShow" id="checkbox4" value="glasses"/></p>
+			<p style="color : #fff">Mask 2d<input type="radio" class="js-radio-box" name="effectShow" id="checkbox3" value="mask" checked/></p>
+			<button id="btn-input-img" class="hidden-xs">Play with image</button>
+			<button id="btn-input-video" class="hidden-xs">Play with video</button>
+			<button id="btn-input-webcam">Play with webcam</button>
+		</div> #}
+		{# <div class="mediapipe__container hidden" id="playground">
+			<div class="mediapipe__material-img active">
+				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
+			</div>
+            <div class="mediapipe__material-vid">
+                <video id="mediapipe-vid-input" crossOrigin="anonymous" playsinline muted controls>
+                    <source src="{{assets_url}}/mediapipe/720p-face-3.mp4" type="video/mp4" />
+                </video>
+            </div>
+			<div class="mediapipe__canvas">
+                <canvas id="mediapipe-output" width="1280px" height="720px"></canvas>
+            </div>
+		</div> #}
+		<div class="mediapipe__container ">
+			<div class="mediapipe__material-img active">
+				<div class="tool__wrapper">
+					<div class="tool__bar">
+						<button id="btn-1">Start Scan</button>
+					</div>
+				</div>
+				<img id="mediapipe-image-input" src="{{assets_url}}/mediapipe/multi-faces.jpg"/>
+
+			</div>
+			<div class="mediapipe__canvas">
+				<div class="loading__wrapper" id="loading-1">
+					<div class="loading__icon">Loadding...</div>
+				</div>
+                <canvas id="canvas-input-image-1" width="1280px" height="720px"></canvas>
+            </div>
+		</div>
+		<div class="mediapipe__masks2d">
+		<h4 style="color : #fff">Mask sample</h4>
+			<img id="mediapipe-face-place-holder" src="{{assets_url}}/mediapipe/face-place-holder.png"/>
+		</div>
+		<div class="hidden">
+			<img id="mediapipe-text-1" src="{{assets_url}}/mediapipe/text-banner-1.jpg"/>
+			<img id="mediapipe-text-2" src="{{assets_url}}/mediapipe/text-banner-2.jpg"/>
+		</div>
+	</main>
+	{% block before_js %}
+		<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+	{% endblock %}
+{% endblock %}
