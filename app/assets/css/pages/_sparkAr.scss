@@ -1,12 +1,20 @@
-.sparkAr{
+.spark-ar{
     &__wrapper{
         margin : auto;
         position: relative;
         width : 50vw;
         height : 89vw;
-        min-width : 320px;
-        min-height: 544px;
+        // min-width : 320px;
+        // min-height: 544px;
         background-color: #ccc;
+        @media screen and (orientation:portrait) and (max-width : 1180px) { 
+            width : 100vw;
+            height : 100vh;
+        }
+        @media screen and (orientation:landscape) and (max-width : 1180px) { 
+            width : 100vh;
+            height : 100vw;
+        }
     }
     &__input{
         position: relative;
@@ -29,7 +37,7 @@
     &__tabs{
         position: relative;
         display: block;
-        padding : 10% 15px 10% 15px;
+        padding : 0 15px;
         text-align: center;
     }
     &__tabs-item{

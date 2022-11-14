@@ -9,7 +9,7 @@ const materialsEffect = [
     {
         type: "3d",
         src: modelHatXMas,
-        name: "hat"
+        name: "hat",
     },
     {
         type: "3d",
@@ -25,14 +25,27 @@ const materialsEffect = [
 
 export default class MediaPipeFace {
     constructor() {
-        this.sizeVideoOutPut = {
-            height : 1920,
-            width : 1080
-        }
+        this.loadDone = false;
+        this.calcSizeCanvas();
         this.init();
     }
     init() {
         this.initFaceMesh1();
+        this.eventLoadedVideo();
+    }
+    calcSizeCanvas(){
+        this.sizeVideoOutPut = {
+            height : 1920,
+            width : 1080
+        };
+        if(window.innerWidth < 1180){
+            const wrapper = document.getElementById("sparkArWrapper");
+            let multiWidth = Math.floor(this.sizeVideoOutPut.width / wrapper.offsetWidth);
+            let multiHeight = Math.floor(this.sizeVideoOutPut.height / wrapper.offsetHeight);
+            this.sizeVideoOutPut.width = multiWidth* wrapper.offsetWidth;
+            this.sizeVideoOutPut.height = multiHeight* wrapper.offsetHeight;
+        }
+        
     }
     initFaceMesh1() {
         this.faceMesh1 = new FaceMeshFeaturev1({
@@ -41,19 +54,43 @@ export default class MediaPipeFace {
                 height: this.sizeVideoOutPut.height
             },
             canvasElm : document.getElementById("canvas-output"),
-            inputTracking : document.getElementById("video-test"),
-            afterLoadedAllEventName : "loadedAllMaterial1"
+            inputTracking : null ,//document.getElementById("video-test"),
+            afterLoadedAllEventName : "loadedAllMaterial1",
+            updateCallback : this.renderEffect.bind(this),
         });
+        this.faceMesh1.pickEffect("mask-tiger");
         this.faceMesh1.loadTextures(materialsEffect);
-        this.faceMesh1.setBg();
         this.listenerEventLoadedAll();
     }
     listenerEventLoadedAll(){
-        document.addEventListener("loadedAllMaterial1", this.hiddenLoadingScene.bind(this));
+        document.addEventListener("loadedAllMaterial1", () => {
+            this.hiddenLoadingScene();
+            this.eventPlayEffect();
+        });
     }
     hiddenLoadingScene(){
+        this.loadDone = true;
         this.loadingElm1 = document.getElementById("loading1");
         this.loadingElm1.classList.remove("active");
         document.removeEventListener("loadedAllMaterial1", this.hiddenLoadingScene, false);
+    }
+    eventLoadedVideo(){
+        const vid = document.getElementById("video-test");
+        vid.addEventListener("loadedmetadata", (e) => {
+            this.faceMesh1.setInputTracking(vid, "VIDEO");
+            this.faceMesh1.setBg();
+            //vid.play();
+        });
+        vid.addEventListener("ended", () => {
+            this.faceMesh1.isStop = true;
+        })
+    }
+    eventPlayEffect(){
+        this.faceMesh1.sendFrames();
+    }
+    renderEffect(){
+        if(!this.loadDone) return false;
+        this.faceMesh1.removeEffects();
+        this.faceMesh1.addEffects();
     }
 }

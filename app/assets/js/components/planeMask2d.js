@@ -11,7 +11,6 @@ export default class PlaneMask2d {
         this.imageUpdated = false;
         this.sizeUpdated = false;
         this.needsUpdate = false;
-        this.isLoaded = false;
         this.landmarks = landmarks
     }
     updateSize(width, height) {
@@ -43,6 +42,7 @@ export default class PlaneMask2d {
         }
         let tex = new THREE.TextureLoader().load(this.texture);
         tex.flipY = false;
+        //this.texture.flipY = false;
         let mat = new THREE.MeshBasicMaterial({
             map: tex,
             transparent : true
