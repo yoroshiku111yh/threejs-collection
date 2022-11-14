@@ -40,7 +40,19 @@ export const transformLandmarks = (landmarks) => {
 
 export const makeGeometry = (landmarks) => {
     let geometry = new THREE.BufferGeometry();
-
+    if(landmarks.length === 0){
+        const verticesSample = new Float32Array( [
+            -1.0, -1.0,  1.0,
+             1.0, -1.0,  1.0,
+             1.0,  1.0,  1.0,
+        
+             1.0,  1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            -1.0, -1.0,  1.0
+        ] );
+        geometry.setAttribute('position', new THREE.BufferAttribute(verticesSample, 3));
+        return geometry;
+    }
     let vertices = [];
     let uvs = [];
 

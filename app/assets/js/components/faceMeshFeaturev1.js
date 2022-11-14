@@ -57,15 +57,40 @@ export default class FaceMeshFeaturev1 {
             const maskUse = this.loadedMaterials[this.choiceEffect.name];
             switch(maskUse.type){
                 case "2d" : 
-                    const planeMask2d = new PlaneMask2d(this.mainScene.scene, this.size, landmarks);
-                    // planeMask2d.setTexture(document.getElementById("mediapipe-face-place-holder").src);
-                    // planeMask2d.createPlane();
-                    // this.choiceEffect.ar.push(planeMask2d);
+                    const _effect = this.choiceEffect.ar[i];
+                    _effect.setLandMarks(landmarks);
+                    _effect.setGeometry();
+                    _effect.show();
                     break;
                 case "3d" :
                     break;
             }
         }
+    }
+    createEffectLayers(){
+        const maskUse = this.loadedMaterials[this.choiceEffect.name];
+        for(let i = 0 ; i < this.limitFaces; i++){
+            switch(maskUse.type){
+                case "2d" :
+                     this.createEffectLayer2d();
+                    break;
+                case "3d":
+                    this.createEffectLayer3d();
+                    break;
+            }
+        }
+        
+    }
+    createEffectLayer2d(){
+        const { name } = this.choiceEffect;
+        const layer = new PlaneMask2d(this.mainScene.scene, this.size);
+        layer.setTexture(this.loadedMaterials[name].src);
+        layer.createPlane();
+        this.choiceEffect.ar.push(layer);
+    }
+    createEffectLayer3d(){
+        const { name } = this.choiceEffect;
+        const obj3dLayer = null;
     }
     removeEffects(){
         for(let i = 0; i < this.choiceEffect.ar.length; i++){
@@ -73,6 +98,12 @@ export default class FaceMeshFeaturev1 {
             item.remove();
         }
         this.choiceEffect.ar = [];
+    }
+    hideEffects(){
+        for(let i = 0; i < this.choiceEffect.ar.length; i++){
+            const item = this.choiceEffect.ar[i];
+            item.hide();
+        }
     }
     update() {
         this.dispatchAfterLoadedAll();
@@ -129,15 +160,10 @@ export default class FaceMeshFeaturev1 {
         }
     }
     load2dTexture({ src, name }) {
-        const texture = new Texture2d({
-            textureSrc: src,
-            callbackLoaded: (tex) => {
-                this.loadedMaterials[name] = {
-                    obj : texture,
-                    type : "2d"
-                }
-            }
-        });
+        this.loadedMaterials[name] = {
+            src : src,
+            type : "2d"
+        }
     }
     load3dTexture({ src, name }) {
         const model = new Object3dModel({
@@ -168,35 +194,5 @@ export default class FaceMeshFeaturev1 {
         setTimeout(() => {
             document.dispatchEvent(this.eventLoadedAll);
         }, 500);
-    }
-    accessWebcam() {
-        ///code again
-        return;
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            const constraints = {
-                video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    facingMode: 'user'
-                }
-            };
-            const video = document.createElement("video");
-            video.setAttribute('autoplay', '');
-            video.setAttribute('muted', '');
-            video.setAttribute('playsinline', '');
-            navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-                video.srcObject = stream;
-                video.play();
-                video.addEventListener("loadedmetadata", (e) => {
-
-                });
-
-            }).catch(function (error) {
-                console.error('Unable to access the camera/webcam.', error);
-            });
-
-        } else {
-            console.error('MediaDevices interface not available.');
-        }
     }
 }

@@ -27,5 +27,8 @@ export default class Texture2d {
         if(!this.isLoaded) return;
         return this.texture.clone(); 
     }
+    getSrc(){
+        return this.textureSrc;
+    }
 
 }

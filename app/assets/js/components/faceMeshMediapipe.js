@@ -1,4 +1,4 @@
-
+import { FaceMesh } from "@mediapipe/face_mesh";
 
 export default class FaceMeshMediapipe {
     constructor(onResults = () => {}, options = {}) {

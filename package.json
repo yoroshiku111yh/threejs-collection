@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@fancyapps/fancybox": "^3.5.7",
+    "@mediapipe/face_mesh": "^0.4.1633559619",
     "flickity": "^2.2.1",
     "flickity-as-nav-for": "^2.0.1",
     "jquery-bridget": "^2.0.1",

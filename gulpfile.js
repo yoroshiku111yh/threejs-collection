@@ -242,7 +242,7 @@ function removeCompressedSprites(cb) {
 function serve(cb) {
     browserSync.init({
         notify: true,
-        port: 9000,
+        port: 9090,
         reloadDelay: 100,
         logLevel: 'info',
         online: true,

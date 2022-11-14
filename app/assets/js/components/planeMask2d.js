@@ -22,10 +22,13 @@ export default class PlaneMask2d {
         this.texture = texture;
         this.imageUpdated = true;
     }
+    setLandMarks(landmarks){
+        this.landmarks = landmarks;
+    }
     createPlane() {
-        const geo = makeGeometry(this.landmarks);
-        const mat = this.createMaterial();
-        this.plane = new THREE.Mesh(geo, mat);
+        this.geo = makeGeometry(this.landmarks);
+        this.mat = this.createMaterial();
+        this.plane = new THREE.Mesh(this.geo, this.mat);
         this.plane.scale.set(this.sizeDimension.width, this.sizeDimension.height, this.sizeDimension.width);
         this.addPlane();
     }
@@ -33,6 +36,10 @@ export default class PlaneMask2d {
         if (!this.plane) return;
         this.scene.add(this.plane);
         this.plane.position.set(0, 0, 0);
+    }
+    setGeometry(){
+        this.plane.geometry = makeGeometry(this.landmarks);
+        this.plane.geometry.verticesNeedUpdate = true;
     }
     createMaterial() {
         if (!this.texture) {
@@ -54,6 +61,14 @@ export default class PlaneMask2d {
             this.scene.remove(this.plane);
             this.plane = null;
         }, 1)
+    }
+    hide(){
+        if(!this.plane) return;
+        this.plane.visible = false;
+    }
+    show(){
+        if(!this.plane) return;
+        this.plane.visible = true;
     }
     update() {
         if (this.needsUpdate) {

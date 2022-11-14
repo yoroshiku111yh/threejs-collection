@@ -31,21 +31,22 @@ export default class MediaPipeFace {
     }
     init() {
         this.initFaceMesh1();
-        this.eventLoadedVideo();
+        //this.accessWebcam();
+        this.eventLoadedVideoSample();
     }
-    calcSizeCanvas(){
+    calcSizeCanvas() {
         this.sizeVideoOutPut = {
-            height : 1920,
-            width : 1080
+            height: 1920,
+            width: 1080
         };
-        if(window.innerWidth < 1180){
+        if (window.innerWidth < 1180) {
             const wrapper = document.getElementById("sparkArWrapper");
             let multiWidth = Math.floor(this.sizeVideoOutPut.width / wrapper.offsetWidth);
             let multiHeight = Math.floor(this.sizeVideoOutPut.height / wrapper.offsetHeight);
-            this.sizeVideoOutPut.width = multiWidth* wrapper.offsetWidth;
-            this.sizeVideoOutPut.height = multiHeight* wrapper.offsetHeight;
+            this.sizeVideoOutPut.width = multiWidth * wrapper.offsetWidth;
+            this.sizeVideoOutPut.height = multiHeight * wrapper.offsetHeight;
         }
-        
+
     }
     initFaceMesh1() {
         this.faceMesh1 = new FaceMeshFeaturev1({
@@ -53,44 +54,75 @@ export default class MediaPipeFace {
                 width: this.sizeVideoOutPut.width,
                 height: this.sizeVideoOutPut.height
             },
-            canvasElm : document.getElementById("canvas-output"),
-            inputTracking : null ,//document.getElementById("video-test"),
-            afterLoadedAllEventName : "loadedAllMaterial1",
-            updateCallback : this.renderEffect.bind(this),
+            canvasElm: document.getElementById("canvas-output"),
+            inputTracking: null,//document.getElementById("video-test"),
+            afterLoadedAllEventName: "loadedAllMaterial1",
+            updateCallback: this.renderEffect.bind(this),
         });
         this.faceMesh1.pickEffect("mask-tiger");
         this.faceMesh1.loadTextures(materialsEffect);
         this.listenerEventLoadedAll();
     }
-    listenerEventLoadedAll(){
+    listenerEventLoadedAll() {
         document.addEventListener("loadedAllMaterial1", () => {
             this.hiddenLoadingScene();
             this.eventPlayEffect();
         });
     }
-    hiddenLoadingScene(){
+    hiddenLoadingScene() {
         this.loadDone = true;
         this.loadingElm1 = document.getElementById("loading1");
         this.loadingElm1.classList.remove("active");
         document.removeEventListener("loadedAllMaterial1", this.hiddenLoadingScene, false);
     }
-    eventLoadedVideo(){
+    eventLoadedVideoSample() {
         const vid = document.getElementById("video-test");
         vid.addEventListener("loadedmetadata", (e) => {
-            this.faceMesh1.setInputTracking(vid, "VIDEO");
-            this.faceMesh1.setBg();
-            //vid.play();
+            this.videoShow = vid;
         });
         vid.addEventListener("ended", () => {
             this.faceMesh1.isStop = true;
         })
     }
-    eventPlayEffect(){
-        this.faceMesh1.sendFrames();
+    accessWebcam() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const constraints = {
+                video: {
+                    width: { ideal: 720 },
+                    height: { ideal: 1280 },
+                    facingMode: 'user'
+                }
+            };
+            const video = document.createElement("video");
+            video.setAttribute('autoplay', '');
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+            navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+                video.srcObject = stream;
+                video.addEventListener("loadedmetadata", (e) => {
+                    this.videoShow = video;
+                });
+
+            }).catch(function (error) {
+                console.error('Unable to access the camera/webcam.', error);
+            });
+
+        } else {
+            console.error('MediaDevices interface not available.');
+        }
     }
-    renderEffect(){
-        if(!this.loadDone) return false;
-        this.faceMesh1.removeEffects();
+    eventPlayEffect() {
+        if(!this.videoShow) return;
+        this.faceMesh1.setInputTracking(this.videoShow, "VIDEO");
+        this.faceMesh1.setBg();
+
+        this.videoShow.play();
+        this.faceMesh1.sendFrames();
+        this.faceMesh1.createEffectLayers();
+    }
+    renderEffect() {
+        if (!this.loadDone) return false;
+        this.faceMesh1.hideEffects();
         this.faceMesh1.addEffects();
     }
 }
