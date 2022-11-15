@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { scaleLandmark } from '../helpers/landmarksHelper';
 
 export default class PlaneMask3d {
-    constructor({ scene, sizeDimension = {}, model, pointInFace, spacingMulti = {x : 1, y : 1, z : 1}}){
+    constructor({ scene, sizeDimension = {}, model, pointInFace, spacingMulti = {x : 1, y : 1, z : 1}, scaleMulti = { x : 1, y : 1, z : 1 }}){
         this.scene = scene;
         this.sizeDimension = sizeDimension;
         this.model = model;
@@ -10,6 +10,7 @@ export default class PlaneMask3d {
         this.scaleFactor = 1;
         this.pointInFace = pointInFace;
         this.spacingMulti = spacingMulti;
+        this.scaleMulti = scaleMulti;
         this.group = new THREE.Group();
     }
     add(){
@@ -68,7 +69,7 @@ export default class PlaneMask3d {
             ( leftEyeUpper.z - rightEyeUpper.z )** 2
         );
         this.scale = eyeDist / this.scaleFactor;
-        this.model.scale.set(this.scale, this.scale, this.scale);
+        this.model.scale.set(this.scale*this.scaleMulti.x, this.scale*this.scaleMulti.y, this.scale*this.scaleMulti.z);
     }
     rotateFollow(){
         const landmarks = this.landmarks;

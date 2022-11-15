@@ -1,7 +1,7 @@
 
 import 'regenerator-runtime/runtime';
 
-import modelHatXMas from '../../mediapipe/models/hat/hat-2.glb';
+import modelHatXMas from '../../mediapipe/models/hat/scene.gltf';
 import modelGlasses from '../../mediapipe/models/glass/scene.gltf';
 import FaceMeshFeaturev1 from '../components/faceMeshFeaturev1';
 
@@ -10,12 +10,17 @@ const materialsEffect = [
         type: "3d",
         src: modelHatXMas,
         name: "hat",
-        modifiedPos : {
-            pointInFace : 168,
+        modified : {
+            pointInFace : 10,
             spacingMulti : {
                 x : 1,
                 y : 1,
                 z : 1
+            },
+            scaleMulti : {
+                x : 2,
+                y : 2,
+                z : 2
             }
         }
     },
@@ -23,9 +28,14 @@ const materialsEffect = [
         type: "3d",
         src: modelGlasses,
         name: "glasses",
-        modifiedPos : {
+        modified : {
             pointInFace : 168,
             spacingMulti : {
+                x : 1,
+                y : 1,
+                z : 1
+            },
+            scaleMulti : {
                 x : 1,
                 y : 1,
                 z : 1
@@ -75,7 +85,7 @@ export default class MediaPipeFace {
             afterLoadedAllEventName: "loadedAllMaterial1",
             updateCallback: this.renderEffect.bind(this),
         });
-        this.faceMesh1.pickEffect("glasses");
+        this.faceMesh1.pickEffect("hat");
         this.faceMesh1.loadTextures(materialsEffect);
         this.listenerEventLoadedAll();
     }

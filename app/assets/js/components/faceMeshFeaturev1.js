@@ -97,9 +97,10 @@ export default class FaceMeshFeaturev1 {
     }
     createEffectLayer3d(){
         const { name } = this.choiceEffect;
-        const obj3dLayer = new PlaneMask3d({scene : this.mainScene.scene, sizeDimension : this.size});
-        obj3dLayer.setModel(this.loadedMaterials[name].obj.cloneModel());
-        obj3dLayer.setPointInFace(this.loadedMaterials[name].modifiedPos.pointInFace);
+        const { obj, modified } = this.loadedMaterials[name];
+        const obj3dLayer = new PlaneMask3d({scene : this.mainScene.scene, sizeDimension : this.size, spacingMulti : modified.spacingMulti, scaleMulti : modified.scaleMulti});
+        obj3dLayer.setModel(obj.cloneModel());
+        obj3dLayer.setPointInFace(modified.pointInFace);
         obj3dLayer.add();
         this.choiceEffect.ar.push(obj3dLayer);
     }
@@ -176,14 +177,14 @@ export default class FaceMeshFeaturev1 {
             type : "2d"
         }
     }
-    load3dTexture({ src, name, modifiedPos }) {
+    load3dTexture({ src, name, modified }) {
         const model = new Object3dModel({
             modelSrc: src,
             callbackLoaded: (obj) => {
                 this.loadedMaterials[name] = {
                     obj : model,
                     type : "3d",
-                    modifiedPos : modifiedPos
+                    modified : modified
                 }
             }
         });
