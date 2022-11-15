@@ -10,11 +10,27 @@ const materialsEffect = [
         type: "3d",
         src: modelHatXMas,
         name: "hat",
+        modifiedPos : {
+            pointInFace : 168,
+            spacingMulti : {
+                x : 1,
+                y : 1,
+                z : 1
+            }
+        }
     },
     {
         type: "3d",
         src: modelGlasses,
-        name: "glasses"
+        name: "glasses",
+        modifiedPos : {
+            pointInFace : 168,
+            spacingMulti : {
+                x : 1,
+                y : 1,
+                z : 1
+            }
+        }
     },
     {
         type: "2d",
@@ -59,7 +75,7 @@ export default class MediaPipeFace {
             afterLoadedAllEventName: "loadedAllMaterial1",
             updateCallback: this.renderEffect.bind(this),
         });
-        this.faceMesh1.pickEffect("mask-tiger");
+        this.faceMesh1.pickEffect("glasses");
         this.faceMesh1.loadTextures(materialsEffect);
         this.listenerEventLoadedAll();
     }

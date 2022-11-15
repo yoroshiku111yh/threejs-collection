@@ -6,6 +6,7 @@ import SceneBase from './sceneBase';
 import Texture2d from './texture2d';
 import Object3dModel from './obj3d';
 import PlaneMask2d from './planeMask2d';
+import PlaneMask3d from './planeMask3d';
 
 
 export default class FaceMeshFeaturev1 {
@@ -63,6 +64,12 @@ export default class FaceMeshFeaturev1 {
                     _effect.show();
                     break;
                 case "3d" :
+                    const _effect3d = this.choiceEffect.ar[i];
+                    _effect3d.setLandMarks(landmarks);
+                    _effect3d.setPosition();
+                    _effect3d.scaleModel();
+                    _effect3d.rotateFollow();
+                    _effect3d.show();
                     break;
             }
         }
@@ -83,14 +90,18 @@ export default class FaceMeshFeaturev1 {
     }
     createEffectLayer2d(){
         const { name } = this.choiceEffect;
-        const layer = new PlaneMask2d(this.mainScene.scene, this.size);
+        const layer = new PlaneMask2d({scene : this.mainScene.scene, sizeDimension : this.size});
         layer.setTexture(this.loadedMaterials[name].src);
         layer.createPlane();
         this.choiceEffect.ar.push(layer);
     }
     createEffectLayer3d(){
         const { name } = this.choiceEffect;
-        const obj3dLayer = null;
+        const obj3dLayer = new PlaneMask3d({scene : this.mainScene.scene, sizeDimension : this.size});
+        obj3dLayer.setModel(this.loadedMaterials[name].obj.cloneModel());
+        obj3dLayer.setPointInFace(this.loadedMaterials[name].modifiedPos.pointInFace);
+        obj3dLayer.add();
+        this.choiceEffect.ar.push(obj3dLayer);
     }
     removeEffects(){
         for(let i = 0; i < this.choiceEffect.ar.length; i++){
@@ -151,10 +162,10 @@ export default class FaceMeshFeaturev1 {
             const mat = textures[i];
             switch (mat.type) {
                 case "2d":
-                    this.load2dTexture({ src: mat.src, name: mat.name });
+                    this.load2dTexture(mat);
                     break;
                 case "3d":
-                    this.load3dTexture({ src: mat.src, name: mat.name });
+                    this.load3dTexture(mat);
                     break;
             }
         }
@@ -165,13 +176,14 @@ export default class FaceMeshFeaturev1 {
             type : "2d"
         }
     }
-    load3dTexture({ src, name }) {
+    load3dTexture({ src, name, modifiedPos }) {
         const model = new Object3dModel({
             modelSrc: src,
             callbackLoaded: (obj) => {
                 this.loadedMaterials[name] = {
                     obj : model,
-                    type : "3d"
+                    type : "3d",
+                    modifiedPos : modifiedPos
                 }
             }
         });

@@ -3,7 +3,7 @@ import { makeGeometry } from '../helpers/landmarksHelper';
 import { clone } from './../utils/jsm/SkeletonUtils';
 
 export default class PlaneMask2d {
-    constructor(scene, sizeDimension = {}, landmarks = []) {
+    constructor({scene, sizeDimension = {}, landmarks = []}) {
         this.scene = scene;
         this.texture;
         this.plane;
