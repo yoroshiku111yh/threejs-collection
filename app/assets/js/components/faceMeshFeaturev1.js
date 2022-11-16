@@ -22,11 +22,11 @@ export default class FaceMeshFeaturev1 {
         this.updateCallBack = updateCallback;
         this.loadedMaterials = {};
         this.choiceEffect = {
-            name : null,
-            ar : []
+            name: null,
+            ar: []
         };
         this.isLoadedAllMaterial = false;
-        this.DoneLoadAll = false;
+        this.doneLoadAll = false;
         this.lengthTextures = 0;
         this.mainScene;
         this.typeTex = typeTex;
@@ -35,7 +35,7 @@ export default class FaceMeshFeaturev1 {
         this.init();
     }
     init() {
-        if(!this.canvasElm) return;
+        if (!this.canvasElm) return;
         this.createCustomEventLoadedAll();
         this.mainScene = new SceneBase({
             typeTex: this.typeTex,
@@ -46,24 +46,24 @@ export default class FaceMeshFeaturev1 {
         this.mainScene.init();
 
     }
-    pickEffect(name){
+    pickEffect(name) {
         this.choiceEffect.name = name;
         this.choiceEffect.ar = [];
     }
-    addEffects(){
-        if(this.arFaceLandmarks.length === 0) return;
-        for(let i = 0; i < this.arFaceLandmarks.length; i++){
+    addEffects() {
+        if (this.arFaceLandmarks.length === 0) return;
+        for (let i = 0; i < this.arFaceLandmarks.length; i++) {
             const landmarks = this.arFaceLandmarks[i];
-            if(!landmarks) continue;
+            if (!landmarks) continue;
             const maskUse = this.loadedMaterials[this.choiceEffect.name];
-            switch(maskUse.type){
-                case "2d" : 
+            switch (maskUse.type) {
+                case "2d":
                     const _effect = this.choiceEffect.ar[i];
                     _effect.setLandMarks(landmarks);
                     _effect.setGeometry();
                     _effect.show();
                     break;
-                case "3d" :
+                case "3d":
                     const _effect3d = this.choiceEffect.ar[i];
                     _effect3d.setLandMarks(landmarks);
                     _effect3d.setPosition();
@@ -74,51 +74,51 @@ export default class FaceMeshFeaturev1 {
             }
         }
     }
-    createEffectLayers(){
+    createEffectLayers() {
+        console.log(this.loadedMaterials);
         const maskUse = this.loadedMaterials[this.choiceEffect.name];
-        for(let i = 0 ; i < this.limitFaces; i++){
-            switch(maskUse.type){
-                case "2d" :
-                     this.createEffectLayer2d();
+        for (let i = 0; i < this.limitFaces; i++) {
+            switch (maskUse.type) {
+                case "2d":
+                    this.createEffectLayer2d();
                     break;
                 case "3d":
                     this.createEffectLayer3d();
                     break;
             }
         }
-        
+
     }
-    createEffectLayer2d(){
+    createEffectLayer2d() {
         const { name } = this.choiceEffect;
-        const layer = new PlaneMask2d({scene : this.mainScene.scene, sizeDimension : this.size});
+        const layer = new PlaneMask2d({ scene: this.mainScene.scene, sizeDimension: this.size });
         layer.setTexture(this.loadedMaterials[name].src);
         layer.createPlane();
         this.choiceEffect.ar.push(layer);
     }
-    createEffectLayer3d(){
+    createEffectLayer3d() {
         const { name } = this.choiceEffect;
         const { obj, modified } = this.loadedMaterials[name];
-        const obj3dLayer = new PlaneMask3d({scene : this.mainScene.scene, sizeDimension : this.size, spacingMulti : modified.spacingMulti, scaleMulti : modified.scaleMulti});
+        const obj3dLayer = new PlaneMask3d({ scene: this.mainScene.scene, sizeDimension: this.size, spacingMulti: modified.spacingMulti, scaleMulti: modified.scaleMulti });
         obj3dLayer.setModel(obj.cloneModel());
         obj3dLayer.setPointInFace(modified.pointInFace);
         obj3dLayer.add();
         this.choiceEffect.ar.push(obj3dLayer);
     }
-    removeEffects(){
-        for(let i = 0; i < this.choiceEffect.ar.length; i++){
+    removeEffects() {
+        for (let i = 0; i < this.choiceEffect.ar.length; i++) {
             const item = this.choiceEffect.ar[i];
             item.remove();
         }
         this.choiceEffect.ar = [];
     }
-    hideEffects(){
-        for(let i = 0; i < this.choiceEffect.ar.length; i++){
+    hideEffects() {
+        for (let i = 0; i < this.choiceEffect.ar.length; i++) {
             const item = this.choiceEffect.ar[i];
             item.hide();
         }
     }
     update() {
-        this.dispatchAfterLoadedAll();
         this.updateCallBack();
     }
     sendImage() {
@@ -126,25 +126,25 @@ export default class FaceMeshFeaturev1 {
             image: this.inputTracking
         });
     }
-    async sendFrames(){
-        if( ! this.inputTracking) return;
-        if(!this.webCamActive){
-            if(this.inputTracking.end || this.inputTracking.paused) return;
+    async sendFrames() {
+        if (!this.inputTracking) return;
+        if (!this.webCamActive) {
+            if (this.inputTracking.end || this.inputTracking.paused) return;
         }
         await this.trackingFaceMesh.faceMesh.send({
-            image : this.inputTracking
-        });
-        await new Promise(requestAnimationFrame);
+            image: this.inputTracking
+        }).catch((e) => {});
+        await new Promise(requestAnimationFrame).catch((e) => {});
         this.sendFrames();
     }
-    setInputTracking(inputTracking, typeInput){
+    setInputTracking(inputTracking, typeInput) {
         this.inputTracking = inputTracking;
         this.typeTex = typeInput;
     }
     setBg() {
-        if(this.typeTex === "IMAGE")
+        if (this.typeTex === "IMAGE")
             return this.mainScene.bg.setTexture(this.inputTracking.src);
-        if(this.typeTex === "VIDEO")
+        if (this.typeTex === "VIDEO")
             return this.mainScene.bg.setTexture(this.inputTracking);
     }
     onResults(results) {
@@ -158,6 +158,9 @@ export default class FaceMeshFeaturev1 {
         }
     }
     loadTextures(textures) {
+        /////
+        this.removeTexLoaded();
+        ////
         this.lengthTextures = textures.length;
         for (let i = 0; i < this.lengthTextures; i++) {
             const mat = textures[i];
@@ -171,41 +174,50 @@ export default class FaceMeshFeaturev1 {
             }
         }
     }
+    removeTexLoaded() {
+        this.loadedMaterials = [];
+        for (let i = 0; i < this.choiceEffect.ar.length; i++) {
+            const item = this.choiceEffect.ar[i];
+            item.remove();
+        }
+        this.choiceEffect.ar = [];
+        this.doneLoadAll = false;
+    }
     load2dTexture({ src, name }) {
         this.loadedMaterials[name] = {
-            src : src,
-            type : "2d"
+            src: src,
+            type: "2d"
         }
+        this.callLoadedAll();
     }
     load3dTexture({ src, name, modified }) {
         const model = new Object3dModel({
             modelSrc: src,
             callbackLoaded: (obj) => {
                 this.loadedMaterials[name] = {
-                    obj : model,
-                    type : "3d",
-                    modified : modified
-                }
+                    obj: model,
+                    type: "3d",
+                    modified: modified
+                };
+                this.callLoadedAll();
             }
         });
     }
-    callLoadedAll(){
-        if(this.lengthTextures === 0) return;
-        if(this.lengthTextures !== Object.size(this.loadedMaterials)) return;
-        this.phaseMain();
+    callLoadedAll() {
+        if (this.lengthTextures === 0) return;
+        if (this.lengthTextures !== Object.keys(this.loadedMaterials).length) return;
+        this.dispatchAfterLoadedAll();
     }
-    createCustomEventLoadedAll(){
-        if(!this.afterLoadedAllEventName) return
-        this.eventLoadedAll = new CustomEvent(this.afterLoadedAllEventName, {
-            bubbles : false
+    createCustomEventLoadedAll() {
+        if (!this.afterLoadedAllEventName) return
+        this.eventLoadedAll = new Event(this.afterLoadedAllEventName, {
+            bubbles: true
         })
     }
-    dispatchAfterLoadedAll(){
-        if(this.DoneLoadAll) return;
-        this.DoneLoadAll = true;
-        if(!this.eventLoadedAll) return;
-        setTimeout(() => {
-            document.dispatchEvent(this.eventLoadedAll);
-        }, 500);
+    dispatchAfterLoadedAll() {
+        if (this.doneLoadAll) return;
+        this.doneLoadAll = true;
+        if (!this.eventLoadedAll) return;
+        document.dispatchEvent(this.eventLoadedAll);
     }
 }

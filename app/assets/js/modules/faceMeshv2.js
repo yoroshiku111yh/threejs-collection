@@ -5,25 +5,15 @@ import modelHatXMas from '../../mediapipe/models/hat/scene.gltf';
 import modelGlasses from '../../mediapipe/models/glass/scene.gltf';
 import FaceMeshFeaturev1 from '../components/faceMeshFeaturev1';
 
-const materialsEffect = [
+const materialsEffectMask = [
     {
-        type: "3d",
-        src: modelHatXMas,
-        name: "hat",
-        modified : {
-            pointInFace : 10,
-            spacingMulti : {
-                x : 1,
-                y : 1,
-                z : 1
-            },
-            scaleMulti : {
-                x : 2,
-                y : 2,
-                z : 2
-            }
-        }
-    },
+        type: "2d",
+        src: document.getElementById("mediapipe-face-place-holder").src,
+        name: "mask-tiger"
+    }
+];
+
+const materialsEffectGlasses = [
     {
         type: "3d",
         src: modelGlasses,
@@ -42,11 +32,27 @@ const materialsEffect = [
             }
         }
     },
+];
+
+const materialsEffectHat = [
     {
-        type: "2d",
-        src: document.getElementById("mediapipe-face-place-holder").src,
-        name: "mask-tiger"
-    }
+        type: "3d",
+        src: modelHatXMas,
+        name: "hat",
+        modified : {
+            pointInFace : 10,
+            spacingMulti : {
+                x : 1,
+                y : 1,
+                z : 1
+            },
+            scaleMulti : {
+                x : 2,
+                y : 2,
+                z : 2
+            }
+        }
+    },
 ]
 
 export default class MediaPipeFace {
@@ -56,6 +62,7 @@ export default class MediaPipeFace {
         this.init();
     }
     init() {
+        this.listenerEventLoadedAll();
         this.initFaceMesh1();
         //this.accessWebcam();
         this.eventLoadedVideoSample();
@@ -85,9 +92,8 @@ export default class MediaPipeFace {
             afterLoadedAllEventName: "loadedAllMaterial1",
             updateCallback: this.renderEffect.bind(this),
         });
-        this.faceMesh1.pickEffect("hat");
-        this.faceMesh1.loadTextures(materialsEffect);
-        this.listenerEventLoadedAll();
+        this.faceMesh1.pickEffect("mask-tiger");
+        this.faceMesh1.loadTextures(materialsEffectMask); 
     }
     listenerEventLoadedAll() {
         document.addEventListener("loadedAllMaterial1", () => {
@@ -99,12 +105,12 @@ export default class MediaPipeFace {
         this.loadDone = true;
         this.loadingElm1 = document.getElementById("loading1");
         this.loadingElm1.classList.remove("active");
-        document.removeEventListener("loadedAllMaterial1", this.hiddenLoadingScene, false);
     }
     eventLoadedVideoSample() {
         const vid = document.getElementById("video-test");
         vid.addEventListener("loadedmetadata", (e) => {
             this.videoShow = vid;
+            this.setInputTracking();
         });
         vid.addEventListener("ended", () => {
             this.faceMesh1.isStop = true;
@@ -127,6 +133,7 @@ export default class MediaPipeFace {
                 video.srcObject = stream;
                 video.addEventListener("loadedmetadata", (e) => {
                     this.videoShow = video;
+                    this.setInputTracking();
                 });
 
             }).catch(function (error) {
@@ -137,13 +144,14 @@ export default class MediaPipeFace {
             console.error('MediaDevices interface not available.');
         }
     }
-    eventPlayEffect() {
+    setInputTracking(){
         if(!this.videoShow) return;
         this.faceMesh1.setInputTracking(this.videoShow, "VIDEO");
         this.faceMesh1.setBg();
-
         this.videoShow.play();
         this.faceMesh1.sendFrames();
+    }
+    eventPlayEffect() {
         this.faceMesh1.createEffectLayers();
     }
     renderEffect() {
