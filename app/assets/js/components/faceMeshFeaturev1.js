@@ -47,8 +47,8 @@ export default class FaceMeshFeaturev1 {
 
     }
     pickEffect(name) {
+        this.removeEffects();
         this.choiceEffect.name = name;
-        this.choiceEffect.ar = [];
     }
     addEffects() {
         if (this.arFaceLandmarks.length === 0) return;

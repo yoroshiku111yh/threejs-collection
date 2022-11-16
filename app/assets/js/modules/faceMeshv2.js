@@ -1,59 +1,8 @@
 
 import 'regenerator-runtime/runtime';
 
-import modelHatXMas from '../../mediapipe/models/hat/scene.gltf';
-import modelGlasses from '../../mediapipe/models/glass/scene.gltf';
 import FaceMeshFeaturev1 from '../components/faceMeshFeaturev1';
-
-const materialsEffectMask = [
-    {
-        type: "2d",
-        src: document.getElementById("mediapipe-face-place-holder").src,
-        name: "mask-tiger"
-    }
-];
-
-const materialsEffectGlasses = [
-    {
-        type: "3d",
-        src: modelGlasses,
-        name: "glasses",
-        modified : {
-            pointInFace : 168,
-            spacingMulti : {
-                x : 1,
-                y : 1,
-                z : 1
-            },
-            scaleMulti : {
-                x : 1,
-                y : 1,
-                z : 1
-            }
-        }
-    },
-];
-
-const materialsEffectHat = [
-    {
-        type: "3d",
-        src: modelHatXMas,
-        name: "hat",
-        modified : {
-            pointInFace : 10,
-            spacingMulti : {
-                x : 1,
-                y : 1,
-                z : 1
-            },
-            scaleMulti : {
-                x : 2,
-                y : 2,
-                z : 2
-            }
-        }
-    },
-]
+import { materialsEffectGlasses, materialsEffectHat, materialsEffectMask } from '../utils/variable/index';
 
 export default class MediaPipeFace {
     constructor() {
@@ -92,8 +41,20 @@ export default class MediaPipeFace {
             afterLoadedAllEventName: "loadedAllMaterial1",
             updateCallback: this.renderEffect.bind(this),
         });
-        this.faceMesh1.pickEffect("mask-tiger");
-        this.faceMesh1.loadTextures(materialsEffectMask); 
+        this.selectEffect({
+            name : "mask-tiger",
+            resource : materialsEffectMask
+        });
+        // setTimeout(() => {
+        //     this.selectEffect({
+        //         name : "glasses",
+        //         resource : materialsEffectGlasses
+        //     });
+        // },2000);
+    }
+    selectEffect({name, resource}){
+        this.faceMesh1.pickEffect(name);
+        this.faceMesh1.loadTextures(resource); 
     }
     listenerEventLoadedAll() {
         document.addEventListener("loadedAllMaterial1", () => {
