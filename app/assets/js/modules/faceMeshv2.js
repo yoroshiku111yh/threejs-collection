@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime';
 
 import FaceMeshFeaturev1 from '../components/faceMeshFeaturev1';
 import { materialsEffectGlasses, materialsEffectHat, materialsEffectMask } from '../utils/variable/index';
+import CaptureCanvasToVideo from './../components/captureCanvasToVideo';
 
 const listEffectMaterials = {
     hat : materialsEffectHat,
@@ -22,6 +23,7 @@ export default class MediaPipeFace {
         //this.accessWebcam();
         this.eventLoadedVideoSample();
         this.eventClickEffect();
+        this.eventRecord();
     }
     calcSizeCanvas() {
         this.sizeVideoOutPut = {
@@ -48,16 +50,13 @@ export default class MediaPipeFace {
             afterLoadedAllEventName: "loadedAllMaterial1",
             updateCallback: this.renderEffect.bind(this),
         });
+        this.mediaRecord = new CaptureCanvasToVideo(
+            document.getElementById("canvas-output")
+        )
         this.selectEffect({
             name : "mask-tiger",
             resource : materialsEffectMask
         });
-        // setTimeout(() => {
-        //     this.selectEffect({
-        //         name : "glasses",
-        //         resource : materialsEffectGlasses
-        //     });
-        // },2000);
     }
     eventClickEffect(){
         const btnAr = document.querySelectorAll(".js-btn-effect");
@@ -65,7 +64,9 @@ export default class MediaPipeFace {
             const btn = btnAr[i];
             btn.addEventListener("click", (e) => {
                 const _this = e.currentTarget;
-                if(_this.classList.contains("active")) return;
+                if(_this.classList.contains("active")){
+                    return;
+                }
                 btnAr.forEach(e => {
                     e.classList.remove("active");
                 })
@@ -78,6 +79,19 @@ export default class MediaPipeFace {
                 });
             })
         }
+    }
+    eventRecord(){
+        const btnRecord = document.querySelector(".js-btn-effect.active");
+        btnRecord.addEventListener("mousedown", (e) => {
+            const _this = e.currentTarget;
+            //this.mediaRecord.start();
+
+        });
+        btnRecord.addEventListener("mouseup", (e) => {
+            const _this = e.currentTarget;
+            //this.mediaRecord.stop();
+            //this.mediaRecord.download();
+        });
     }
     selectEffect({name, resource}){
         this.loadDone = false;
