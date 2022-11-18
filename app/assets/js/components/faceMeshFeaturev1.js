@@ -75,7 +75,6 @@ export default class FaceMeshFeaturev1 {
         }
     }
     createEffectLayers() {
-        console.log(this.loadedMaterials);
         const maskUse = this.loadedMaterials[this.choiceEffect.name];
         for (let i = 0; i < this.limitFaces; i++) {
             switch (maskUse.type) {

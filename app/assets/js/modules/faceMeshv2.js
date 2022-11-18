@@ -4,6 +4,12 @@ import 'regenerator-runtime/runtime';
 import FaceMeshFeaturev1 from '../components/faceMeshFeaturev1';
 import { materialsEffectGlasses, materialsEffectHat, materialsEffectMask } from '../utils/variable/index';
 
+const listEffectMaterials = {
+    hat : materialsEffectHat,
+    glasses : materialsEffectGlasses,
+    maskTiger : materialsEffectMask
+}
+
 export default class MediaPipeFace {
     constructor() {
         this.loadDone = false;
@@ -15,6 +21,7 @@ export default class MediaPipeFace {
         this.initFaceMesh1();
         //this.accessWebcam();
         this.eventLoadedVideoSample();
+        this.eventClickEffect();
     }
     calcSizeCanvas() {
         this.sizeVideoOutPut = {
@@ -52,7 +59,31 @@ export default class MediaPipeFace {
         //     });
         // },2000);
     }
+    eventClickEffect(){
+        const btnAr = document.querySelectorAll(".js-btn-effect");
+        for(let i = 0 ; i < btnAr.length ; i++){
+            const btn = btnAr[i];
+            btn.addEventListener("click", (e) => {
+                const _this = e.currentTarget;
+                if(_this.classList.contains("active")) return;
+                btnAr.forEach(e => {
+                    e.classList.remove("active");
+                })
+                _this.classList.add("active");
+                const effectName = _this.dataset.effect;
+                const resourceName = _this.dataset.resource;
+                this.selectEffect({
+                    name : effectName,
+                    resource : listEffectMaterials[resourceName]
+                });
+            })
+        }
+    }
     selectEffect({name, resource}){
+        this.loadDone = false;
+        this.loadingElm1 = document.getElementById("loading1");
+        this.loadingElm1.classList.add("active");
+
         this.faceMesh1.pickEffect(name);
         this.faceMesh1.loadTextures(resource); 
     }
