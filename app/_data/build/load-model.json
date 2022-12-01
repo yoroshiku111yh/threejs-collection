@@ -1,0 +1,45 @@
+{
+	"assetPath": "assets",
+	"assets_url": "assets",
+	"title": "Climax - The Best Creatology Agency",
+	"css_style_inline": false,
+	"menu": [
+		{
+			"title": "About Us",
+			"url": "/about-us.html"
+		},
+		{
+			"title": "Our Work",
+			"url": "/our-work.html"
+		},
+		{
+			"title": "Services",
+			"url": "/services.html"
+		},
+		{
+			"title": "Carees",
+			"url": "/carees.html"
+		},
+		{
+			"title": "Contact",
+			"url": "/contact.html"
+		}
+	],
+	"heroBanner": [
+		{
+			"title": "title 1",
+			"description": "description 1",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"title": "title 2",
+			"description": "description 2",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		},
+		{
+			"title": "title 3",
+			"description": "description 3",
+			"image": "assets/images/dummy/article-img-1.jpg"
+		}
+	]
+}
