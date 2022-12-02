@@ -9,11 +9,13 @@ export default class SceneRaymarchingBasic extends SceneBase {
         super($container, size.width, size.height);
         this.frustumSize = 1;
         this.time = 0;
-        this.speed = 0.025;
+        this.speed = 0.035;
         this.isPlaying = true;
         this.isMouseLeave = true;
+        this.isMobile = window.innerWidth < 768 ? true : false;
         this.mouse = new THREE.Vector2();
         this.resolution = new THREE.Vector4();
+        this.count = 0;
         this.init();
     }
     initCamera() {
@@ -87,8 +89,11 @@ export default class SceneRaymarchingBasic extends SceneBase {
             resolution: {
                 value: this.resolution
             },
+            isMobile : {
+                value : this.isMobile
+            },
             totalOrb: {
-                value: 5
+                value: this.isMobile ? 1 : 5
             },
             colorOrb: {
                 value: new THREE.Vector3(new THREE.Color("#040809").r, new THREE.Color("#040809").g, new THREE.Color("#040809").b)
@@ -109,6 +114,7 @@ export default class SceneRaymarchingBasic extends SceneBase {
         this.isPlaying = true;
     }
     mouseEvents() {
+        if(window.innerWidth < 768) return;
         document.addEventListener("mousemove", (e) => {
             this.mouse.x = e.pageX / this.W - 0.5;
             this.mouse.y = -e.pageY / this.H + 0.5;

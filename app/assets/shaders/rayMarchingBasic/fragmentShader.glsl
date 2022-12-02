@@ -5,6 +5,7 @@ uniform vec3 colorOrb;
 uniform vec4 resolution;
 uniform vec2 mouse;
 uniform bool isMouseLeave;
+uniform bool isMobile;
 varying vec2 vUv;
 float PI = 3.141592653589793238;
 
@@ -39,24 +40,34 @@ vec2 sdf(vec3 p ) {
     float radius = 0.15;
     float type = 0.;
     int total = totalOrb;
-    vec3 p1 = rotate(p, vec3(1.), time / 5.);
+    vec3 p1 = rotate(p, vec3(1.), time / 3.);
     float box = smin(sdBox(p1, vec3(.2)), sdSphere(p, .2), radius);
 
     float realSphere = sdSphere(p1, radius);
+    
     float final = mix(box, realSphere, .5 + .5 * sin(time / 3.));
+
+    if(isMobile == true){
+        final = mix(box, box, .5 + .5 * sin(time / 3.));
+    }
     
     for(int i = 0; i < total; i++) {
         float randOffset = rand(vec2(i, 0));
         float progr = 1. - fract(time / 3. + randOffset * 3.);
         vec3 pos = vec3(sin(randOffset * 2. * PI), cos(randOffset * 2. * PI), 0.);
         float goToCenter = sdSphere(p - pos * progr, .05);
+        //is box
+        // vec3 p1 = rotate(p - pos * progr , vec3(1.), time / 3.);
+        // float goToCenter = sdBox(p1, vec3(.05));
         final = smin(final, goToCenter, radius);
     }
     float radiusMouseSphere = 0.;
     if(isMouseLeave == false){
         radiusMouseSphere = .1 + .05 * sin(time);
     }
-    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), radiusMouseSphere*0.5);
+    //float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), radiusMouseSphere*0.5);
+    vec3 pMouseBox = rotate(p - vec3(mouse * resolution.zw * 2., 0.) , vec3(1.), time / 2.);
+    float mouseSphere = sdBox(pMouseBox, vec3(radiusMouseSphere*0.5));
 
     if(mouseSphere < final)
         type = 1.;
