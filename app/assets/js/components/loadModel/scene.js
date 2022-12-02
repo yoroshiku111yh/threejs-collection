@@ -14,6 +14,7 @@ export default class SceneLoadModel extends SceneBase {
         this.start();
         this.renderer.autoClear = false;
         this.renderer.setClearColor(new THREE.Color(clearColorDark));
+        this.renderer.shadowMap.enabled = true;
         this.light();
         this.initCamera();
         this.control = new OrbitControls(this.camera, this.renderer.domElement);
@@ -65,7 +66,9 @@ export default class SceneLoadModel extends SceneBase {
         new LoaderGLTF({
             src: document.getElementById("src-model-glb").dataset.src,
             resolve: (obj) => {
-                console.log(obj);
+                const mesh = obj.scene.children[ 0 ];
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
                 this.mainScene.add(obj.scene);
             },
             reject: (err) => {
@@ -79,7 +82,7 @@ export default class SceneLoadModel extends SceneBase {
     }
 
     ground() {
-        const groundGeo = new THREE.PlaneGeometry(100, 100);
+        const groundGeo = new THREE.PlaneGeometry(2000, 2000);
         const groundMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
         groundMat.color.setHSL(0.095, 1, 0.75);
 
