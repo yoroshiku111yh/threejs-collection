@@ -9,7 +9,7 @@ export default class SceneRaymarchingBasic extends SceneBase {
         super($container, size.width, size.height);
         this.frustumSize = 1;
         this.time = 0;
-        this.speed = 0.05;
+        this.speed = 0.025;
         this.isPlaying = true;
         this.isMouseLeave = true;
         this.mouse = new THREE.Vector2();
@@ -91,7 +91,7 @@ export default class SceneRaymarchingBasic extends SceneBase {
                 value: 5
             },
             colorOrb: {
-                value: new THREE.Vector3(0.75, 0.16, 0.16)
+                value: new THREE.Vector3(new THREE.Color("#040809").r, new THREE.Color("#040809").g, new THREE.Color("#040809").b)
             },
             isMouseLeave : {
                 value : this.isMouseLeave

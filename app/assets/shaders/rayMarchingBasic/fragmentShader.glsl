@@ -36,26 +36,27 @@ float smin(float a, float b, float k) {
 }
 
 vec2 sdf(vec3 p ) {
+    float radius = 0.15;
     float type = 0.;
     int total = totalOrb;
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
-    float box = smin(sdBox(p1, vec3(.2)), sdSphere(p, .2), .3);
+    float box = smin(sdBox(p1, vec3(.2)), sdSphere(p, .2), radius);
 
-    float realSphere = sdSphere(p1, .3);
+    float realSphere = sdSphere(p1, radius);
     float final = mix(box, realSphere, .5 + .5 * sin(time / 3.));
     
     for(int i = 0; i < total; i++) {
         float randOffset = rand(vec2(i, 0));
         float progr = 1. - fract(time / 3. + randOffset * 3.);
         vec3 pos = vec3(sin(randOffset * 2. * PI), cos(randOffset * 2. * PI), 0.);
-        float goToCenter = sdSphere(p - pos * progr, .1);
-        final = smin(final, goToCenter, .3);
+        float goToCenter = sdSphere(p - pos * progr, .05);
+        final = smin(final, goToCenter, radius);
     }
     float radiusMouseSphere = 0.;
     if(isMouseLeave == false){
         radiusMouseSphere = .1 + .05 * sin(time);
     }
-    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), radiusMouseSphere);
+    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), radiusMouseSphere*0.5);
 
     if(mouseSphere < final)
         type = 1.;
