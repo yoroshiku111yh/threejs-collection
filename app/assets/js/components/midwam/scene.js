@@ -7,8 +7,13 @@ import { LoaderGLTF } from './../../ultilities/object3dLoader/gltf';
 export default class SceneMidWam extends SceneBase {
     constructor({ $container, $size = {} }) {
         super($container, $size.width, $size.height);
+        this.srcModel = document.getElementById("src-model-glb").dataset.src;
+        this.srcEnv = document.getElementById("src-env").dataset.src
         this.loaded = {
-            modelHuman : null
+            modelHuman: null
+        };
+        this.materials = {
+            human : null
         };
         this.time = 0.0;
         this.init();
@@ -18,14 +23,16 @@ export default class SceneMidWam extends SceneBase {
         this.renderer.autoClear = false;
         this.renderer.setClearColor(new THREE.Color(clearColorDark));
         this.initCamera();
+        this.makePmremGenerator();
+        this.addObjects();
         this.loadAssets();
         this.light();
         this.update();
     }
     updateCallback() {
         this.renderer.clear();
-        this.time+= 0.005;
-        if(this.loaded.modelHuman){
+        this.time += 0.005;
+        if (this.loaded.modelHuman) {
             this.loaded.modelHuman.rotation.z = this.time;
         }
     }
@@ -38,17 +45,34 @@ export default class SceneMidWam extends SceneBase {
         new LoaderGLTF({
             src: document.getElementById("src-model-glb").dataset.src,
             resolve: (obj) => {
-                //const mesh = obj.scene.children[0];
                 this.loaded.modelHuman = obj.scene.children[0];
-                this.loaded.modelHuman.material = new THREE.MeshBasicMaterial({
-                    color : 0xFFFFFF
-                });
-                console.log(this.loaded.modelHuman.material);
+                this.loaded.modelHuman.traverse((node) => {
+                    if (node instanceof THREE.Mesh) {
+                        this.setMaterialMidwam(node);
+                    }
+                })
                 this.mainScene.add(this.loaded.modelHuman);
             },
             reject: (err) => {
                 console.log(err);
             }
+        })
+    }
+    setMaterialMidwam(node){
+        node.material = new THREE.MeshPhysicalMaterial({
+            metalness : 1,
+            roughness : 0.28,
+            envMap : this.envMap
+        });
+    }
+    makePmremGenerator(){
+        this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
+        this.pmremGenerator.compileEquirectangularShader();
+    }
+    addObjects(){
+        this.envMap = new THREE.TextureLoader().load(this.srcEnv, texture => {
+            this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
+            this.pmremGenerator.dispose();
         })
     }
     light() {
