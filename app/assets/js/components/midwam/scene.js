@@ -8,32 +8,31 @@ export default class SceneMidWam extends SceneBase {
     constructor({ $container, $size = {} }) {
         super($container, $size.width, $size.height);
         this.srcModel = document.getElementById("src-model-glb").dataset.src;
-        this.srcEnv = document.getElementById("src-env").dataset.src
-        this.loaded = {
-            modelHuman: null
-        };
-        this.materials = {
-            human : null
-        };
+        this.srcEnv = document.getElementById("src-env").dataset.src;
+        this.loadTex = new THREE.TextureLoader();
+        this.envMap = null;
+        this.modelHuman = null;
         this.time = 0.0;
         this.init();
     }
-    init() {
+    async init() {
         this.start();
         this.renderer.autoClear = false;
         this.renderer.setClearColor(new THREE.Color(clearColorDark));
         this.initCamera();
-        this.makePmremGenerator();
-        this.addObjects();
-        this.loadAssets();
         this.light();
+        this.makePmremGenerator();
+        this.texture = await this.loadTex.loadAsync(this.srcEnv);
+        this.envMap = this.pmremGenerator.fromEquirectangular(this.texture).texture;
+        this.pmremGenerator.dispose();
+        this.loadAssets();
         this.update();
     }
     updateCallback() {
         this.renderer.clear();
         this.time += 0.005;
-        if (this.loaded.modelHuman) {
-            this.loaded.modelHuman.rotation.z = this.time;
+        if (this.modelHuman) {
+            this.modelHuman.rotation.z = this.time;
         }
     }
     initCamera() {
@@ -45,35 +44,29 @@ export default class SceneMidWam extends SceneBase {
         new LoaderGLTF({
             src: document.getElementById("src-model-glb").dataset.src,
             resolve: (obj) => {
-                this.loaded.modelHuman = obj.scene.children[0];
-                this.loaded.modelHuman.traverse((node) => {
+                this.modelHuman = obj.scene.children[0];
+                this.modelHuman.traverse((node) => {
                     if (node instanceof THREE.Mesh) {
                         this.setMaterialMidwam(node);
                     }
                 })
-                this.mainScene.add(this.loaded.modelHuman);
+                this.mainScene.add(this.modelHuman);
             },
             reject: (err) => {
                 console.log(err);
             }
         })
     }
-    setMaterialMidwam(node){
+    setMaterialMidwam(node) {
         node.material = new THREE.MeshPhysicalMaterial({
-            metalness : 1,
-            roughness : 0.28,
-            envMap : this.envMap
+            metalness: 1,
+            roughness: 0.28,
+            envMap: this.envMap
         });
     }
-    makePmremGenerator(){
+    makePmremGenerator() {
         this.pmremGenerator = new THREE.PMREMGenerator(this.renderer);
         this.pmremGenerator.compileEquirectangularShader();
-    }
-    addObjects(){
-        this.envMap = new THREE.TextureLoader().load(this.srcEnv, texture => {
-            this.envMap = this.pmremGenerator.fromEquirectangular(texture).texture;
-            this.pmremGenerator.dispose();
-        })
     }
     light() {
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
