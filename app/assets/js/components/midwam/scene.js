@@ -4,6 +4,21 @@ import SceneBase from './../../ultilities/sceneBase';
 import * as THREE from 'three';
 import { LoaderGLTF } from './../../ultilities/object3dLoader/gltf';
 
+import { GUI } from '../../three/jsm/libs/lil-gui.module.min.js';
+
+import { EffectComposer } from '../../three/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '../../three/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from '../../three/jsm/postprocessing/UnrealBloomPass.js';
+import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
+
+const params = {
+    exposure: 0.5,
+    bloomStrength: 1.5,
+    bloomThreshold: 0,
+    bloomRadius: 0,
+    roughness : 0.05
+};
+
 export default class SceneMidWam extends SceneBase {
     constructor({ $container, $size = {} }) {
         super($container, $size.width, $size.height);
@@ -19,10 +34,11 @@ export default class SceneMidWam extends SceneBase {
     async init() {
         this.start();
         this.renderer.autoClear = false;
-        this.renderer.setClearColor(new THREE.Color(clearColorDark));
+        this.renderer.setClearColor(new THREE.Color(0x050505), 1);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 0.5;
+        this.renderer.toneMappingExposure = params.exposure;
         this.initCamera();
+        this.initPost();
         this.light();
         this.makePmremGenerator();
         this.texture = await this.loadTex.loadAsync(this.srcEnv);
@@ -30,28 +46,84 @@ export default class SceneMidWam extends SceneBase {
         //this.envMap.mapping = THREE.EquirectangularReflectionMapping;
         this.pmremGenerator.dispose();
         this.loadAssets();
+        this.gui();
         this.update();
+    }
+    initPost() {
+
+        this.renderScene = new RenderPass(this.mainScene, this.camera);
+        this.bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5,
+            0.4,
+            0.85
+        );
+        this.bloomPass.threshold = params.bloomThreshold;
+        this.bloomPass.radius = params.bloomRadius;
+        this.bloomPass.strength = params.bloomStrength;
+
+        this.composer = new EffectComposer(this.renderer);
+        this.composer.addPass(this.renderScene);
+        this.composer.addPass(this.bloomPass);
+
+        console.log(this.composer);
+    }
+    gui() {
+        const gui = new GUI();
+
+        gui.add(params, 'exposure', 0.1, 2).onChange((value) => {
+            //this.renderer.toneMappingExposure = Math.pow(value, 4.0);
+            this.renderer.toneMappingExposure = value;
+        });
+
+        gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange((value) => {
+
+            this.bloomPass.threshold = Number(value);
+
+        });
+
+        gui.add(params, 'bloomStrength', 0.0, 3.0).onChange((value) => {
+
+            this.bloomPass.strength = Number(value);
+
+        });
+
+        gui.add(params, 'bloomRadius', 0.0, 1.0).step(0.01).onChange((value) => {
+
+            this.bloomPass.radius = Number(value);
+
+        });
+
+        gui.add(params, 'roughness', 0.0, 1.0).step(0.01).onChange((value) => {
+
+            this.userData.material.roughness = value;
+
+        });
+
     }
     updateCallback() {
         this.renderer.clear();
         this.time += 0.005;
         if (this.modelHuman) {
-            //this.modelHuman.rotation.z = this.time;
+            this.modelHuman.rotation.y = this.time;
         }
-        if(this.userData.shader){
+        if (this.userData.shader) {
             this.userData.shader.uniforms.uTime.value = this.time;
+            this.composer.render();
         }
     }
     initCamera() {
         this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
-        this.camera.position.set(0, 5, 10);
+        this.camera.position.set(0, 9, 25);
         this.mainScene.add(this.camera);
     }
     loadAssets() {
         new LoaderGLTF({
             src: document.getElementById("src-model-glb").dataset.src,
             resolve: (obj) => {
+                console.log(obj);
                 this.modelHuman = obj.scene.children[0];
+                //this.modelHuman = obj;
                 this.modelHuman.traverse((node) => {
                     if (node instanceof THREE.Mesh) {
                         this.setMaterialMidwam(node);
@@ -63,7 +135,8 @@ export default class SceneMidWam extends SceneBase {
             reject: (err) => {
                 console.log(err);
             }
-        })
+        });
+
     }
     beforeCompile(shader) {
         shader.uniforms.uTime = { value: 0.0 };
@@ -86,8 +159,8 @@ export default class SceneMidWam extends SceneBase {
                 mat4 m = rotationMatrix(axis, angle);
                 return (m * vec4(v, 1.0)).xyz;
             }
-        ` + 
-        shader.fragmentShader;
+        ` +
+            shader.fragmentShader;
         shader.fragmentShader = shader.fragmentShader.replace(
             'include <envmap_physical_pars_fragment>',
             `
@@ -108,7 +181,7 @@ export default class SceneMidWam extends SceneBase {
                         reflectVec = normalize( mix( reflectVec, normal, roughness * roughness) );
                         reflectVec = inverseTransformDirection( reflectVec, viewMatrix );
 
-                        reflectVec = rotate(reflectVec, vec3(1.0, 0.0, 0.0), uTime*2.0);
+                        reflectVec = rotate(reflectVec, vec3(0.0, 0.0, 1.0), uTime*0.5);
 
                         vec4 envMapColor = textureCubeUV( envMap, reflectVec, roughness );
                         return envMapColor.rgb * envMapIntensity;
@@ -122,11 +195,12 @@ export default class SceneMidWam extends SceneBase {
         this.userData.shader = shader;
     }
     setMaterialMidwam(node) {
-        node.material = new THREE.MeshPhysicalMaterial({
+        node.material = new THREE.MeshStandardMaterial({
             metalness: 1,
-            roughness: 0.28,
-            envMap: this.envMap
+            roughness: params.roughness
         });
+        node.material.envMap = this.envMap;
+        node.material.needsUpdate = true;
         this.userData.material = node.material;
     }
     makePmremGenerator() {
@@ -134,38 +208,6 @@ export default class SceneMidWam extends SceneBase {
         this.pmremGenerator.compileEquirectangularShader();
     }
     light() {
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
-        hemiLight.color.setHSL(0.6, 1, 0.6);
-        hemiLight.groundColor.setHSL(0.095, 1, 0.75);
-        hemiLight.position.set(0, 50, 0);
-        this.mainScene.add(hemiLight);
-
-        //const hemiLightHelper = new THREE.HemisphereLightHelper(hemiLight, 10);
-        //this.mainScene.add(hemiLightHelper);
-
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.color.setHSL(0.1, 1, 0.95);
-        dirLight.position.set(- 1, 1.75, 1);
-        dirLight.position.multiplyScalar(30);
-        this.mainScene.add(dirLight);
-
-        dirLight.castShadow = true;
-
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
-
-        const d = 50;
-
-        dirLight.shadow.camera.left = - d;
-        dirLight.shadow.camera.right = d;
-        dirLight.shadow.camera.top = d;
-        dirLight.shadow.camera.bottom = - d;
-
-        dirLight.shadow.camera.far = 3500;
-        dirLight.shadow.bias = - 0.0001;
-
-        //const dirLightHelper = new THREE.DirectionalLightHelper(dirLight, 10);
-        //this.mainScene.add(dirLightHelper);
+        
     }
 }
