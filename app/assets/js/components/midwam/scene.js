@@ -12,11 +12,12 @@ import { UnrealBloomPass } from '../../three/jsm/postprocessing/UnrealBloomPass.
 import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
 
 const params = {
-    exposure: 0.5,
-    bloomStrength: 1.5,
-    bloomThreshold: 0,
+    exposure: 0.74,
+    bloomStrength: 0.972,
+    bloomThreshold: 0.028,
     bloomRadius: 0,
-    roughness : 0.05
+    roughness : 0.16,
+    metalness : 1
 };
 
 export default class SceneMidWam extends SceneBase {
@@ -100,6 +101,12 @@ export default class SceneMidWam extends SceneBase {
 
         });
 
+        gui.add(params, 'metalness', 0.0, 1.0).step(0.01).onChange((value) => {
+
+            this.modelHuman.material.metalness = value;
+
+        });
+
     }
     updateCallback() {
         this.renderer.clear();
@@ -124,12 +131,14 @@ export default class SceneMidWam extends SceneBase {
                 console.log(obj);
                 this.modelHuman = obj.scene.children[0];
                 //this.modelHuman = obj;
-                this.modelHuman.traverse((node) => {
-                    if (node instanceof THREE.Mesh) {
-                        this.setMaterialMidwam(node);
-                        node.material.onBeforeCompile = this.beforeCompile.bind(this);
-                    }
-                })
+                // this.modelHuman.traverse((node) => {
+                //     if (node instanceof THREE.Mesh) {
+                //         this.setMaterialMidwam(node);
+                //         node.material.onBeforeCompile = this.beforeCompile.bind(this);
+                //     }
+                // })
+                this.setMaterialMidwam(this.modelHuman);
+                this.modelHuman.material.onBeforeCompile = this.beforeCompile.bind(this);
                 this.mainScene.add(this.modelHuman);
             },
             reject: (err) => {
@@ -196,7 +205,7 @@ export default class SceneMidWam extends SceneBase {
     }
     setMaterialMidwam(node) {
         node.material = new THREE.MeshStandardMaterial({
-            metalness: 1,
+            metalness: params.metalness,
             roughness: params.roughness
         });
         node.material.envMap = this.envMap;
