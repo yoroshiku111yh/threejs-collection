@@ -9,7 +9,8 @@ import { GUI } from '../../three/jsm/libs/lil-gui.module.min.js';
 import { EffectComposer } from '../../three/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../../three/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from '../../three/jsm/postprocessing/UnrealBloomPass.js';
-import { LoaderOBJ } from './../../ultilities/object3dLoader/obj';
+import { HoloScreenShader } from './holoScreen';
+import { ShaderPass } from '../../three/jsm/postprocessing/ShaderPass';
 
 const params = {
     exposure: 0.74,
@@ -17,7 +18,9 @@ const params = {
     bloomThreshold: 0.028,
     bloomRadius: 0,
     roughness : 0.16,
-    metalness : 1
+    metalness : 1,
+    powerHolo : 0.5,
+    glitchHolo : 1.0
 };
 
 export default class SceneMidWam extends SceneBase {
@@ -66,8 +69,11 @@ export default class SceneMidWam extends SceneBase {
         this.composer = new EffectComposer(this.renderer);
         this.composer.addPass(this.renderScene);
         this.composer.addPass(this.bloomPass);
+        
 
-        console.log(this.composer);
+        this.holoScreen = new ShaderPass(HoloScreenShader);
+        this.composer.addPass(this.holoScreen);
+
     }
     gui() {
         const gui = new GUI();
@@ -106,7 +112,13 @@ export default class SceneMidWam extends SceneBase {
             this.modelHuman.material.metalness = value;
 
         });
-
+        gui.add(params, 'powerHolo', 0.0, 1.0).step(0.01).onChange((value) => {
+            console.log(this.holoScreen);
+            this.holoScreen.uniforms.powerHolo.value = value;
+        });
+        gui.add(params, 'glitchHolo', 1.0, 10.0).step(0.01).onChange((value) => {
+            this.holoScreen.uniforms.glitchHolo.value = value;
+        });
     }
     updateCallback() {
         this.renderer.clear();
@@ -116,6 +128,7 @@ export default class SceneMidWam extends SceneBase {
         }
         if (this.userData.shader) {
             this.userData.shader.uniforms.uTime.value = this.time;
+            this.holoScreen.uniforms.uTime.value = this.time*2.0;
             this.composer.render();
         }
     }
