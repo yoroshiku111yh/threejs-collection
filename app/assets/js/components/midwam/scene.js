@@ -1,4 +1,5 @@
 /// tutorial and code research from Yuri Artiukh
+/// https://www.youtube.com/watch?v=Vr9l4m6bkcQ&ab_channel=YuriArtiukh
 import { clearColorDark } from './../../ultilities/variable';
 import SceneBase from './../../ultilities/sceneBase';
 import * as THREE from 'three';
@@ -11,17 +12,25 @@ import { RenderPass } from '../../three/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from '../../three/jsm/postprocessing/UnrealBloomPass.js';
 import { HoloScreenShader } from './holoScreen';
 import { ShaderPass } from '../../three/jsm/postprocessing/ShaderPass';
+import { gsap } from 'gsap';
 
 const params = {
-    exposure: 0.74,
-    bloomStrength: 0.972,
+    exposure: 0.63,
+    bloomStrength: 0.75,
     bloomThreshold: 0.028,
     bloomRadius: 0,
-    roughness : 0.16,
-    metalness : 1,
-    powerHolo : 0.5,
-    glitchHolo : 1.0
+    roughness: 0.14,
+    metalness: 1,
+    powerHolo: 0.,
+    glitchHolo: 1.0,
+    progress: 0.0,
 };
+
+const cameraAnimation = {
+    step1: new THREE.Vector3(0, 18, 1),
+    step2: new THREE.Vector3(0, 17, 7),
+    step3: new THREE.Vector3(0, 10, 10)
+}
 
 export default class SceneMidWam extends SceneBase {
     constructor({ $container, $size = {} }) {
@@ -33,6 +42,8 @@ export default class SceneMidWam extends SceneBase {
         this.modelHuman = null;
         this.time = 0.0;
         this.userData = {};
+        this.tl = gsap.timeline();
+        console.log("DAMAGE TO LOW GPU")
         this.init();
     }
     async init() {
@@ -49,9 +60,66 @@ export default class SceneMidWam extends SceneBase {
         this.envMap = this.pmremGenerator.fromEquirectangular(this.texture).texture;
         //this.envMap.mapping = THREE.EquirectangularReflectionMapping;
         this.pmremGenerator.dispose();
-        this.loadAssets();
+        this.loadAssets(() => {
+            this.testAnimation();
+        });
         this.gui();
         this.update();
+    }
+    testAnimation() {
+        const camera = this.camera.position;
+        const model = this.modelHuman;
+        const holoScreen = this.holoScreen.uniforms;
+        const bloom = this.bloomPass;
+        this.tl.to(camera, {
+            x: cameraAnimation["step2"].x,
+            y: cameraAnimation["step2"].y,
+            z: cameraAnimation["step2"].z,
+            duration : 0.75,
+            delay : 1.5
+        }, 'stage1')
+        .to(model.rotation, { 
+            y : -1 ,
+            duration : 0.75,
+            delay : 1.5
+        },'stage1')
+        .to(bloom, { 
+            strength : 1.2,
+            threshold : 0.017,
+            duration : 0.75,
+            delay : 2
+        }, 'stage1')
+        .to(model.rotation, {
+            y : -3.5,
+            duration : 1,
+            delay : 2
+        }, 'stage2')
+        .to(camera, {
+            x: cameraAnimation["step3"].x,
+            y: cameraAnimation["step3"].y,
+            z: cameraAnimation["step3"].z,
+            duration : 0.75,
+            delay : 2
+        }, 'stage2')
+        .to(holoScreen.powerHolo, {
+            value : 0.3,
+            duration : 0.75,
+            delay : 2
+        }, 'stage2')
+        .to(holoScreen.glitchHolo, {
+            value : 5.46,
+            duration : 0.75,
+            delay : 2
+        }, 'stage2')
+        .to(holoScreen.progress, {
+            value : 0.82,
+            duration : 0.75,
+            delay : 2
+        }, 'stage2')
+        
+        // threshold : 0.017,
+        // strength : 1.413,
+
     }
     initPost() {
 
@@ -69,11 +137,17 @@ export default class SceneMidWam extends SceneBase {
         this.composer = new EffectComposer(this.renderer);
         this.composer.addPass(this.renderScene);
         this.composer.addPass(this.bloomPass);
-        
+
 
         this.holoScreen = new ShaderPass(HoloScreenShader);
         this.composer.addPass(this.holoScreen);
-
+    }
+    initCamera() {
+        this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
+        this.camera.position.x = cameraAnimation['step1'].x;
+        this.camera.position.y = cameraAnimation['step1'].y;
+        this.camera.position.z = cameraAnimation['step1'].z;
+        this.mainScene.add(this.camera);
     }
     gui() {
         const gui = new GUI();
@@ -119,25 +193,23 @@ export default class SceneMidWam extends SceneBase {
         gui.add(params, 'glitchHolo', 1.0, 10.0).step(0.01).onChange((value) => {
             this.holoScreen.uniforms.glitchHolo.value = value;
         });
+        gui.add(params, 'progress', 0.0, 3.0).step(0.01).onChange((value) => {
+            this.holoScreen.uniforms.progress.value = value;
+        });
     }
     updateCallback() {
         this.renderer.clear();
         this.time += 0.005;
         if (this.modelHuman) {
-            this.modelHuman.rotation.y = this.time;
+            //this.modelHuman.rotation.y += this.time;
         }
         if (this.userData.shader) {
             this.userData.shader.uniforms.uTime.value = this.time;
-            this.holoScreen.uniforms.uTime.value = this.time*2.0;
+            this.holoScreen.uniforms.uTime.value = this.time * 2.0;
             this.composer.render();
         }
     }
-    initCamera() {
-        this.camera = new THREE.PerspectiveCamera(this.degCameraPerspective, this.W / this.H, this.minPerspective, this.maxPerspective);
-        this.camera.position.set(0, 9, 25);
-        this.mainScene.add(this.camera);
-    }
-    loadAssets() {
+    loadAssets(callback) {
         new LoaderGLTF({
             src: document.getElementById("src-model-glb").dataset.src,
             resolve: (obj) => {
@@ -152,7 +224,12 @@ export default class SceneMidWam extends SceneBase {
                 // })
                 this.setMaterialMidwam(this.modelHuman);
                 this.modelHuman.material.onBeforeCompile = this.beforeCompile.bind(this);
+
                 this.mainScene.add(this.modelHuman);
+
+                //////
+
+                callback && callback();
             },
             reject: (err) => {
                 console.log(err);
@@ -230,6 +307,6 @@ export default class SceneMidWam extends SceneBase {
         this.pmremGenerator.compileEquirectangularShader();
     }
     light() {
-        
+
     }
 }

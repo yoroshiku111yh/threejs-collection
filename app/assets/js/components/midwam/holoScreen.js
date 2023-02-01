@@ -19,8 +19,9 @@ const HoloScreenShader = {
 		'scale': { value: 1.0 },
 		'uTime' : { value : 0.0 },
 		'uSize' : {value : new Vector2(window.innerWidth, window.innerHeight)},
-		'powerHolo' : { value : 0.5 },
-		'glitchHolo' : {value : 1.0}
+		'powerHolo' : { value : 0.0 },
+		'glitchHolo' : {value : 0.0},
+		'progress' : { value : 0.2 }
 
 	},
 
@@ -41,6 +42,7 @@ const HoloScreenShader = {
 		uniform vec2 uSize;
 		uniform float powerHolo;
 		uniform float glitchHolo;
+		uniform float progress;
 		varying vec2 vUv;
 
 		//	Classic Perlin 3D Noise 
@@ -136,8 +138,15 @@ const HoloScreenShader = {
 
 			vec3 combined = color.rgb + holo*powerHolo;
 			
+			float lumFront = dot(luminance, combined);
+			float lumBack = dot(luminance, background);
+			
+			float d = lumFront - lumBack;
+			vec3 combinedLum =  background + d;
+			vec3 finalColor = mix(combined, combinedLum, progress);
+
 			gl_FragColor = color;
-			gl_FragColor = vec4(vec3(combined), 1.);
+			gl_FragColor = vec4(vec3(finalColor), 1.);
 		}`
 
 };
